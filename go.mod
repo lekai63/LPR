@@ -1,4 +1,4 @@
-module github.com/lekai63/lpr/model
+module github.com/lekai63/lpr
 
 go 1.14
 
