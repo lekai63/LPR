@@ -1,37 +1,27 @@
-module github.com/lekai63/lpr
+module bin
 
-go 1.14
+go 1.13
 
 require (
-	cloud.google.com/go v0.37.4 // indirect
-	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
-	github.com/denisenkom/go-mssqldb v0.0.0-20200428022330-06a60b6afbbc
-	github.com/gin-gonic/gin v1.6.2
-	github.com/go-openapi/spec v0.19.7 // indirect
-	github.com/go-openapi/swag v0.19.9 // indirect
-	github.com/go-sql-driver/mysql v1.5.0
-	github.com/gogo/protobuf v1.3.1
-	github.com/golang/protobuf v1.4.0 // indirect
-	github.com/grpc-ecosystem/go-grpc-middleware v1.2.0
-	github.com/guregu/null v3.4.0+incompatible
-	github.com/jinzhu/gorm v1.9.14
-	github.com/jmoiron/sqlx v1.2.0
-	github.com/julienschmidt/httprouter v1.3.0
-	github.com/kr/pretty v0.2.0 // indirect
-	github.com/lib/pq v1.3.0
-	github.com/mailru/easyjson v0.7.1 // indirect
-	github.com/mattn/go-sqlite3 v2.0.2+incompatible
-	github.com/satori/go.uuid v1.2.0
-	github.com/sirupsen/logrus v1.4.2
-	github.com/swaggo/files v0.0.0-20190704085106-630677cd5c14
-	github.com/swaggo/gin-swagger v1.2.0
-	github.com/swaggo/swag v1.6.5
-	golang.org/x/net v0.0.0-20200421231249-e086a090c8fd // indirect
-	golang.org/x/sys v0.0.0-20200420163511-1957bb5e6d1f // indirect
-	golang.org/x/tools v0.0.0-20200424195722-358506031216 // indirect
-	google.golang.org/appengine v1.6.5 // indirect
-	google.golang.org/grpc v1.19.0
-	gopkg.in/yaml.v2 v2.2.8
-	gorm.io/driver/postgres v0.2.5
-	gorm.io/gorm v0.2.22
+	github.com/GoAdminGroup/go-admin v1.2.14
+	github.com/GoAdminGroup/themes v0.0.37
+	github.com/ajg/form v1.5.1 // indirect
+	github.com/buaazp/fasthttprouter v0.1.1 // indirect
+	github.com/fasthttp-contrib/websocket v0.0.0-20160511215533-1f3b11f56072 // indirect
+	github.com/fatih/structs v1.1.0 // indirect
+	github.com/gavv/httpexpect v2.0.0+incompatible
+	github.com/gin-gonic/gin v1.6.3
+	github.com/gobuffalo/packr/v2 v2.8.0 // indirect
+	github.com/google/go-querystring v1.0.0 // indirect
+	github.com/gorilla/websocket v1.4.2 // indirect
+	github.com/imkira/go-interpol v1.1.0 // indirect
+	github.com/jinzhu/gorm v1.9.15
+	github.com/moul/http2curl v1.0.0 // indirect
+	github.com/sclevine/agouti v3.0.0+incompatible // indirect
+	github.com/sergi/go-diff v1.1.0 // indirect
+	github.com/valyala/fasthttp v1.15.1 // indirect
+	github.com/xeipuuv/gojsonschema v1.2.0 // indirect
+	github.com/yalp/jsonpath v0.0.0-20180802001716-5cc68e5049a0 // indirect
+	github.com/yudai/gojsondiff v1.0.0 // indirect
+	github.com/yudai/golcs v0.0.0-20170316035057-ecda9a501e82 // indirect
 )

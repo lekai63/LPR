@@ -1,5 +1,41 @@
-# lpr
+# GoAdmin 介绍
 
-## gen struct via github.com/smallnest/gen
+GoAdmin 是一个帮你快速搭建数据可视化管理应用平台的框架。 
 
-~/go/bin/gen --sqltype=postgres --connstr="host=192.168.5.11 port=5432 user=remote dbname=fzzl password=my032003 sslmode=disable" --database fzzl --module github.com/lekai63/lpr/model --verbose --overwrite --out ~/lpr/ --json --db --api=apis --model=models --gorm  --guregu  --rest --mod --server  --makefile --run-gofmt --host=localhost --port=5430
+- [github](https://github.com/GoAdminGroup/go-admin)
+- [论坛](http://discuss.go-admin.com)
+- [文档](https://book.go-admin.cn)
+
+## 目录介绍
+
+```
+.
+├── Dockerfile          Dockerfile
+├── Makefile            Makefile
+├── adm.ini             adm配置文件
+├── admin.db            sqlite数据库
+├── build               二进制构建目标文件夹
+├── config.json         配置文件
+├── go.mod              go.mod
+├── go.sum              go.sum
+├── html                前端html文件
+├── logs                日志
+├── main.go             main.go
+├── main_test.go        CI测试
+├── pages               页面控制器
+├── tables              数据模型
+└── uploads             上传文件夹
+```
+
+## 生成CRUD数据模型
+
+### 在线工具
+
+管理员身份运行后，访问：http://127.0.0.1:8080/admin/info/generate/new
+
+### 使用命令行工具
+
+```
+adm generate -l cn -c adm.ini
+```
+

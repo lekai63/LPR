@@ -1,180 +1,41 @@
-export PROJ_PATH=github.com/lekai63/lpr/model
+GOCMD = go
+GOBUILD = $(GOCMD) build
+GOMOD = $(GOCMD) mod
+GOTEST = $(GOCMD) test
+BINARY_NAME = goadmin
+CLI = adm
 
-export DATE := $(shell date +%Y.%m.%d-%H%M)
-export LATEST_COMMIT := $(shell git log --pretty=format:'%h' -n 1)
-export BRANCH := $(shell git branch |grep -v "no branch"| grep \*|cut -d ' ' -f2)
-export BUILT_ON_IP := $(shell [ $$(uname) = Linux ] && hostname -i || hostname )
-export BIN_DIR=./bin
-export PACKR2_EXECUTABLE := $(shell command -v packr2  2> /dev/null)
-export SWAG_EXECUTABLE := $(shell command -v swag  2> /dev/null)
+all: serve
 
-export BUILT_ON_OS=$(shell uname -a)
-ifeq ($(BRANCH),)
-BRANCH := master
-endif
+init:
+	$(GOMOD) init $(module)
 
-export COMMIT_CNT := $(shell git rev-list HEAD | wc -l | sed 's/ //g' )
-export BUILD_NUMBER := ${BRANCH}-${COMMIT_CNT}
-export COMPILE_LDFLAGS=-s -X "main.DATE=${DATE}" \
-                          -X "main.LATEST_COMMIT=${LATEST_COMMIT}" \
-                          -X "main.BUILD_NUMBER=${BUILD_NUMBER}" \
-                          -X "main.BUILT_ON_IP=${BUILT_ON_IP}" \
-                          -X "main.BUILT_ON_OS=${BUILT_ON_OS}"
+install:
+	$(GOMOD) tidy
 
-build_info: check_prereq ## Build the container
-	@echo ''
-	@echo '---------------------------------------------------------'
-	@echo 'BUILT_ON_IP       $(BUILT_ON_IP)'
-	@echo 'BUILT_ON_OS       $(BUILT_ON_OS)'
-	@echo 'DATE              $(DATE)'
-	@echo 'LATEST_COMMIT     $(LATEST_COMMIT)'
-	@echo 'BRANCH            $(BRANCH)'
-	@echo 'COMMIT_CNT        $(COMMIT_CNT)'
-	@echo 'BUILD_NUMBER      $(BUILD_NUMBER)'
-	@echo 'COMPILE_LDFLAGS   $(COMPILE_LDFLAGS)'
-	@echo 'PATH              $(PATH)'
-	@echo 'PACKR2_EXECUTABLE $(PACKR2_EXECUTABLE)'
-	@echo 'SWAG_EXECUTABLE   $(SWAG_EXECUTABLE)'
-	@echo '---------------------------------------------------------'
-	@echo ''
+serve:
+	$(GOCMD) run .
 
+build:
+	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 $(GOBUILD) -o ./build/$(BINARY_NAME) -v ./
 
-####################################################################################################################
-##
-## help for each task - https://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
-##
-####################################################################################################################
-.PHONY: help
+generate:
+	$(CLI) generate -c adm.ini
 
-help: ## This help.
-	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
+test: black-box-test user-acceptance-test
 
-.DEFAULT_GOAL := help
+black-box-test: ready-for-data
+	$(GOTEST) -v -test.run=TestMainBlackBox
+	make clean
 
+user-acceptance-test: ready-for-data
+	$(GOTEST) -v -test.run=TestMainUserAcceptance
+	make clean
 
+ready-for-data:
+	cp admin.db admin_test.db
 
-####################################################################################################################
-##
-## Build of binaries
-##
-####################################################################################################################
-all: example test ## build example and run tests
+clean:
+	rm admin_test.db
 
-binaries: example ## build binaries in bin dir
-
-create_dir:
-	@mkdir -p $(BIN_DIR)
-
-check_prereq: create_dir
-ifndef PACKR2_EXECUTABLE
-	go get -u github.com/gobuffalo/packr/v2/packr2
-endif
-	$(warning "found packr2")
-
-ifndef SWAG_EXECUTABLE
-	go get -u github.com/swaggo/swag/cmd/swag
-endif
-	$(warning "found swag")
-
-
-
-build_app: create_dir
-		packr2 build -o $(BIN_DIR)/$(BIN_NAME) -a -ldflags '$(COMPILE_LDFLAGS)' $(APP_PATH)
-
-
-example: build_info ## build example binary in bin dir
-	@echo "build example server"
-	swag init --dir .  --generalInfo ./app/server/main.go
-	make BIN_NAME=example APP_PATH=$(PROJ_PATH)/app/server build_app
-	@echo ''
-	@echo ''
-
-
-
-####################################################################################################################
-##
-## Cleanup of binaries
-##
-####################################################################################################################
-
-clean_binaries: clean_example  ## clean all binaries in bin dir
-
-
-clean_binary: ## clean binary in bin dir
-	rm -f $(BIN_DIR)/$(BIN_NAME)
-
-clean_example: ## clean example
-	make BIN_NAME=example clean_binary
-
-
-
-test: ## run tests
-	go test -v $(PROJ_PATH)
-
-fmt: ## run fmt on project
-	#go fmt $(PROJ_PATH)/...
-	gofmt -s -d -w -l .
-
-doc: ## launch godoc on port 6060
-	godoc -http=:6060
-
-deps: ## display deps for project
-	go list -f '{{ join .Deps  "\n"}}' . |grep "/" | grep -v $(PROJ_PATH)| grep "\." | sort |uniq
-
-lint: ## run lint on the project
-	golint ./...
-
-staticcheck: ## run staticcheck on the project
-	staticcheck -ignore "$(shell cat .checkignore)" .
-
-vet: ## run go vet on the project
-	go vet .
-
-tools: ## install dependent tools for code analysis
-	go get -u github.com/gogo/protobuf
-	go get -u github.com/gogo/protobuf/proto
-	go get -u github.com/gogo/protobuf/jsonpb
-	go get -u github.com/gogo/protobuf/protoc-gen-gogo
-	go get -u github.com/gogo/protobuf/gogoproto
-	go get -u honnef.co/go/tools
-	go get -u github.com/gordonklaus/ineffassign
-	go get -u github.com/fzipp/gocyclo
-	go get -u golang.org/x/lint/golint
-	go get -u github.com/gobuffalo/packr/v2/packr2
-
-
-
-regen: ## regenerate generated code
-	gen \
-     --sqltype=postgres \
-     --connstr='host=192.168.5.11 port=5432 user=remote dbname=fzzl password=my032003 sslmode=disable' \
-     --database=fzzl \
-     --templateDir=./templates \
-     --model=models \
-     --dao=dao \
-     --api=apis \
-     --out=./ \
-     --module=github.com/lekai63/lpr/model \
-     --json \
-     --json-fmt=snake \
-     --gorm \
-     --db \
-     --guregu \
-     --mod \
-     --makefile \
-     --server \
-     --overwrite \
-     --host=localhost \
-     --port=5430 \
-     --rest \
-     --file_naming='{{.}}' \
-     --model_naming='{{FmtFieldName .}}' \
-     --verbose \
-     --swagger_version=1.0 \
-     --swagger_path=/ \
-     --swagger_tos= \
-     --swagger_contact_name=Me \
-     --swagger_contact_url=http://me.com/terms.html \
-     --swagger_contact_email=me@me.com
-
-
+.PHONY: all serve build generate test black-box-test user-acceptance-test ready-for-data clean
