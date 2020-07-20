@@ -18,7 +18,7 @@
 		"path": "./uploads",
 		"prefix": "uploads"
 	},
-	"title": "GoAdmin",
+	"title": "lpr",
 	"logo": "\u003cb\u003eGo\u003c/b\u003eAdmin",
 	"mini_logo": "\u003cb\u003eG\u003c/b\u003eA",
 	"index": "/",

@@ -39,3 +39,12 @@
 2020-07-20T11:38:42.078Z	logger/logger.go:321	[GoAdmin] [37;44m 200 [0m [37;104m GET   [0m /admin/info/normal_manager/edit
 2020-07-20T11:39:04.457Z	logger/logger.go:321	[GoAdmin] [37;44m 200 [0m [37;104m GET   [0m /admin/info/lessee_info
 2020-07-20T11:39:20.115Z	logger/logger.go:321	[GoAdmin] [37;44m 200 [0m [37;104m GET   [0m /admin/info/lessee_info
+2020-07-20T11:48:30.486Z	logger/logger.go:321	[GoAdmin] [37;44m 200 [0m [37;104m GET   [0m /admin/info/lessee_info
+2020-07-20T11:48:53.778Z	logger/logger.go:321	[GoAdmin] [37;44m 200 [0m [37;104m GET   [0m /admin/info/lessee_info
+2020-07-20T11:49:03.832Z	logger/logger.go:321	[GoAdmin] [37;44m 200 [0m [37;104m GET   [0m /admin/info/manager
+2020-07-20T11:49:07.873Z	logger/logger.go:321	[GoAdmin] [37;44m 200 [0m [37;104m GET   [0m /admin/info/site/edit
+2020-07-20T11:49:34.070Z	logger/logger.go:321	[GoAdmin] [37;44m 200 [0m [37;104m POST   [0m /admin/edit/site
+2020-07-20T11:49:36.735Z	logger/logger.go:321	[GoAdmin] [37;44m 302 [0m [37;104m GET   [0m /admin/info/site
+2020-07-20T11:49:36.974Z	logger/logger.go:321	[GoAdmin] [37;44m 200 [0m [37;104m GET   [0m /admin/info/site/edit
+2020-07-20T11:49:40.324Z	logger/logger.go:321	[GoAdmin] [37;44m 302 [0m [37;104m GET   [0m /admin/info/site
+2020-07-20T11:49:40.468Z	logger/logger.go:321	[GoAdmin] [37;44m 200 [0m [37;104m GET   [0m /admin/info/site/edit
