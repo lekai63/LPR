@@ -11,6 +11,7 @@ require (
 	github.com/fatih/structs v1.1.0 // indirect
 	github.com/gavv/httpexpect v2.0.0+incompatible
 	github.com/gin-gonic/gin v1.6.3
+	github.com/go-delve/delve v1.4.1 // indirect
 	github.com/gobuffalo/packr/v2 v2.8.0 // indirect
 	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
