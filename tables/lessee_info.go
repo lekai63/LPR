@@ -44,7 +44,7 @@ func GetLesseeInfoTable(ctx *context.Context) table.Table {
 	formList.AddField("创建时间", "created_at", db.Timestamp, form.Datetime).FieldHide().FieldNotAllowEdit().
 		FieldPostFilterFn(func(value types.PostFieldModel) interface{} {
 			if value.Value == nil {
-				return time.Now().Format("2006-01-02 15:04:05.00")
+				return time.Now().Format("2006-01-02 15:04:05")
 			}
 			return value.Value.Value()
 		})
@@ -53,7 +53,7 @@ func GetLesseeInfoTable(ctx *context.Context) table.Table {
 	formList.AddField("修改时间", "updated_at", db.Timestamp, form.Datetime).
 		FieldHide().
 		FieldPostFilterFn(func(value types.PostFieldModel) interface{} {
-			return time.Now().Format("2006-01-02 15:04:05.00")
+			return time.Now().Format("2006-01-02 15:04:05")
 		})
 
 	formList.SetTable("fzzl.lessee_info").SetTitle("LesseeInfo").SetDescription("LesseeInfo")

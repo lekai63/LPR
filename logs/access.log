@@ -346,3 +346,16 @@
 2020-07-24T10:52:03.849Z	logger/logger.go:321	[GoAdmin] [37;44m 200 [0m [37;104m GET   [0m /admin/info/lessee_info
 2020-07-24T10:52:05.623Z	logger/logger.go:321	[GoAdmin] [37;44m 200 [0m [37;104m GET   [0m /admin/info/lessee_info/new
 2020-07-24T10:52:32.236Z	logger/logger.go:321	[GoAdmin] [37;44m 200 [0m [37;104m GET   [0m /admin/info/lease_contract
+2020-07-24T10:53:21.297Z	logger/logger.go:321	[GoAdmin] [37;44m 200 [0m [37;104m GET   [0m /admin/info/lessee_info
+2020-07-24T10:53:22.665Z	logger/logger.go:321	[GoAdmin] [37;44m 200 [0m [37;104m GET   [0m /admin/info/lessee_info/new
+2020-07-24T10:53:51.081Z	logger/logger.go:321	[GoAdmin] [37;44m 200 [0m [37;104m POST   [0m /admin/new/lessee_info
+2020-07-24T10:56:46.661Z	logger/logger.go:321	[GoAdmin] [37;44m 200 [0m [37;104m GET   [0m /admin/info/lease_contract
+2020-07-24T10:56:57.221Z	logger/logger.go:321	[GoAdmin] [37;44m 200 [0m [37;104m GET   [0m /admin/info/lease_contract/edit
+2020-07-24T11:22:54.063Z	logger/logger.go:321	[GoAdmin] [37;44m 200 [0m [37;104m GET   [0m /admin/info/lease_contract
+2020-07-24T11:22:57.985Z	logger/logger.go:321	[GoAdmin] [37;44m 200 [0m [37;104m GET   [0m /admin/info/lease_contract/edit
+2020-07-24T11:30:07.821Z	logger/logger.go:321	[GoAdmin] [37;44m 200 [0m [37;104m GET   [0m /admin/info/lease_contract
+2020-07-24T11:30:10.449Z	logger/logger.go:321	[GoAdmin] [37;44m 200 [0m [37;104m GET   [0m /admin/info/lease_contract/edit
+2020-07-24T11:31:07.307Z	logger/logger.go:321	[GoAdmin] [37;44m 200 [0m [37;104m GET   [0m /admin/info/lease_contract
+2020-07-24T11:31:10.108Z	logger/logger.go:321	[GoAdmin] [37;44m 200 [0m [37;104m GET   [0m /admin/info/lease_contract/edit
+2020-07-24T11:33:31.006Z	logger/logger.go:321	[GoAdmin] [37;44m 200 [0m [37;104m GET   [0m /admin/info/lease_contract
+2020-07-24T11:33:32.941Z	logger/logger.go:321	[GoAdmin] [37;44m 200 [0m [37;104m GET   [0m /admin/info/lease_contract/edit
