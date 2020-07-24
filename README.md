@@ -1,3 +1,9 @@
+# dlv调试
+
+```
+~/go/bin/dlv debug --headless --listen ":2345" --log --api-version 2
+```
+
 # GoAdmin 介绍
 
 GoAdmin 是一个帮你快速搭建数据可视化管理应用平台的框架。 

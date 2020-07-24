@@ -20,8 +20,12 @@
             "request": "launch",
             "mode": "auto",
             "program": "${fileDirname}",
+            // "program": "${workspaceFolder}",
+            // "program": "${file}",
+            "apiVersion": 2,
             "env": {},
             "args": []
+            //  -gcflags="-N -l"
         }
     ]
 }

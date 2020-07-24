@@ -1,0 +1,18 @@
+{
+    "go.enableCodeLens": {
+
+        "references": false,
+        "runtest": true
+    },
+    "go.delveConfig":{
+        "dlvLoadConfig": {
+            "followPointers": true,
+            "maxVariableRecurse": 6,  //查询六层嵌套的变量
+            "maxStringLen": 64,
+            "maxArrayValues": 64,
+            "maxStructFields": -1
+        },
+        "apiVersion": 2,
+        "showGlobalVariables": true
+    }
+}

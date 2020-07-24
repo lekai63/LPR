@@ -11,8 +11,8 @@ import (
 )
 
 func GetLeaseContractTable(ctx *context.Context) table.Table {
-	cc := selfTableConfig{table.DefaultConfigWithDriver(db.DriverPostgresql)}
-	leaseContract := table.NewDefaultTable(cc.setPrimaryKey("cid"))
+
+	leaseContract := table.NewDefaultTable(table.DefaultConfigWithDriver(db.DriverPostgresql))
 
 	info := leaseContract.GetInfo().HideFilterArea()
 
