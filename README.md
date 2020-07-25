@@ -1,7 +1,24 @@
-# dlv调试
+# dlv远程调试
 
 ```
 ~/go/bin/dlv debug --headless --listen ":2345" --log --api-version 2
+```
+
+# use smallnest/gen to generate codes
+
+```
+~/go/bin/gen --sqltype=postgres \
+   	--connstr "host=192.168.5.11 port=5432 user=fzzl dbname=lpr password=fzzl032003 sslmode=disable connect_timeout=10000" \
+   	--database fzzl  \
+   	--json \
+   	--gorm \
+   	--guregu \
+   	--rest \
+   	--out ./tables_gen \
+   	--module github.com/lekai63/lpr/tables_gen \
+   	--makefile \
+   	--json-fmt=snake \
+   	--overwrite
 ```
 
 # GoAdmin 介绍

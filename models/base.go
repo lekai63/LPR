@@ -6,12 +6,12 @@ import (
 )
 
 var (
-	orm *gorm.DB
-	err error
+	Gorm *gorm.DB
+	err  error
 )
 
 func Init(c db.Connection) {
-	orm, err = gorm.Open("postgresql", c.GetDB("default"))
+	Gorm, err = gorm.Open("postgresql", c.GetDB("default"))
 
 	if err != nil {
 		panic("initialize orm failed")

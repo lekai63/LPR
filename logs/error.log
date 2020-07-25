@@ -594,3 +594,472 @@ net/http.(*conn).serve(0xc0003b8000, 0x1728440, 0xc0003c8000)
 created by net/http.(*Server).Serve
 	/usr/lib/go-1.13/src/net/http/server.go:2928 +0x384
 
+2020-07-25T05:34:47.969Z	[31mERROR[0m	logger/logger.go:284	runtime error: slice bounds out of range [:-4]
+2020-07-25T05:34:47.970Z	[31mERROR[0m	logger/logger.go:284	goroutine 9 [running]:
+runtime/debug.Stack(0xc000011440, 0x118f402, 0x0)
+	/usr/lib/go-1.13/src/runtime/debug/stack.go:24 +0x9d
+github.com/GoAdminGroup/go-admin/plugins/admin/controller.(*Handler).GlobalDeferHandler(0xc00034c240, 0xc0002e05c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/controller/handler.go:29 +0xc6
+panic(0x118f4e0, 0xc000038aa0)
+	/usr/lib/go-1.13/src/runtime/panic.go:679 +0x1b2
+bin/tables.showPercent(0x0, 0x0, 0x0, 0x0, 0xc0002d0ba0, 0x0, 0x10ac820, 0x1efb360)
+	/home/lekai/code/lpr/tables/patch.go:37 +0xdc
+github.com/GoAdminGroup/go-admin/template/types.FieldDisplay.ToDisplay(0x15d04a0, 0x1efa110, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0xc0002d0ba0, 0x0, ...)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/template/types/display.go:38 +0x62
+github.com/GoAdminGroup/go-admin/template/types.FieldDisplay.ToDisplayHTML(0x15d04a0, 0x1efa110, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0xc0002d0ba0, 0x0, ...)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/template/types/display.go:69 +0x80
+github.com/GoAdminGroup/go-admin/template/types.(*FormField).updateValue(0xc00057bb80, 0x0, 0x0, 0x0, 0x0, 0xc0002d0ba0, 0x0, 0xc00026e3c0, 0xc00057bb80)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/template/types/form.go:275 +0xfd1
+github.com/GoAdminGroup/go-admin/template/types.(*FormField).UpdateDefaultValue(...)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/template/types/form.go:187
+github.com/GoAdminGroup/go-admin/template/types.(*FormPanel).FieldsWithDefaultValue(0xc0000b4340, 0xc00057c620, 0x1, 0x1, 0x0, 0x0, 0xc000030100)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/template/types/form.go:1386 +0x344
+github.com/GoAdminGroup/go-admin/plugins/admin/modules/table.(*DefaultTable).GetNewForm(0xc0002e0d00, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, ...)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/modules/table/default.go:961 +0xce
+github.com/GoAdminGroup/go-admin/plugins/admin/controller.(*Handler).showNewForm(0xc00034c240, 0xc0002e05c0, 0x0, 0x0, 0xc0003223d3, 0xe, 0xc00003e9c0, 0x32, 0x1efa100)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/controller/new.go:32 +0x1c7
+github.com/GoAdminGroup/go-admin/plugins/admin/controller.(*Handler).ShowNewForm(0xc00034c240, 0xc0002e05c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/controller/new.go:23 +0x149
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc0002e05c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/plugins/admin/modules/guard.(*Guard).ShowNewForm(0xc0003b2510, 0xc0002e05c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/modules/guard/new.go:58 +0x626
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc0002e05c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/plugins/admin/modules/guard.(*Guard).CheckPrefix(0xc0003b2510, 0xc0002e05c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/modules/guard/guard.go:51 +0x1ef
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc0002e05c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/modules/auth.(*Invoker).Middleware.func1(0xc0002e05c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/modules/auth/middleware.go:131 +0x343
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc0002e05c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/plugins/admin.(*Admin).globalErrorHandler(0xc00034e1e0, 0xc0002e05c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/router.go:94 +0x82
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc0002e05c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/adapter/gin.(*Gin).AddHandler.func1(0xc00020c3c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/adapter/gin/gin.go:90 +0x2a3
+github.com/gin-gonic/gin.(*Context).Next(0xc00020c3c0)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161 +0x3b
+github.com/gin-gonic/gin.RecoveryWithWriter.func1(0xc00020c3c0)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/recovery.go:83 +0x64
+github.com/gin-gonic/gin.(*Context).Next(0xc00020c3c0)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161 +0x3b
+github.com/gin-gonic/gin.LoggerWithConfig.func1(0xc00020c3c0)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/logger.go:241 +0xe1
+github.com/gin-gonic/gin.(*Context).Next(0xc00020c3c0)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161 +0x3b
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest(0xc00030cb40, 0xc00020c3c0)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409 +0x66d
+github.com/gin-gonic/gin.(*Engine).ServeHTTP(0xc00030cb40, 0x17268a0, 0xc000338380, 0xc00015c000)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367 +0x14e
+net/http.serverHandler.ServeHTTP(0xc0003380e0, 0x17268a0, 0xc000338380, 0xc00015c000)
+	/usr/lib/go-1.13/src/net/http/server.go:2802 +0xa4
+net/http.(*conn).serve(0xc0003ebf40, 0x17296a0, 0xc000331140)
+	/usr/lib/go-1.13/src/net/http/server.go:1890 +0x875
+created by net/http.(*Server).Serve
+	/usr/lib/go-1.13/src/net/http/server.go:2928 +0x384
+
+2020-07-25T05:34:48.089Z	[31mERROR[0m	logger/logger.go:284	runtime error: slice bounds out of range [:-4]
+2020-07-25T05:34:48.089Z	[31mERROR[0m	logger/logger.go:284	goroutine 9 [running]:
+runtime/debug.Stack(0xc000011440, 0x118f402, 0x0)
+	/usr/lib/go-1.13/src/runtime/debug/stack.go:24 +0x9d
+github.com/GoAdminGroup/go-admin/plugins/admin/controller.(*Handler).GlobalDeferHandler(0xc00034c240, 0xc0002120c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/controller/handler.go:29 +0xc6
+panic(0x118f4e0, 0xc0000387a0)
+	/usr/lib/go-1.13/src/runtime/panic.go:679 +0x1b2
+bin/tables.showPercent(0x0, 0x0, 0x0, 0x0, 0xc0002386f0, 0x0, 0x10ac820, 0x1efb360)
+	/home/lekai/code/lpr/tables/patch.go:37 +0xdc
+github.com/GoAdminGroup/go-admin/template/types.FieldDisplay.ToDisplay(0x15d04a0, 0x1efa110, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0xc0002386f0, 0x0, ...)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/template/types/display.go:38 +0x62
+github.com/GoAdminGroup/go-admin/template/types.FieldDisplay.ToDisplayHTML(0x15d04a0, 0x1efa110, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0xc0002386f0, 0x0, ...)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/template/types/display.go:69 +0x80
+github.com/GoAdminGroup/go-admin/template/types.(*FormField).updateValue(0xc00057bb80, 0x0, 0x0, 0x0, 0x0, 0xc0002386f0, 0x0, 0xc00026fe00, 0xc00057bb80)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/template/types/form.go:275 +0xfd1
+github.com/GoAdminGroup/go-admin/template/types.(*FormField).UpdateDefaultValue(...)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/template/types/form.go:187
+github.com/GoAdminGroup/go-admin/template/types.(*FormPanel).FieldsWithDefaultValue(0xc00001e000, 0xc00057c620, 0x1, 0x1, 0x0, 0x0, 0xc000290100)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/template/types/form.go:1386 +0x344
+github.com/GoAdminGroup/go-admin/plugins/admin/modules/table.(*DefaultTable).GetNewForm(0xc000212300, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, ...)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/modules/table/default.go:961 +0xce
+github.com/GoAdminGroup/go-admin/plugins/admin/controller.(*Handler).showNewForm(0xc00034c240, 0xc0002120c0, 0x0, 0x0, 0xc00010803b, 0xe, 0xc00003e3c0, 0x32, 0x1efa100)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/controller/new.go:32 +0x1c7
+github.com/GoAdminGroup/go-admin/plugins/admin/controller.(*Handler).ShowNewForm(0xc00034c240, 0xc0002120c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/controller/new.go:23 +0x149
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc0002120c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/plugins/admin/modules/guard.(*Guard).ShowNewForm(0xc0003b2510, 0xc0002120c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/modules/guard/new.go:58 +0x626
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc0002120c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/plugins/admin/modules/guard.(*Guard).CheckPrefix(0xc0003b2510, 0xc0002120c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/modules/guard/guard.go:51 +0x1ef
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc0002120c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/modules/auth.(*Invoker).Middleware.func1(0xc0002120c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/modules/auth/middleware.go:131 +0x343
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc0002120c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/plugins/admin.(*Admin).globalErrorHandler(0xc00034e1e0, 0xc0002120c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/router.go:94 +0x82
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc0002120c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/adapter/gin.(*Gin).AddHandler.func1(0xc000124000)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/adapter/gin/gin.go:90 +0x2a3
+github.com/gin-gonic/gin.(*Context).Next(0xc000124000)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161 +0x3b
+github.com/gin-gonic/gin.RecoveryWithWriter.func1(0xc000124000)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/recovery.go:83 +0x64
+github.com/gin-gonic/gin.(*Context).Next(0xc000124000)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161 +0x3b
+github.com/gin-gonic/gin.LoggerWithConfig.func1(0xc000124000)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/logger.go:241 +0xe1
+github.com/gin-gonic/gin.(*Context).Next(0xc000124000)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161 +0x3b
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest(0xc00030cb40, 0xc000124000)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409 +0x66d
+github.com/gin-gonic/gin.(*Engine).ServeHTTP(0xc00030cb40, 0x17268a0, 0xc0003382a0, 0xc00030e200)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367 +0x14e
+net/http.serverHandler.ServeHTTP(0xc0003380e0, 0x17268a0, 0xc0003382a0, 0xc00030e200)
+	/usr/lib/go-1.13/src/net/http/server.go:2802 +0xa4
+net/http.(*conn).serve(0xc0003ebf40, 0x17296a0, 0xc000331140)
+	/usr/lib/go-1.13/src/net/http/server.go:1890 +0x875
+created by net/http.(*Server).Serve
+	/usr/lib/go-1.13/src/net/http/server.go:2928 +0x384
+
+2020-07-25T05:34:50.488Z	[31mERROR[0m	logger/logger.go:284	runtime error: slice bounds out of range [:-4]
+2020-07-25T05:34:50.489Z	[31mERROR[0m	logger/logger.go:284	goroutine 9 [running]:
+runtime/debug.Stack(0xc000011440, 0x118f402, 0x0)
+	/usr/lib/go-1.13/src/runtime/debug/stack.go:24 +0x9d
+github.com/GoAdminGroup/go-admin/plugins/admin/controller.(*Handler).GlobalDeferHandler(0xc00034c240, 0xc0002e0200)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/controller/handler.go:29 +0xc6
+panic(0x118f4e0, 0xc000038ae0)
+	/usr/lib/go-1.13/src/runtime/panic.go:679 +0x1b2
+bin/tables.showPercent(0x0, 0x0, 0x0, 0x0, 0xc0002d04b0, 0x0, 0x10ac820, 0x1efb360)
+	/home/lekai/code/lpr/tables/patch.go:37 +0xdc
+github.com/GoAdminGroup/go-admin/template/types.FieldDisplay.ToDisplay(0x15d04a0, 0x1efa110, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0xc0002d04b0, 0x0, ...)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/template/types/display.go:38 +0x62
+github.com/GoAdminGroup/go-admin/template/types.FieldDisplay.ToDisplayHTML(0x15d04a0, 0x1efa110, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0xc0002d04b0, 0x0, ...)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/template/types/display.go:69 +0x80
+github.com/GoAdminGroup/go-admin/template/types.(*FormField).updateValue(0xc00057bb80, 0x0, 0x0, 0x0, 0x0, 0xc0002d04b0, 0x0, 0xc000235040, 0xc00057bb80)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/template/types/form.go:275 +0xfd1
+github.com/GoAdminGroup/go-admin/template/types.(*FormField).UpdateDefaultValue(...)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/template/types/form.go:187
+github.com/GoAdminGroup/go-admin/template/types.(*FormPanel).FieldsWithDefaultValue(0xc0000b4340, 0xc00057c620, 0x1, 0x1, 0x0, 0x0, 0xc000290100)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/template/types/form.go:1386 +0x344
+github.com/GoAdminGroup/go-admin/plugins/admin/modules/table.(*DefaultTable).GetNewForm(0xc0002e0a80, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, ...)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/modules/table/default.go:961 +0xce
+github.com/GoAdminGroup/go-admin/plugins/admin/controller.(*Handler).showNewForm(0xc00034c240, 0xc0002e0200, 0x0, 0x0, 0xc00010808b, 0xe, 0xc000316c80, 0x32, 0x1efa100)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/controller/new.go:32 +0x1c7
+github.com/GoAdminGroup/go-admin/plugins/admin/controller.(*Handler).ShowNewForm(0xc00034c240, 0xc0002e0200)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/controller/new.go:23 +0x149
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc0002e0200)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/plugins/admin/modules/guard.(*Guard).ShowNewForm(0xc0003b2510, 0xc0002e0200)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/modules/guard/new.go:58 +0x626
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc0002e0200)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/plugins/admin/modules/guard.(*Guard).CheckPrefix(0xc0003b2510, 0xc0002e0200)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/modules/guard/guard.go:51 +0x1ef
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc0002e0200)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/modules/auth.(*Invoker).Middleware.func1(0xc0002e0200)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/modules/auth/middleware.go:131 +0x343
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc0002e0200)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/plugins/admin.(*Admin).globalErrorHandler(0xc00034e1e0, 0xc0002e0200)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/router.go:94 +0x82
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc0002e0200)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/adapter/gin.(*Gin).AddHandler.func1(0xc00020c000)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/adapter/gin/gin.go:90 +0x2a3
+github.com/gin-gonic/gin.(*Context).Next(0xc00020c000)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161 +0x3b
+github.com/gin-gonic/gin.RecoveryWithWriter.func1(0xc00020c000)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/recovery.go:83 +0x64
+github.com/gin-gonic/gin.(*Context).Next(0xc00020c000)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161 +0x3b
+github.com/gin-gonic/gin.LoggerWithConfig.func1(0xc00020c000)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/logger.go:241 +0xe1
+github.com/gin-gonic/gin.(*Context).Next(0xc00020c000)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161 +0x3b
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest(0xc00030cb40, 0xc00020c000)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409 +0x66d
+github.com/gin-gonic/gin.(*Engine).ServeHTTP(0xc00030cb40, 0x17268a0, 0xc0003381c0, 0xc00030e300)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367 +0x14e
+net/http.serverHandler.ServeHTTP(0xc0003380e0, 0x17268a0, 0xc0003381c0, 0xc00030e300)
+	/usr/lib/go-1.13/src/net/http/server.go:2802 +0xa4
+net/http.(*conn).serve(0xc0003ebf40, 0x17296a0, 0xc000331140)
+	/usr/lib/go-1.13/src/net/http/server.go:1890 +0x875
+created by net/http.(*Server).Serve
+	/usr/lib/go-1.13/src/net/http/server.go:2928 +0x384
+
+2020-07-25T05:35:40.012Z	[31mERROR[0m	logger/logger.go:284	runtime error: slice bounds out of range [:-4]
+2020-07-25T05:35:40.013Z	[31mERROR[0m	logger/logger.go:284	goroutine 9 [running]:
+runtime/debug.Stack(0xc000011440, 0x118f402, 0x0)
+	/usr/lib/go-1.13/src/runtime/debug/stack.go:24 +0x9d
+github.com/GoAdminGroup/go-admin/plugins/admin/controller.(*Handler).GlobalDeferHandler(0xc00034c240, 0xc000212100)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/controller/handler.go:29 +0xc6
+panic(0x118f4e0, 0xc0003f6be0)
+	/usr/lib/go-1.13/src/runtime/panic.go:679 +0x1b2
+bin/tables.showPercent(0x0, 0x0, 0x0, 0x0, 0xc00038d0e0, 0x0, 0x10ac820, 0x1efb360)
+	/home/lekai/code/lpr/tables/patch.go:37 +0xdc
+github.com/GoAdminGroup/go-admin/template/types.FieldDisplay.ToDisplay(0x15d04a0, 0x1efa110, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0xc00038d0e0, 0x0, ...)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/template/types/display.go:38 +0x62
+github.com/GoAdminGroup/go-admin/template/types.FieldDisplay.ToDisplayHTML(0x15d04a0, 0x1efa110, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0xc00038d0e0, 0x0, ...)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/template/types/display.go:69 +0x80
+github.com/GoAdminGroup/go-admin/template/types.(*FormField).updateValue(0xc000565b80, 0x0, 0x0, 0x0, 0x0, 0xc00038d0e0, 0x0, 0xc00026ef00, 0xc000565b80)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/template/types/form.go:275 +0xfd1
+github.com/GoAdminGroup/go-admin/template/types.(*FormField).UpdateDefaultValue(...)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/template/types/form.go:187
+github.com/GoAdminGroup/go-admin/template/types.(*FormPanel).FieldsWithDefaultValue(0xc0000b4000, 0xc000566620, 0x1, 0x1, 0x0, 0x0, 0xc000420100)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/template/types/form.go:1386 +0x344
+github.com/GoAdminGroup/go-admin/plugins/admin/modules/table.(*DefaultTable).GetNewForm(0xc000200240, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, ...)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/modules/table/default.go:961 +0xce
+github.com/GoAdminGroup/go-admin/plugins/admin/controller.(*Handler).showNewForm(0xc00034c240, 0xc000212100, 0x0, 0x0, 0xc000046283, 0xe, 0xc0004e4240, 0x32, 0x1efa100)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/controller/new.go:32 +0x1c7
+github.com/GoAdminGroup/go-admin/plugins/admin/controller.(*Handler).ShowNewForm(0xc00034c240, 0xc000212100)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/controller/new.go:23 +0x149
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc000212100)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/plugins/admin/modules/guard.(*Guard).ShowNewForm(0xc0003b2510, 0xc000212100)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/modules/guard/new.go:58 +0x626
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc000212100)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/plugins/admin/modules/guard.(*Guard).CheckPrefix(0xc0003b2510, 0xc000212100)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/modules/guard/guard.go:51 +0x1ef
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc000212100)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/modules/auth.(*Invoker).Middleware.func1(0xc000212100)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/modules/auth/middleware.go:131 +0x343
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc000212100)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/plugins/admin.(*Admin).globalErrorHandler(0xc00034e1e0, 0xc000212100)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/router.go:94 +0x82
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc000212100)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/adapter/gin.(*Gin).AddHandler.func1(0xc0001c6000)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/adapter/gin/gin.go:90 +0x2a3
+github.com/gin-gonic/gin.(*Context).Next(0xc0001c6000)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161 +0x3b
+github.com/gin-gonic/gin.RecoveryWithWriter.func1(0xc0001c6000)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/recovery.go:83 +0x64
+github.com/gin-gonic/gin.(*Context).Next(0xc0001c6000)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161 +0x3b
+github.com/gin-gonic/gin.LoggerWithConfig.func1(0xc0001c6000)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/logger.go:241 +0xe1
+github.com/gin-gonic/gin.(*Context).Next(0xc0001c6000)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161 +0x3b
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest(0xc00030cb40, 0xc0001c6000)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409 +0x66d
+github.com/gin-gonic/gin.(*Engine).ServeHTTP(0xc00030cb40, 0x17268a0, 0xc0003382a0, 0xc000474000)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367 +0x14e
+net/http.serverHandler.ServeHTTP(0xc0003380e0, 0x17268a0, 0xc0003382a0, 0xc000474000)
+	/usr/lib/go-1.13/src/net/http/server.go:2802 +0xa4
+net/http.(*conn).serve(0xc0003ebf40, 0x17296a0, 0xc000331140)
+	/usr/lib/go-1.13/src/net/http/server.go:1890 +0x875
+created by net/http.(*Server).Serve
+	/usr/lib/go-1.13/src/net/http/server.go:2928 +0x384
+
+2020-07-25T05:35:40.060Z	[31mERROR[0m	logger/logger.go:284	runtime error: slice bounds out of range [:-4]
+2020-07-25T05:35:40.061Z	[31mERROR[0m	logger/logger.go:284	goroutine 9 [running]:
+runtime/debug.Stack(0xc000011440, 0x118f402, 0x0)
+	/usr/lib/go-1.13/src/runtime/debug/stack.go:24 +0x9d
+github.com/GoAdminGroup/go-admin/plugins/admin/controller.(*Handler).GlobalDeferHandler(0xc00034c240, 0xc0000821c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/controller/handler.go:29 +0xc6
+panic(0x118f4e0, 0xc0002a0720)
+	/usr/lib/go-1.13/src/runtime/panic.go:679 +0x1b2
+bin/tables.showPercent(0x0, 0x0, 0x0, 0x0, 0xc000473f50, 0x0, 0x10ac820, 0x1efb360)
+	/home/lekai/code/lpr/tables/patch.go:37 +0xdc
+github.com/GoAdminGroup/go-admin/template/types.FieldDisplay.ToDisplay(0x15d04a0, 0x1efa110, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0xc000473f50, 0x0, ...)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/template/types/display.go:38 +0x62
+github.com/GoAdminGroup/go-admin/template/types.FieldDisplay.ToDisplayHTML(0x15d04a0, 0x1efa110, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0xc000473f50, 0x0, ...)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/template/types/display.go:69 +0x80
+github.com/GoAdminGroup/go-admin/template/types.(*FormField).updateValue(0xc000565b80, 0x0, 0x0, 0x0, 0x0, 0xc000473f50, 0x0, 0xc000235b80, 0xc000565b80)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/template/types/form.go:275 +0xfd1
+github.com/GoAdminGroup/go-admin/template/types.(*FormField).UpdateDefaultValue(...)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/template/types/form.go:187
+github.com/GoAdminGroup/go-admin/template/types.(*FormPanel).FieldsWithDefaultValue(0xc00001e340, 0xc000566620, 0x1, 0x1, 0x0, 0x0, 0xc000290100)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/template/types/form.go:1386 +0x344
+github.com/GoAdminGroup/go-admin/plugins/admin/modules/table.(*DefaultTable).GetNewForm(0xc000082900, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, ...)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/modules/table/default.go:961 +0xce
+github.com/GoAdminGroup/go-admin/plugins/admin/controller.(*Handler).showNewForm(0xc00034c240, 0xc0000821c0, 0x0, 0x0, 0xc0001083ab, 0xe, 0xc00003e800, 0x32, 0x1efa100)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/controller/new.go:32 +0x1c7
+github.com/GoAdminGroup/go-admin/plugins/admin/controller.(*Handler).ShowNewForm(0xc00034c240, 0xc0000821c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/controller/new.go:23 +0x149
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc0000821c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/plugins/admin/modules/guard.(*Guard).ShowNewForm(0xc0003b2510, 0xc0000821c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/modules/guard/new.go:58 +0x626
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc0000821c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/plugins/admin/modules/guard.(*Guard).CheckPrefix(0xc0003b2510, 0xc0000821c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/modules/guard/guard.go:51 +0x1ef
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc0000821c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/modules/auth.(*Invoker).Middleware.func1(0xc0000821c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/modules/auth/middleware.go:131 +0x343
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc0000821c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/plugins/admin.(*Admin).globalErrorHandler(0xc00034e1e0, 0xc0000821c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/router.go:94 +0x82
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc0000821c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/adapter/gin.(*Gin).AddHandler.func1(0xc0001c6000)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/adapter/gin/gin.go:90 +0x2a3
+github.com/gin-gonic/gin.(*Context).Next(0xc0001c6000)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161 +0x3b
+github.com/gin-gonic/gin.RecoveryWithWriter.func1(0xc0001c6000)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/recovery.go:83 +0x64
+github.com/gin-gonic/gin.(*Context).Next(0xc0001c6000)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161 +0x3b
+github.com/gin-gonic/gin.LoggerWithConfig.func1(0xc0001c6000)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/logger.go:241 +0xe1
+github.com/gin-gonic/gin.(*Context).Next(0xc0001c6000)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161 +0x3b
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest(0xc00030cb40, 0xc0001c6000)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409 +0x66d
+github.com/gin-gonic/gin.(*Engine).ServeHTTP(0xc00030cb40, 0x17268a0, 0xc0003381c0, 0xc00030e100)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367 +0x14e
+net/http.serverHandler.ServeHTTP(0xc0003380e0, 0x17268a0, 0xc0003381c0, 0xc00030e100)
+	/usr/lib/go-1.13/src/net/http/server.go:2802 +0xa4
+net/http.(*conn).serve(0xc0003ebf40, 0x17296a0, 0xc000331140)
+	/usr/lib/go-1.13/src/net/http/server.go:1890 +0x875
+created by net/http.(*Server).Serve
+	/usr/lib/go-1.13/src/net/http/server.go:2928 +0x384
+
+2020-07-25T05:38:12.556Z	[31mERROR[0m	logger/logger.go:284	runtime error: slice bounds out of range [:-4]
+2020-07-25T05:38:12.557Z	[31mERROR[0m	logger/logger.go:284	goroutine 51 [running]:
+runtime/debug.Stack(0xc0000109c8, 0x118f402, 0x0)
+	/usr/lib/go-1.13/src/runtime/debug/stack.go:24 +0x9d
+github.com/GoAdminGroup/go-admin/plugins/admin/controller.(*Handler).GlobalDeferHandler(0xc000084f00, 0xc00047c140)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/controller/handler.go:29 +0xc6
+panic(0x118f4e0, 0xc00035e340)
+	/usr/lib/go-1.13/src/runtime/panic.go:679 +0x1b2
+bin/tables.showPercent(0x0, 0x0, 0x0, 0x0, 0xc000355c50, 0x0, 0x10ac820, 0x1efb360)
+	/home/lekai/code/lpr/tables/patch.go:40 +0x103
+github.com/GoAdminGroup/go-admin/template/types.FieldDisplay.ToDisplay(0x15d04a0, 0x1efa110, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0xc000355c50, 0x0, ...)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/template/types/display.go:38 +0x62
+github.com/GoAdminGroup/go-admin/template/types.FieldDisplay.ToDisplayHTML(0x15d04a0, 0x1efa110, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0xc000355c50, 0x0, ...)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/template/types/display.go:69 +0x80
+github.com/GoAdminGroup/go-admin/template/types.(*FormField).updateValue(0xc000377b80, 0x0, 0x0, 0x0, 0x0, 0xc000355c50, 0x0, 0xc000289b80, 0xc00027db80)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/template/types/form.go:275 +0xfd1
+github.com/GoAdminGroup/go-admin/template/types.(*FormField).UpdateDefaultValue(...)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/template/types/form.go:187
+github.com/GoAdminGroup/go-admin/template/types.(*FormPanel).FieldsWithDefaultValue(0xc0002221a0, 0xc000378620, 0x1, 0x1, 0x0, 0x0, 0xc000430100)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/template/types/form.go:1386 +0x344
+github.com/GoAdminGroup/go-admin/plugins/admin/modules/table.(*DefaultTable).GetNewForm(0xc0004ede80, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, ...)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/modules/table/default.go:961 +0xce
+github.com/GoAdminGroup/go-admin/plugins/admin/controller.(*Handler).showNewForm(0xc000084f00, 0xc00047c140, 0x0, 0x0, 0xc00041003b, 0xe, 0xc0002c7300, 0x32, 0x1efa100)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/controller/new.go:32 +0x1c7
+github.com/GoAdminGroup/go-admin/plugins/admin/controller.(*Handler).ShowNewForm(0xc000084f00, 0xc00047c140)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/controller/new.go:23 +0x149
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc00047c140)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/plugins/admin/modules/guard.(*Guard).ShowNewForm(0xc000240420, 0xc00047c140)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/modules/guard/new.go:58 +0x626
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc00047c140)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/plugins/admin/modules/guard.(*Guard).CheckPrefix(0xc000240420, 0xc00047c140)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/modules/guard/guard.go:51 +0x1ef
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc00047c140)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/modules/auth.(*Invoker).Middleware.func1(0xc00047c140)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/modules/auth/middleware.go:131 +0x343
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc00047c140)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/plugins/admin.(*Admin).globalErrorHandler(0xc00022e280, 0xc00047c140)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/router.go:94 +0x82
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc00047c140)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/adapter/gin.(*Gin).AddHandler.func1(0xc00023c000)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/adapter/gin/gin.go:90 +0x2a3
+github.com/gin-gonic/gin.(*Context).Next(0xc00023c000)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161 +0x3b
+github.com/gin-gonic/gin.RecoveryWithWriter.func1(0xc00023c000)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/recovery.go:83 +0x64
+github.com/gin-gonic/gin.(*Context).Next(0xc00023c000)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161 +0x3b
+github.com/gin-gonic/gin.LoggerWithConfig.func1(0xc00023c000)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/logger.go:241 +0xe1
+github.com/gin-gonic/gin.(*Context).Next(0xc00023c000)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161 +0x3b
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest(0xc000228140, 0xc00023c000)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409 +0x66d
+github.com/gin-gonic/gin.(*Engine).ServeHTTP(0xc000228140, 0x17268a0, 0xc00022a000, 0xc000412100)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367 +0x14e
+net/http.serverHandler.ServeHTTP(0xc00001c0e0, 0x17268a0, 0xc00022a000, 0xc000412100)
+	/usr/lib/go-1.13/src/net/http/server.go:2802 +0xa4
+net/http.(*conn).serve(0xc0001d8000, 0x17296a0, 0xc00047c000)
+	/usr/lib/go-1.13/src/net/http/server.go:1890 +0x875
+created by net/http.(*Server).Serve
+	/usr/lib/go-1.13/src/net/http/server.go:2928 +0x384
+
+2020-07-25T05:38:13.472Z	[31mERROR[0m	logger/logger.go:284	runtime error: slice bounds out of range [:-4]
+2020-07-25T05:38:13.473Z	[31mERROR[0m	logger/logger.go:284	goroutine 51 [running]:
+runtime/debug.Stack(0xc0000109c8, 0x118f402, 0x0)
+	/usr/lib/go-1.13/src/runtime/debug/stack.go:24 +0x9d
+github.com/GoAdminGroup/go-admin/plugins/admin/controller.(*Handler).GlobalDeferHandler(0xc000084f00, 0xc000306140)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/controller/handler.go:29 +0xc6
+panic(0x118f4e0, 0xc00035eb20)
+	/usr/lib/go-1.13/src/runtime/panic.go:679 +0x1b2
+bin/tables.showPercent(0x0, 0x0, 0x0, 0x0, 0xc0004e8e10, 0x0, 0x10ac820, 0x1efb360)
+	/home/lekai/code/lpr/tables/patch.go:40 +0x103
+github.com/GoAdminGroup/go-admin/template/types.FieldDisplay.ToDisplay(0x15d04a0, 0x1efa110, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0xc0004e8e10, 0x0, ...)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/template/types/display.go:38 +0x62
+github.com/GoAdminGroup/go-admin/template/types.FieldDisplay.ToDisplayHTML(0x15d04a0, 0x1efa110, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0xc0004e8e10, 0x0, ...)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/template/types/display.go:69 +0x80
+github.com/GoAdminGroup/go-admin/template/types.(*FormField).updateValue(0xc000377b80, 0x0, 0x0, 0x0, 0x0, 0xc0004e8e10, 0x0, 0xc00055f400, 0xc000377b80)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/template/types/form.go:275 +0xfd1
+github.com/GoAdminGroup/go-admin/template/types.(*FormField).UpdateDefaultValue(...)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/template/types/form.go:187
+github.com/GoAdminGroup/go-admin/template/types.(*FormPanel).FieldsWithDefaultValue(0xc000222680, 0xc000378620, 0x1, 0x1, 0x0, 0x0, 0xc000030100)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/template/types/form.go:1386 +0x344
+github.com/GoAdminGroup/go-admin/plugins/admin/modules/table.(*DefaultTable).GetNewForm(0xc0003068c0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, ...)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/modules/table/default.go:961 +0xce
+github.com/GoAdminGroup/go-admin/plugins/admin/controller.(*Handler).showNewForm(0xc000084f00, 0xc000306140, 0x0, 0x0, 0xc00041008b, 0xe, 0xc0002c7600, 0x32, 0x1efa100)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/controller/new.go:32 +0x1c7
+github.com/GoAdminGroup/go-admin/plugins/admin/controller.(*Handler).ShowNewForm(0xc000084f00, 0xc000306140)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/controller/new.go:23 +0x149
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc000306140)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/plugins/admin/modules/guard.(*Guard).ShowNewForm(0xc000240420, 0xc000306140)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/modules/guard/new.go:58 +0x626
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc000306140)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/plugins/admin/modules/guard.(*Guard).CheckPrefix(0xc000240420, 0xc000306140)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/modules/guard/guard.go:51 +0x1ef
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc000306140)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/modules/auth.(*Invoker).Middleware.func1(0xc000306140)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/modules/auth/middleware.go:131 +0x343
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc000306140)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/plugins/admin.(*Admin).globalErrorHandler(0xc00022e280, 0xc000306140)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/router.go:94 +0x82
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc000306140)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/adapter/gin.(*Gin).AddHandler.func1(0xc00023c0f0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/adapter/gin/gin.go:90 +0x2a3
+github.com/gin-gonic/gin.(*Context).Next(0xc00023c0f0)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161 +0x3b
+github.com/gin-gonic/gin.RecoveryWithWriter.func1(0xc00023c0f0)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/recovery.go:83 +0x64
+github.com/gin-gonic/gin.(*Context).Next(0xc00023c0f0)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161 +0x3b
+github.com/gin-gonic/gin.LoggerWithConfig.func1(0xc00023c0f0)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/logger.go:241 +0xe1
+github.com/gin-gonic/gin.(*Context).Next(0xc00023c0f0)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161 +0x3b
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest(0xc000228140, 0xc00023c0f0)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409 +0x66d
+github.com/gin-gonic/gin.(*Engine).ServeHTTP(0xc000228140, 0x17268a0, 0xc00022a0e0, 0xc000162000)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367 +0x14e
+net/http.serverHandler.ServeHTTP(0xc00001c0e0, 0x17268a0, 0xc00022a0e0, 0xc000162000)
+	/usr/lib/go-1.13/src/net/http/server.go:2802 +0xa4
+net/http.(*conn).serve(0xc0001d8000, 0x17296a0, 0xc00047c000)
+	/usr/lib/go-1.13/src/net/http/server.go:1890 +0x875
+created by net/http.(*Server).Serve
+	/usr/lib/go-1.13/src/net/http/server.go:2928 +0x384
+

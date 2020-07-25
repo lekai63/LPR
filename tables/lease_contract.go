@@ -1,6 +1,7 @@
 package tables
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
@@ -9,9 +10,18 @@ import (
 	"github.com/GoAdminGroup/go-admin/plugins/admin/modules/table"
 	"github.com/GoAdminGroup/go-admin/template/types"
 	"github.com/GoAdminGroup/go-admin/template/types/form"
+
+	form2 "github.com/GoAdminGroup/go-admin/plugins/admin/modules/form"
+
+	// import GORM
+	// _ "github.com/jinzhu/gorm/dialects/postgres"
+	"github.com/lekai63/lpr/models"
 )
 
 func GetLeaseContractTable(ctx *context.Context) table.Table {
+
+	dbGorm := models.Gorm
+	var lesseeInfoGorm models.LesseeInfo
 
 	leaseContract := table.NewDefaultTable(table.DefaultConfigWithDriver(db.DriverPostgresql))
 
@@ -47,12 +57,12 @@ func GetLeaseContractTable(ctx *context.Context) table.Table {
 		return model.Value + "月"
 	})
 	info.AddField("标的物", "subject_matter", db.Varchar).FieldHide()
-	info.AddField("Irr", "irr", db.Int).FieldDisplay(showPercent)
+	info.AddField("Irr", "irr", db.Int).FieldDisplay(showMoney)
 	info.AddField("Is_lpr", "is_lpr", db.Bool).FieldHide()
 	info.AddField("Current_reprice_day", "current_reprice_day", db.Date).FieldHide()
 	info.AddField("Current_LPR", "current_LPR", db.Int).FieldHide()
 	info.AddField("Lpr_plus", "lpr_plus", db.Int).FieldHide()
-	info.AddField("当前租息率", "current_rate", db.Int).FieldDisplay(showPercent)
+	info.AddField("当前租息率", "current_rate", db.Int).FieldDisplay(showMoney)
 	info.AddField("Next_reprice_day", "next_reprice_day", db.Date).FieldHide()
 	info.AddField("已收本金", "received_principal", db.Int8).
 		FieldDisplay(showMoney)
@@ -74,44 +84,63 @@ func GetLeaseContractTable(ctx *context.Context) table.Table {
 	formList.AddField("到期日", "end_date", db.Date, form.Date)
 
 	//todo: 转换金额
-	formList.AddField("手续费", "fee", db.Int8, form.Text)
-	formList.AddField("保证金", "margin", db.Int8, form.Text)
-	formList.AddField("合同本金", "contract_principal", db.Int8, form.Text)
-	formList.AddField("实际投放", "actual_principal", db.Int8, form.Text)
+	formList.AddField("手续费", "fee", db.Int8, form.Text).
+		FieldDisplay(showMoney).
+		FieldHelpMsg("单位:元").
+		FieldPostFilterFn(money2bigint)
+	formList.AddField("保证金", "margin", db.Int8, form.Text).
+		FieldDisplay(showMoney).
+		FieldHelpMsg("单位:元").
+		FieldPostFilterFn(money2bigint)
+	formList.AddField("合同本金", "contract_principal", db.Int8, form.Text).
+		FieldDisplay(showMoney).
+		FieldHelpMsg("单位:元").
+		FieldPostFilterFn(money2bigint)
+	formList.AddField("实际投放", "actual_principal", db.Int8, form.Text).
+		FieldDisplay(showMoney).
+		FieldHelpMsg("单位:元").
+		FieldPostFilterFn(money2bigint)
 	//todo：数据校验
 	formList.AddField("期限", "term_month", db.Int2, form.Number)
 
 	formList.AddField("标的物", "subject_matter", db.Varchar, form.Text)
 
 	//todo: 转换百分比
-	formList.AddField("Irr", "irr", db.Int, form.Number)
+	formList.AddField("Irr", "irr", db.Int, form.Rate).
+		FieldDisplay(showMoney)
 
-	//默认隐藏LPR表单项
-	formList.AddField("Current_reprice_day", "current_reprice_day", db.Date, form.Datetime).FieldHide()
-	formList.AddField("Current_LPR", "current_LPR", db.Int, form.Number).FieldHide()
-	formList.AddField("Lpr_plus", "lpr_plus", db.Int, form.Number).FieldHide()
-	formList.AddField("Next_reprice_day", "next_reprice_day", db.Date, form.Datetime).FieldHide()
-
-	//选中基准定价后，显示上述4个LPR相关表单
-	formList.AddField("定价模式", "is_lpr", db.Bool, form.Switch).
+	// 选中基准定价后，显示4个LPR相关表单。
+	// 此处有一点小bug，不影响使用，暂不修改。
+	formList.AddField("定价模式", "is_lpr", db.Bool, form.SelectSingle).
 		FieldOptions(types.FieldOptions{
-			{Text: "基于基准定价", Value: "false"},
 			{Text: "基于LPR定价", Value: "true"},
-		}).FieldDefault("false").
-		FieldOnChooseShow("1", "current_reprice_day", "current_LPR", "lpr_plus", "next_reprice_day")
+			{Text: "基于基准定价", Value: "false"},
+		}).FieldDefault("基于LPR定价").
+		FieldOnChooseHide("基于基准定价", "current_reprice_day", "current_LPR", "lpr_plus", "next_reprice_day")
 
-	formList.AddField("当前租息率", "current_rate", db.Int4, form.Number)
+		//默认隐藏LPR表单项
+	formList.AddField("当前执行利率的重定价日", "current_reprice_day", db.Date, form.Date)
+	formList.AddField("当前基于的LPR利率", "current_LPR", db.Int, form.Rate)
+	formList.AddField("LPR加点值", "lpr_plus", db.Int, form.Number).FieldHelpMsg("单位:bp. 请填写整数")
+	formList.AddField("下一重定价日", "next_reprice_day", db.Date, form.Date)
+
+	formList.AddField("当前租息率", "current_rate", db.Int, form.Rate).
+		FieldDisplay(showMoney)
 
 	formList.AddField("Received_principal", "received_principal", db.Int8, form.Text).FieldHide()
 	formList.AddField("Received_interest", "received_interest", db.Int8, form.Text).FieldHide()
+
 	formList.AddField("合同执行", "is_finished", db.Bool, form.Switch).
 		FieldOptions(types.FieldOptions{
 			{Text: "已结束", Value: "true"},
 			{Text: "执行中", Value: "false"},
 		}).FieldDefault("false")
 
-	// 对应lessee_info表主键
-	formList.AddField("承租人ID", "lessee_info_id", db.Int4, form.Number).FieldHide()
+	// 从lessee_info中获取承租人id，并写入本表对应字段
+	var lesseeInfoId int32
+	formList.AddField("承租人ID", "lessee_info_id", db.Int4, form.Number).FieldHide().FieldPostFilterFn(func(value types.PostFieldModel) interface{} {
+		return lesseeInfoId
+	})
 
 	formList.AddField("创建时间", "created_time", db.Timestamp, form.Datetime).FieldHide().FieldNotAllowEdit().
 		FieldPostFilterFn(func(value types.PostFieldModel) interface{} {
@@ -127,6 +156,26 @@ func GetLeaseContractTable(ctx *context.Context) table.Table {
 		})
 
 	formList.SetTable("fzzl.lease_contract").SetTitle("LeaseContract").SetDescription("LeaseContract")
+
+	//数据校验
+	// formList.SetPostValidator(func(values form2.Values) error {
+	// 	if values.Get("sex") != "women" && values.Get("sex") != "men" {
+	// 		return fmt.Errorf("error info")
+	// 	}
+	// 	return nil
+	// })
+
+	// 数据校验
+	formList.SetPostValidator(func(values form2.Values) error {
+		query := dbGorm.First(&lesseeInfoGorm, "lessee = ?", values.Get("lessee"))
+
+		if query == nil {
+			return fmt.Errorf("承租人全称不匹配，可能未在《承租人信息表》中新增它")
+		}
+		lesseeInfoId = query.ID
+		return nil
+
+	})
 
 	return leaseContract
 }

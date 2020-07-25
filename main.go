@@ -15,9 +15,9 @@ import (
 	"github.com/GoAdminGroup/go-admin/template/chartjs"
 	"github.com/gin-gonic/gin"
 
-	"bin/models"
-	"bin/pages"
-	"bin/tables"
+	"github.com/lekai63/lpr/models"
+	"github.com/lekai63/lpr/pages"
+	"github.com/lekai63/lpr/tables"
 )
 
 func main() {
