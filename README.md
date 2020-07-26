@@ -21,6 +21,18 @@
    	--overwrite
 ```
 
+# postgres 操作
+
+```
+// 查看所有sequence
+SELECT c.relname FROM pg_class c WHERE c.relkind = 'S'; 
+// 修改序列起始号
+alter sequence lease_contract_id_seq restart with 39;
+
+// 删除记录
+delete from xx_table where id = 9999 ;
+```
+
 # GoAdmin 介绍
 
 GoAdmin 是一个帮你快速搭建数据可视化管理应用平台的框架。 

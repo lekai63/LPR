@@ -2,6 +2,7 @@ package tables
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -70,20 +71,19 @@ func GetLeaseContractTable(ctx *context.Context) table.Table {
 		FieldDisplay(showMoney)
 	info.AddField("合同执行", "is_finished", db.Bool).FieldBool("已结束", "")
 	info.AddField("Customer_id", "customer_id", db.Int4).FieldHide()
-	info.AddField("Create_time", "create_time", db.Timestamp).FieldHide()
-	info.AddField("Modify_time", "modify_time", db.Timestamp).FieldHide()
+	info.AddField("创建时间", "created_at", db.Timestamp).FieldHide()
+	info.AddField("修改时间", "updated_at", db.Timestamp).FieldHide()
 
 	info.SetTable("fzzl.lease_contract").SetTitle("LeaseContract").SetDescription("LeaseContract")
 
 	formList := leaseContract.GetForm()
-	formList.AddField("序号", "id", db.Int, form.Number).FieldHide()
+	formList.AddField("序号", "id", db.Int, form.Number).FieldHide().FieldNotAllowEdit().FieldNotAllowAdd()
 	formList.AddField("合同号", "contract_no", db.Varchar, form.Text)
 	formList.AddField("承租人全称", "lessee", db.Varchar, form.Text)
 	formList.AddField("项目简称", "abbreviation", db.Varchar, form.Text)
 	formList.AddField("起始日", "start_date", db.Date, form.Date)
 	formList.AddField("到期日", "end_date", db.Date, form.Date)
 
-	//todo: 转换金额
 	formList.AddField("手续费", "fee", db.Int8, form.Text).
 		FieldDisplay(showMoney).
 		FieldHelpMsg("单位:元").
@@ -100,56 +100,60 @@ func GetLeaseContractTable(ctx *context.Context) table.Table {
 		FieldDisplay(showMoney).
 		FieldHelpMsg("单位:元").
 		FieldPostFilterFn(money2bigint)
-	//todo：数据校验
-	formList.AddField("期限", "term_month", db.Int2, form.Number)
+
+	formList.AddField("期限", "term_month", db.Int2, form.Number).FieldHelpMsg("单位：月数")
 
 	formList.AddField("标的物", "subject_matter", db.Varchar, form.Text)
 
-	//todo: 转换百分比
 	formList.AddField("Irr", "irr", db.Int, form.Rate).
-		FieldDisplay(showMoney)
+		FieldDisplay(showMoney).FieldPostFilterFn(money2bigint)
 
 	// 选中基准定价后，显示4个LPR相关表单。
-	// 此处有一点小bug，不影响使用，暂不修改。
 	formList.AddField("定价模式", "is_lpr", db.Bool, form.SelectSingle).
 		FieldOptions(types.FieldOptions{
 			{Text: "基于LPR定价", Value: "true"},
 			{Text: "基于基准定价", Value: "false"},
 		}).FieldDefault("基于LPR定价").
 		FieldOnChooseHide("基于基准定价", "current_reprice_day", "current_LPR", "lpr_plus", "next_reprice_day")
-
 		//默认隐藏LPR表单项
-	formList.AddField("当前执行利率的重定价日", "current_reprice_day", db.Date, form.Date)
-	formList.AddField("当前基于的LPR利率", "current_LPR", db.Int, form.Rate)
-	formList.AddField("LPR加点值", "lpr_plus", db.Int, form.Number).FieldHelpMsg("单位:bp. 请填写整数")
-	formList.AddField("下一重定价日", "next_reprice_day", db.Date, form.Date)
+	formList.AddField("当前执行利率的重定价日", "current_reprice_day", db.Date, form.Date).FieldPostFilterFn(allowReturnNullString)
+	formList.AddField("当前基于的LPR利率", "current_LPR", db.Int, form.Rate).FieldPostFilterFn(allowReturnNullString)
+	formList.AddField("LPR加点值", "lpr_plus", db.Int, form.Number).FieldHelpMsg("单位:bp. 请填写整数").FieldPostFilterFn(allowReturnNullString)
+	formList.AddField("下一重定价日", "next_reprice_day", db.Date, form.Date).FieldPostFilterFn(allowReturnNullString)
 
 	formList.AddField("当前租息率", "current_rate", db.Int, form.Rate).
-		FieldDisplay(showMoney)
+		FieldDisplay(showMoney).FieldPostFilterFn(money2bigint)
 
-	formList.AddField("Received_principal", "received_principal", db.Int8, form.Text).FieldHide()
-	formList.AddField("Received_interest", "received_interest", db.Int8, form.Text).FieldHide()
+	formList.AddField("Received_principal", "received_principal", db.Int8, form.Text).FieldHide().
+		FieldPostFilterFn(func(model types.PostFieldModel) interface{} {
+			if len(model.Value) == 0 || model.Value.Value() == "" {
+				return "0"
+			}
+			return model.Value.Value()
+		})
+	formList.AddField("Received_interest", "received_interest", db.Int8, form.Text).FieldHide().
+		FieldPostFilterFn(func(model types.PostFieldModel) interface{} {
+			if len(model.Value) == 0 || model.Value.Value() == "" {
+				return "0"
+			}
+			return model.Value.Value()
+		})
 
 	formList.AddField("合同执行", "is_finished", db.Bool, form.Switch).
-		FieldOptions(types.FieldOptions{
-			{Text: "已结束", Value: "true"},
-			{Text: "执行中", Value: "false"},
-		}).FieldDefault("false")
+		FieldOptions(
+			types.FieldOptions{
+				types.FieldOption{Text: "已结束", Value: "true"},
+				types.FieldOption{Text: "执行中", Value: "false"},
+			}).FieldDefault("false")
 
-	// 从lessee_info中获取承租人id，并写入本表对应字段
-	var lesseeInfoId int32
-	formList.AddField("承租人ID", "lessee_info_id", db.Int4, form.Number).FieldHide().FieldPostFilterFn(func(value types.PostFieldModel) interface{} {
-		return lesseeInfoId
-	})
-
-	formList.AddField("创建时间", "created_time", db.Timestamp, form.Datetime).FieldHide().FieldNotAllowEdit().
+	formList.AddField("创建时间", "created_at", db.Timestamp, form.Datetime).FieldHide().FieldNotAllowEdit().
 		FieldPostFilterFn(func(value types.PostFieldModel) interface{} {
 			if value.Value == nil {
 				return time.Now().Format("2006-01-02 15:04:05")
 			}
 			return value.Value.Value()
 		})
-	formList.AddField("修改时间", "updated_time", db.Timestamp, form.Datetime).
+	formList.AddField("修改时间", "updated_at", db.Timestamp, form.Datetime).
 		FieldHide().
 		FieldPostFilterFn(func(value types.PostFieldModel) interface{} {
 			return time.Now().Format("2006-01-02 15:04:05")
@@ -157,25 +161,56 @@ func GetLeaseContractTable(ctx *context.Context) table.Table {
 
 	formList.SetTable("fzzl.lease_contract").SetTitle("LeaseContract").SetDescription("LeaseContract")
 
-	//数据校验
-	// formList.SetPostValidator(func(values form2.Values) error {
-	// 	if values.Get("sex") != "women" && values.Get("sex") != "men" {
-	// 		return fmt.Errorf("error info")
-	// 	}
-	// 	return nil
-	// })
-
 	// 数据校验
 	formList.SetPostValidator(func(values form2.Values) error {
-		query := dbGorm.First(&lesseeInfoGorm, "lessee = ?", values.Get("lessee"))
 
-		if query == nil {
-			return fmt.Errorf("承租人全称不匹配，可能未在《承租人信息表》中新增它")
+		// 校验承租人名称
+		if dbGorm.First(&lesseeInfoGorm, "lessee = $1", values.Get("lessee")).RecordNotFound() {
+			return fmt.Errorf("未在《承租人信息》表中找到对应的承租人名称，请检查是否输入错误")
 		}
-		lesseeInfoId = query.ID
-		return nil
+
+		// 校验 “期限”
+		switch term, _ := strconv.Atoi(values.Get("term_month")); {
+		case term > 120:
+			return fmt.Errorf("期限（月数）大于120，请注意查看是否输入错误")
+		case term < 1:
+			return fmt.Errorf("期限（月数）非正数，请注意查看是否输入错误")
+		default:
+			return nil
+		}
 
 	})
 
+	// 数据预处理
+	formList.SetPreProcessFn(func(values form2.Values) form2.Values {
+		values.Add("lessee_info_id", id2String(lesseeInfoGorm.ID))
+		return values
+	})
+
+	// 从lessee_info中获取承租人id，并写入本表对应字段
+	formList.AddField("承租人ID", "lessee_info_id", db.Int, form.Number).FieldHide()
+
 	return leaseContract
+}
+
+// id2String convert type int32 to type string
+func id2String(n int32) string {
+	buf := [11]byte{}
+	pos := len(buf)
+	i := int64(n)
+	signed := i < 0
+	if signed {
+		i = -i
+	}
+	for {
+		pos--
+		buf[pos], i = '0'+byte(i%10), i/10
+		if i == 0 {
+			if signed {
+				pos--
+				buf[pos] = '-'
+			}
+			return string(buf[pos:])
+		}
+	}
 }

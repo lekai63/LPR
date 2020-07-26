@@ -13,7 +13,7 @@ func GetShareholderLoanContractTable(ctx *context.Context) table.Table {
 
 	info := shareholderLoanContract.GetInfo().HideFilterArea()
 
-	info.AddField("Sl_cid", "sl_cid", db.Int4)
+	info.AddField("Id", "id", db.Int4).FieldFilterable()
 	info.AddField("Creditor", "creditor", db.Varchar)
 	info.AddField("Abbreviation", "abbreviation", db.Varchar)
 	info.AddField("Loan_principal", "loan_principal", db.Int8)
@@ -24,13 +24,13 @@ func GetShareholderLoanContractTable(ctx *context.Context) table.Table {
 	info.AddField("All_repaid_principal", "all_repaid_principal", db.Int8)
 	info.AddField("All_repaid_interest", "all_repaid_interest", db.Int8)
 	info.AddField("Is_finished", "is_finished", db.Bool)
-	info.AddField("Create_time", "create_time", db.Timestamp)
-	info.AddField("Modify_time", "modify_time", db.Timestamp)
+	info.AddField("Created_at", "created_at", db.Timestamp)
+	info.AddField("Updated_at", "updated_at", db.Timestamp)
 
 	info.SetTable("fzzl.shareholder_loan_contract").SetTitle("ShareholderLoanContract").SetDescription("ShareholderLoanContract")
 
 	formList := shareholderLoanContract.GetForm()
-	formList.AddField("Sl_cid", "sl_cid", db.Int4, form.Number)
+	formList.AddField("Id", "id", db.Int4, form.Default)
 	formList.AddField("Creditor", "creditor", db.Varchar, form.Text)
 	formList.AddField("Abbreviation", "abbreviation", db.Varchar, form.Text)
 	formList.AddField("Loan_principal", "loan_principal", db.Int8, form.Text)
@@ -41,8 +41,8 @@ func GetShareholderLoanContractTable(ctx *context.Context) table.Table {
 	formList.AddField("All_repaid_principal", "all_repaid_principal", db.Int8, form.Text)
 	formList.AddField("All_repaid_interest", "all_repaid_interest", db.Int8, form.Text)
 	formList.AddField("Is_finished", "is_finished", db.Bool, form.Text)
-	formList.AddField("Create_time", "create_time", db.Timestamp, form.Datetime)
-	formList.AddField("Modify_time", "modify_time", db.Timestamp, form.Datetime)
+	formList.AddField("Created_at", "created_at", db.Timestamp, form.Datetime)
+	formList.AddField("Updated_at", "updated_at", db.Timestamp, form.Datetime)
 
 	formList.SetTable("fzzl.shareholder_loan_contract").SetTitle("ShareholderLoanContract").SetDescription("ShareholderLoanContract")
 

@@ -17,14 +17,22 @@ import "github.com/GoAdminGroup/go-admin/plugins/admin/modules/table"
 // "shareholder_loan_contract" => http://localhost:9033/admin/info/shareholder_loan_contract
 // "shareholder_loan_repaid_record" => http://localhost:9033/admin/info/shareholder_loan_repaid_record
 //
+// "bank_loan_contract" => http://localhost:9033/admin/info/bank_loan_contract
+// "bank_repay_plan" => http://localhost:9033/admin/info/bank_repay_plan
+// "lease_repay_plan" => http://localhost:9033/admin/info/lease_repay_plan
+// "shareholder_loan_contract" => http://localhost:9033/admin/info/shareholder_loan_contract
+// "shareholder_loan_repaid_record" => http://localhost:9033/admin/info/shareholder_loan_repaid_record
+//
 // example end
 //
 var Generators = map[string]table.Generator{
-	"lease_repay_plan":               GetLeaseRepayPlanTable,
+
+	"lease_contract": GetLeaseContractTable,
+	"lessee_info":    GetLesseeInfoTable,
+
 	"bank_loan_contract":             GetBankLoanContractTable,
 	"bank_repay_plan":                GetBankRepayPlanTable,
-	"lease_contract":                 GetLeaseContractTable,
-	"lessee_info":                    GetLesseeInfoTable,
+	"lease_repay_plan":               GetLeaseRepayPlanTable,
 	"shareholder_loan_contract":      GetShareholderLoanContractTable,
 	"shareholder_loan_repaid_record": GetShareholderLoanRepaidRecordTable,
 

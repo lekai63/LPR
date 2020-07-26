@@ -13,8 +13,8 @@ func GetBankLoanContractTable(ctx *context.Context) table.Table {
 
 	info := bankLoanContract.GetInfo().HideFilterArea()
 
-	info.AddField("Bl_cid", "bl_cid", db.Int4)
-	info.AddField("Cid", "cid", db.Int4)
+	info.AddField("Id", "id", db.Int4).FieldFilterable()
+	info.AddField("Lease_contract_id", "lease_contract_id", db.Int4)
 	info.AddField("Bank_contract_no", "bank_contract_no", db.Varchar)
 	info.AddField("Bank_contract_name", "bank_contract_name", db.Varchar)
 	info.AddField("Bank_account", "bank_account", db.Varchar)
@@ -37,14 +37,14 @@ func GetBankLoanContractTable(ctx *context.Context) table.Table {
 	info.AddField("Is_finished", "is_finished", db.Bool)
 	info.AddField("Contact_person", "contact_person", db.Varchar)
 	info.AddField("Contact_tel", "contact_tel", db.Varchar)
-	info.AddField("Create_time", "create_time", db.Timestamp)
-	info.AddField("Modify_time", "modify_time", db.Timestamp)
+	info.AddField("Created_at", "created_at", db.Timestamp)
+	info.AddField("Updated_at", "updated_at", db.Timestamp)
 
 	info.SetTable("fzzl.bank_loan_contract").SetTitle("BankLoanContract").SetDescription("BankLoanContract")
 
 	formList := bankLoanContract.GetForm()
-	formList.AddField("Bl_cid", "bl_cid", db.Int4, form.Number)
-	formList.AddField("Cid", "cid", db.Int4, form.Number)
+	formList.AddField("Id", "id", db.Int4, form.Default)
+	formList.AddField("Lease_contract_id", "lease_contract_id", db.Int4, form.Number)
 	formList.AddField("Bank_contract_no", "bank_contract_no", db.Varchar, form.Text)
 	formList.AddField("Bank_contract_name", "bank_contract_name", db.Varchar, form.Text)
 	formList.AddField("Bank_account", "bank_account", db.Varchar, form.Text)
@@ -67,8 +67,8 @@ func GetBankLoanContractTable(ctx *context.Context) table.Table {
 	formList.AddField("Is_finished", "is_finished", db.Bool, form.Text)
 	formList.AddField("Contact_person", "contact_person", db.Varchar, form.Text)
 	formList.AddField("Contact_tel", "contact_tel", db.Varchar, form.Text)
-	formList.AddField("Create_time", "create_time", db.Timestamp, form.Datetime)
-	formList.AddField("Modify_time", "modify_time", db.Timestamp, form.Datetime)
+	formList.AddField("Created_at", "created_at", db.Timestamp, form.Datetime)
+	formList.AddField("Updated_at", "updated_at", db.Timestamp, form.Datetime)
 
 	formList.SetTable("fzzl.bank_loan_contract").SetTitle("BankLoanContract").SetDescription("BankLoanContract")
 
