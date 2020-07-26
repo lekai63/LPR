@@ -4,7 +4,10 @@ import (
 	"github.com/GoAdminGroup/go-admin/context"
 	"github.com/GoAdminGroup/go-admin/modules/db"
 	"github.com/GoAdminGroup/go-admin/plugins/admin/modules/table"
+	"github.com/GoAdminGroup/go-admin/template/types"
 	"github.com/GoAdminGroup/go-admin/template/types/form"
+
+	"github.com/lekai63/lpr/models"
 )
 
 func GetLeaseRepayPlanTable(ctx *context.Context) table.Table {
@@ -13,8 +16,14 @@ func GetLeaseRepayPlanTable(ctx *context.Context) table.Table {
 
 	info := leaseRepayPlan.GetInfo().HideFilterArea()
 
-	info.AddField("Id", "id", db.Int4).FieldFilterable()
-	info.AddField("Lease_contract_id", "lease_contract_id", db.Int4)
+	dbGorm := models.Gorm
+	var lesseeContractGorm models.LeaseContract
+
+	info.AddField("Id", "id", db.Int).FieldHide()
+	info.AddField("项目简称", "lease_contract_id", db.Int).FieldDisplay(func(model types.FieldModel) interface{} {
+		dbGorm.First(&lesseeContractGorm, "id = $1", model.Value)
+		return lesseeContractGorm.Abbreviation
+	})
 	info.AddField("Period", "period", db.Int2)
 	info.AddField("Plan_date", "plan_date", db.Date)
 	info.AddField("Plan_amount", "plan_amount", db.Int8)

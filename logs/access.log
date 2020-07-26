@@ -798,3 +798,11 @@
 2020-07-26T01:57:56.037Z	logger/logger.go:321	[GoAdmin] [37;44m 200 [0m [37;104m POST   [0m /admin/new/lease_contract
 2020-07-26T01:58:12.716Z	logger/logger.go:321	[GoAdmin] [37;44m 200 [0m [37;104m GET   [0m /admin/info/lease_contract/detail
 2020-07-26T01:58:19.949Z	logger/logger.go:321	[GoAdmin] [37;44m 200 [0m [37;104m GET   [0m /admin/info/lease_contract
+2020-07-26T03:51:38.620Z	logger/logger.go:321	[GoAdmin] [37;44m 200 [0m [37;104m GET   [0m /admin/login
+2020-07-26T03:51:43.056Z	logger/logger.go:321	[GoAdmin] [37;44m 200 [0m [37;104m POST   [0m /admin/signin
+2020-07-26T03:51:47.807Z	logger/logger.go:321	[GoAdmin] [37;44m 200 [0m [37;104m GET   [0m /admin/menu
+2020-07-26T03:54:51.306Z	logger/logger.go:321	[GoAdmin] [37;44m 200 [0m [37;104m POST   [0m /admin/menu/new
+2020-07-26T03:55:04.877Z	logger/logger.go:321	[GoAdmin] [37;44m 302 [0m [37;104m GET   [0m /admin/logout
+2020-07-26T03:55:04.893Z	logger/logger.go:321	[GoAdmin] [37;44m 200 [0m [37;104m GET   [0m /admin/login
+2020-07-26T03:55:09.278Z	logger/logger.go:321	[GoAdmin] [37;44m 200 [0m [37;104m POST   [0m /admin/signin
+2020-07-26T03:55:12.877Z	logger/logger.go:321	[GoAdmin] [37;44m 200 [0m [37;104m GET   [0m /admin/info/lease_repay_plan

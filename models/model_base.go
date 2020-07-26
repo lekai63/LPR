@@ -27,8 +27,6 @@ var (
 	tables map[string]*TableInfo
 )
 
-
-
 // String describe the action
 func (i Action) String() string {
 	switch i {
