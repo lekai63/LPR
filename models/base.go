@@ -17,7 +17,7 @@ func Init(c db.Connection) {
 	// tables["bank_loan_contract"] = bank_loan_contractTableInfo
 	// tables["bank_repay_plan"] = bank_repay_planTableInfo
 	tables["lease_contract"] = lease_contractTableInfo
-	tables["lease_repay_plan"] = lease_repay_planTableInfo
+	// tables["lease_repay_plan"] = lease_repay_planTableInfo
 	tables["lessee_info"] = lessee_infoTableInfo
 	// tables["shareholder_loan_contract"] = shareholder_loan_contractTableInfo
 	// tables["shareholder_loan_repaid_record"] = shareholder_loan_repaid_recordTableInfo
