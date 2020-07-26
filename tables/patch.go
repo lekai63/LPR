@@ -12,7 +12,7 @@ import (
 // 数据库以int存储精度至0.0001%（比如8.68%存储为86800），故也可以将该数据转换为百分数
 func showMoney(model types.FieldModel) (result interface{}) {
 	if model.Value == "" || model.Value == "0" {
-		result = ""
+		result = model.Value
 	} else if len(model.Value) <= 4 {
 		result = "0." + model.Value
 	} else {
