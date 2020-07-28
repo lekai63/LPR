@@ -10,15 +10,19 @@ import (
 // showMoney 实际将小数点向左移动4位
 // 数据库以bigint存储精度至0.01分，可以将该数据转换为“元”；
 // 数据库以int存储精度至0.0001%（比如8.68%存储为86800），故也可以将该数据转换为百分数
-func showMoney(model types.FieldModel) (result interface{}) {
-	if model.Value == "" || model.Value == "0" {
-		result = model.Value
-	} else if len(model.Value) <= 4 {
-		result = "0." + model.Value
-	} else {
-		result = model.Value[:len(model.Value)-4] + "." + model.Value[len(model.Value)-4:len(model.Value)-2]
+func showMoney(model types.FieldModel) interface{} {
+	switch n := len(model.Value); {
+	case n == 0:
+		return ""
+	case n <= 4:
+		if model.Value == "" {
+			return ""
+		} else {
+			return "0." + model.Value
+		}
+	default:
+		return model.Value[:len(model.Value)-4] + "." + model.Value[len(model.Value)-4:len(model.Value)-2]
 	}
-	return
 }
 
 // money2BigintString 将“元”字符串转换为bigint精度的字符串

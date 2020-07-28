@@ -60,8 +60,8 @@ JSON Sample
 type LeaseContract struct {
 	//[ 0] id                                             INT4                 null: false  primary: true   isArray: false  auto: true   col: INT4            len: -1      default: []
 	ID int32 `gorm:"primary_key;AUTO_INCREMENT;column:id;type:INT4;" json:"id"`
-	//[ 1] contract_no                                    VARCHAR(255)         null: false  primary: true   isArray: false  auto: false  col: VARCHAR         len: 255     default: []
-	ContractNo string `gorm:"primary_key;column:contract_no;type:VARCHAR;size:255;" json:"contract_no"`
+	//[ 1] contract_no                                    VARCHAR(255)         null: false  primary: false   isArray: false  auto: false  col: VARCHAR         len: 255     default: []
+	ContractNo string `gorm:"column:contract_no;type:VARCHAR;size:255;" json:"contract_no"`
 	//[ 2] lessee                                         VARCHAR(255)         null: false  primary: false  isArray: false  auto: false  col: VARCHAR         len: 255     default: []
 	Lessee string `gorm:"column:lessee;type:VARCHAR;size:255;" json:"lessee"`
 	//[ 3] abbreviation                                   VARCHAR(255)         null: true   primary: false  isArray: false  auto: false  col: VARCHAR         len: 255     default: []

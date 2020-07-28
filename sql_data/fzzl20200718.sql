@@ -2075,7 +2075,7 @@ ALTER TABLE ONLY fzzl.bank_loan_contract
 --
 
 ALTER TABLE ONLY fzzl.lease_contract
-    ADD CONSTRAINT _copy_1 PRIMARY KEY (id, contract_no);
+    ADD CONSTRAINT lease_contract_pkey PRIMARY KEY (id);
 
 
 --

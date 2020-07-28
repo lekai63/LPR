@@ -18,7 +18,7 @@ require (
 	github.com/guregu/null v4.0.0+incompatible
 	github.com/imkira/go-interpol v1.1.0 // indirect
 	github.com/jinzhu/gorm v1.9.15
-	github.com/julienschmidt/httprouter v1.2.0
+	github.com/julienschmidt/httprouter v1.3.0
 	github.com/moul/http2curl v1.0.0 // indirect
 	github.com/satori/go.uuid v1.2.0
 	github.com/sclevine/agouti v3.0.0+incompatible // indirect
@@ -28,6 +28,5 @@ require (
 	github.com/yalp/jsonpath v0.0.0-20180802001716-5cc68e5049a0 // indirect
 	github.com/yudai/gojsondiff v1.0.0 // indirect
 	github.com/yudai/golcs v0.0.0-20170316035057-ecda9a501e82 // indirect
-	gorm.io/driver/postgres v0.2.6
-	gorm.io/gorm v0.2.24
+
 )
