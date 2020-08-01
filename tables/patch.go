@@ -15,8 +15,8 @@ func showMoney(model types.FieldModel) interface{} {
 	case n == 0:
 		return ""
 	case n <= 4:
-		if model.Value == "" {
-			return ""
+		if model.Value == "" || model.Value == "0" {
+			return model.Value
 		} else {
 			return "0." + model.Value
 		}
@@ -47,4 +47,27 @@ func allowReturnNullString(model types.PostFieldModel) interface{} {
 		return sql.NullString{}
 	}
 	return model.Value.Value()
+}
+
+
+// id2String convert type int32 to type string
+func id2String(n int32) string {
+	buf := [11]byte{}
+	pos := len(buf)
+	i := int64(n)
+	signed := i < 0
+	if signed {
+		i = -i
+	}
+	for {
+		pos--
+		buf[pos], i = '0'+byte(i%10), i/10
+		if i == 0 {
+			if signed {
+				pos--
+				buf[pos] = '-'
+			}
+			return string(buf[pos:])
+		}
+	}
 }
