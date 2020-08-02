@@ -6,10 +6,11 @@ import (
 	"os"
 	"os/signal"
 
-	_ "github.com/GoAdminGroup/go-admin/adapter/gin" // web framework adapter
-	// _ "github.com/GoAdminGroup/go-admin/modules/db/drivers/postgres" // sql driver
-	_ "github.com/GoAdminGroup/themes/adminlte" // ui theme
-	_ "github.com/lekai63/lpr/models/drivers/postgres"
+	_ "github.com/GoAdminGroup/go-admin/adapter/gin"                 // web framework adapter
+	_ "github.com/GoAdminGroup/go-admin/modules/db/drivers/postgres" // sql driver
+	_ "github.com/GoAdminGroup/themes/adminlte"                      // ui theme
+
+	// _ "github.com/lekai63/lpr/models/drivers/postgres"
 
 	"github.com/GoAdminGroup/go-admin/engine"
 	"github.com/GoAdminGroup/go-admin/template"

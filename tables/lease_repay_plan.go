@@ -130,9 +130,9 @@ func GetLeaseRepayPlanTable(ctx *context.Context) table.Table {
 
 		var leaseRepayPlanGorm models.LeaseRepayPlan
 		var u models.UpdateStruct
-		u.ID = cast.ToInt32(values.Get("id"))
+		// u.ID = cast.ToInt32(values.Get("id"))
 
-		dbGorm.Debug().First(&leaseRepayPlanGorm, u.ID)
+		dbGorm.Debug().Where("id= ?", values.Get("id")).First(&leaseRepayPlanGorm)
 
 		u.LeaseContractID = leaseRepayPlanGorm.LeaseContractID
 		// formatDate := "2006-01-02"
@@ -141,7 +141,9 @@ func GetLeaseRepayPlanTable(ctx *context.Context) table.Table {
 		u.ActualPrincipal = cast.ToInt64(floatStr2BigintStr(values.Get("actual_principal")))
 		u.ActualInterest = cast.ToInt64(floatStr2BigintStr(values.Get("actual_interest")))
 		// leaseRepayPlanGorm.UpdatedAt = cast.ToTime(values.Get("updated_at"))
+		fmt.Printf("s", u)
 
+		// 以下语句可能出错
 		leaseRepayPlanGorm.UpdateActualData(dbGorm, u)
 
 		return
