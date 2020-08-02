@@ -6,9 +6,12 @@ import (
 	"os"
 	"os/signal"
 
-	_ "github.com/GoAdminGroup/go-admin/adapter/gin"                 // web framework adapter
-	_ "github.com/GoAdminGroup/go-admin/modules/db/drivers/postgres" // sql driver
-	_ "github.com/GoAdminGroup/themes/adminlte"                      // ui theme
+	_ "github.com/GoAdminGroup/go-admin/adapter/gin" // web framework adapter
+	// _ "github.com/GoAdminGroup/go-admin/modules/db/drivers/postgres" // sql driver
+	_ "github.com/lekai63/lpr/models/drivers/postgres"
+	_ "github.com/GoAdminGroup/themes/adminlte" // ui theme
+    
+	
 
 	"github.com/GoAdminGroup/go-admin/engine"
 	"github.com/GoAdminGroup/go-admin/template"
@@ -40,6 +43,7 @@ func startServer() {
 		panic(err)
 	}
 
+	// fmt.Printf("s", eng)
 	r.Static("/uploads", "./uploads")
 
 	eng.HTML("GET", "/admin", pages.GetDashBoard)
@@ -47,8 +51,9 @@ func startServer() {
 		"msg": "Hello world",
 	})
 
-	models.Init(eng.PostgresqlConnection())
-
+	// models.Init(eng.PostgresqlConnection())
+	// models.Init()
+	models.InitGormv2(eng.PostgresqlConnection())
 	_ = r.Run(":8080")
 
 	quit := make(chan os.Signal)

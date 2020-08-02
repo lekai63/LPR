@@ -1,11 +1,15 @@
 package tables
 
 import (
-	"strconv"
-	"time"
+	// "fmt"
+
+	"fmt"
+
+	"github.com/spf13/cast"
 
 	"github.com/GoAdminGroup/go-admin/context"
 	"github.com/GoAdminGroup/go-admin/modules/db"
+	form2 "github.com/GoAdminGroup/go-admin/plugins/admin/modules/form"
 	"github.com/GoAdminGroup/go-admin/plugins/admin/modules/table"
 	"github.com/GoAdminGroup/go-admin/template/types"
 	"github.com/GoAdminGroup/go-admin/template/types/form"
@@ -72,16 +76,17 @@ func GetLeaseRepayPlanTable(ctx *context.Context) table.Table {
 	info.HideNewButton()
 	info.SetTable("fzzl.lease_repay_plan").SetTitle("租金台账").SetDescription("LeaseRepayPlan")
 
-	formList := leaseRepayPlan.GetForm()
-	formList.AddField("Id", "id", db.Int, form.Default).FieldHide().FieldNotAllowEdit().FieldNotAllowAdd()
-
-	dbGorm := models.Gorm
+	dbGorm := models.Gormv2
 	var leaseContractGorm models.LeaseContract
+	formList := leaseRepayPlan.GetForm()
+
+	formList.AddField("Id", "id", db.Int, form.Default).FieldHide().FieldNotAllowEdit().FieldNotAllowAdd()
 
 	formList.AddField("项目简称", "lease_contract_id", db.Int, form.Text).FieldNotAllowAdd().FieldNotAllowEdit().
 		FieldDisplay(func(model types.FieldModel) interface{} {
-			id, _ := strconv.Atoi(model.Value)
-			dbGorm.First(&leaseContractGorm, id)
+			// 获取第一条匹配的记录
+			id := model.Value
+			dbGorm.Where("id = ?", id).First(&leaseContractGorm)
 			a := leaseContractGorm.Abbreviation
 			if a.Valid {
 				return a.String
@@ -101,28 +106,51 @@ func GetLeaseRepayPlanTable(ctx *context.Context) table.Table {
 	formList.AddField("实际还款日期", "actual_date", db.Date, form.Date)
 	formList.AddField("实际还款金额", "actual_amount", db.Int8, form.Text).
 		FieldDisplay(showMoney).
-		FieldHelpMsg("单位:元").
-		FieldPostFilterFn(money2bigint)
+		FieldHelpMsg("单位:元")
 	formList.AddField("实际还款本金", "actual_principal", db.Int8, form.Text).
 		FieldDisplay(showMoney).
-		FieldHelpMsg("单位:元").
-		FieldPostFilterFn(money2bigint)
+		FieldHelpMsg("单位:元")
 	formList.AddField("实际还款利息", "actual_interest", db.Int8, form.Text).
 		FieldDisplay(showMoney).
-		FieldHelpMsg("单位:元").
-		FieldPostFilterFn(money2bigint)
-	formList.AddField("创建时间", "created_at", db.Timestamp, form.Datetime).FieldHide().FieldNotAllowEdit().
-		FieldPostFilterFn(func(value types.PostFieldModel) interface{} {
-			if value.Value == nil {
-				return time.Now().Format("2006-01-02 15:04:05")
-			}
-			return value.Value.Value()
-		})
+		FieldHelpMsg("单位:元")
+	formList.AddField("创建时间", "created_at", db.Timestamp, form.Datetime).FieldHide().FieldNotAllowEdit()
 	formList.AddField("修改时间", "updated_at", db.Timestamp, form.Datetime).
-		FieldHide().
-		FieldPostFilterFn(func(value types.PostFieldModel) interface{} {
-			return time.Now().Format("2006-01-02 15:04:05")
-		})
+		FieldHide()
+
+	formList.SetPostValidator(func(values form2.Values) error {
+		if cast.ToFloat64(values.Get("actual_amount")) != cast.ToFloat64(values.Get("actual_principal"))+cast.ToFloat64(values.Get("actual_interest")) {
+			return fmt.Errorf("实际还款金额≠实际还款本金+实际还款利息")
+		}
+		return nil
+
+	})
+
+	formList.SetUpdateFn(func(values form2.Values) (err error) {
+		fmt.Printf("%s", values)
+
+		var leaseRepayPlanGorm models.LeaseRepayPlan
+		var u models.UpdateStruct
+		u.ID = cast.ToInt32(values.Get("id"))
+
+		dbGorm.Debug().First(&leaseRepayPlanGorm, u.ID)
+
+		u.LeaseContractID = leaseRepayPlanGorm.LeaseContractID
+		// formatDate := "2006-01-02"
+		u.ActualDate = values.Get("actual_date")
+		u.ActualAmount = cast.ToInt64(floatStr2BigintStr(values.Get("actual_amount")))
+		u.ActualPrincipal = cast.ToInt64(floatStr2BigintStr(values.Get("actual_principal")))
+		u.ActualInterest = cast.ToInt64(floatStr2BigintStr(values.Get("actual_interest")))
+		// leaseRepayPlanGorm.UpdatedAt = cast.ToTime(values.Get("updated_at"))
+
+		leaseRepayPlanGorm.UpdateActualData(dbGorm, u)
+
+		return
+
+	})
+
+	formList.SetInsertFn(func(values form2.Values) (err error) {
+		return nil
+	})
 
 	formList.SetTable("fzzl.lease_repay_plan").SetTitle("LeaseRepayPlan").SetDescription("LeaseRepayPlan")
 

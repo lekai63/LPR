@@ -1,11 +1,16 @@
-package model
+package models
 
 import (
 	"database/sql"
 	"time"
 
 	"github.com/guregu/null"
-	"github.com/satori/go.uuid"
+	uuid "github.com/satori/go.uuid"
+
+	// "gorm.io/driver/postgres"
+	"gorm.io/gorm"
+	// "github.com/jinzhu/gorm"
+	// _ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
 var (
@@ -60,8 +65,8 @@ type LeaseRepayPlan struct {
 	PlanPrincipal int64 `gorm:"column:plan_principal;type:INT8;" json:"plan_principal"`
 	//[ 6] plan_interest                                  INT8                 null: false  primary: false  isArray: false  auto: false  col: INT8            len: -1      default: []
 	PlanInterest int64 `gorm:"column:plan_interest;type:INT8;" json:"plan_interest"`
-	//[ 7] actual_date                                    DATE                 null: true   primary: false  isArray: false  auto: false  col: DATE            len: -1      default: []
-	ActualDate null.Time `gorm:"column:actual_date;type:DATE;" json:"actual_date"`
+	//[ 7] actual_date   null.Time -> null.String                                 DATE                 null: true   primary: false  isArray: false  auto: false  col: DATE            len: -1      default: []
+	ActualDate null.String `gorm:"column:actual_date;type:DATE;" json:"actual_date"`
 	//[ 8] actual_amount                                  INT8                 null: true   primary: false  isArray: false  auto: false  col: INT8            len: -1      default: []
 	ActualAmount null.Int `gorm:"column:actual_amount;type:INT8;" json:"actual_amount"`
 	//[ 9] actual_principal                               INT8                 null: true   primary: false  isArray: false  auto: false  col: INT8            len: -1      default: []
@@ -351,6 +356,40 @@ var lease_repay_planTableInfo = &TableInfo{
 			ProtobufPos:        13,
 		},
 	},
+}
+
+// UpdateActualData 更新 实际还款日期、实际还款金额、实际还款本金、实际还款利息,并更新LeaseContract中已收本金、已收利息
+func (l *LeaseRepayPlan) UpdateActualData(db *gorm.DB, u UpdateStruct) error {
+	return db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.Model(&l).Omit("lease_contract_id").Updates(u).Error; err != nil {
+			return err
+		}
+		var lc *LeaseContract
+
+		var lcUpdate struct {
+			receivedPrincipal int64
+			ReceivedInterest  int64
+		}
+
+		db.First(&lc, u.LeaseContractID)
+
+		if err := tx.Model(&lc).Updates(lcUpdate).Error; err != nil {
+			return err
+		}
+
+		return nil
+
+	})
+}
+
+type UpdateStruct struct {
+	ID              int32
+	LeaseContractID int32
+
+	ActualDate      string
+	ActualAmount    int64
+	ActualPrincipal int64
+	ActualInterest  int64
 }
 
 // TableName sets the insert table name for this struct type

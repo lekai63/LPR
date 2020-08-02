@@ -28,13 +28,22 @@ func showMoney(model types.FieldModel) interface{} {
 // money2BigintString 将“元”字符串转换为bigint精度的字符串
 func money2bigint(model types.PostFieldModel) (result interface{}) {
 	val := model.Value.Value()
+	return floatStr2BigintStr(val)
+}
+
+func floatStr2BigintStr(val string) (result string) {
 	if val == "" || val == "0" {
 		result = "0"
 	} else if strings.Count(val, ".") == 1 {
 		// 小数的处理
 		digitals := strings.Split(val, ".")
 		temp := digitals[1] + strings.Repeat("0", (4-len(digitals[1])))
-		result = digitals[0] + temp
+		if digitals[0] == "0" {
+			result = temp
+		} else {
+			result = digitals[0] + temp
+		}
+
 	} else {
 		result = val + "0000"
 	}
@@ -48,7 +57,6 @@ func allowReturnNullString(model types.PostFieldModel) interface{} {
 	}
 	return model.Value.Value()
 }
-
 
 // id2String convert type int32 to type string
 func id2String(n int32) string {

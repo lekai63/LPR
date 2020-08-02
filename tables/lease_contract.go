@@ -21,7 +21,7 @@ import (
 
 func GetLeaseContractTable(ctx *context.Context) table.Table {
 
-	dbGorm := models.Gorm
+	dbGorm := models.Gormv2
 	var lesseeInfoGorm models.LesseeInfo
 
 	leaseContract := table.NewDefaultTable(table.DefaultConfigWithDriver(db.DriverPostgresql))
@@ -165,8 +165,8 @@ func GetLeaseContractTable(ctx *context.Context) table.Table {
 	formList.SetPostValidator(func(values form2.Values) error {
 
 		// 校验承租人名称
-		if dbGorm.First(&lesseeInfoGorm, "lessee = $1", values.Get("lessee")).RecordNotFound() {
-			return fmt.Errorf("未在《承租人信息》表中找到对应的承租人名称，请检查是否输入错误")
+		if err := dbGorm.Where("lessee = $1", values.Get("lessee")).First(&lesseeInfoGorm).Error; err != nil {
+			return err
 		}
 
 		// 校验 “期限”
@@ -192,5 +192,3 @@ func GetLeaseContractTable(ctx *context.Context) table.Table {
 
 	return leaseContract
 }
-
-

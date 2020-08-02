@@ -28,7 +28,6 @@
 SELECT c.relname FROM pg_class c WHERE c.relkind = 'S'; 
 // 修改序列起始号
 alter sequence lease_contract_id_seq restart with 39;
-
 // 删除记录
 delete from xx_table where id = 9999 ;
 ```
