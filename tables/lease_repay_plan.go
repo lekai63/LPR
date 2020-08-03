@@ -5,6 +5,9 @@ import (
 
 	"fmt"
 
+	_ "gorm.io/driver/postgres"
+	"gorm.io/gorm"
+
 	"github.com/spf13/cast"
 
 	"github.com/GoAdminGroup/go-admin/context"
@@ -126,27 +129,56 @@ func GetLeaseRepayPlanTable(ctx *context.Context) table.Table {
 	})
 
 	formList.SetUpdateFn(func(values form2.Values) (err error) {
-		fmt.Printf("%s", values)
+		// fmt.Printf("%s", values)
 
 		var leaseRepayPlanGorm models.LeaseRepayPlan
-		var u models.UpdateStruct
+		var u models.UpdateLeaseRepayPlanStruct
 		// u.ID = cast.ToInt32(values.Get("id"))
 
-		dbGorm.Debug().Where("id= ?", values.Get("id")).First(&leaseRepayPlanGorm)
+		dbGorm.Where("id= ?", values.Get("id")).First(&leaseRepayPlanGorm)
+		// u.ID = leaseRepayPlanGorm.ID
 
+		// 需要去掉u，切换为struct更新
 		u.LeaseContractID = leaseRepayPlanGorm.LeaseContractID
 		// formatDate := "2006-01-02"
-		u.ActualDate = values.Get("actual_date")
-		u.ActualAmount = cast.ToInt64(floatStr2BigintStr(values.Get("actual_amount")))
-		u.ActualPrincipal = cast.ToInt64(floatStr2BigintStr(values.Get("actual_principal")))
-		u.ActualInterest = cast.ToInt64(floatStr2BigintStr(values.Get("actual_interest")))
-		// leaseRepayPlanGorm.UpdatedAt = cast.ToTime(values.Get("updated_at"))
-		fmt.Printf("s", u)
+		u.ActualDate.SetValid(values.Get("actual_date"))
+		u.ActualAmount.SetValid(cast.ToInt64(floatStr2BigintStr(values.Get("actual_amount"))))
+		u.ActualPrincipal.SetValid(cast.ToInt64(floatStr2BigintStr(values.Get("actual_principal"))))
+		u.ActualInterest.SetValid(cast.ToInt64(floatStr2BigintStr(values.Get("actual_interest"))))
 
-		// 以下语句可能出错
-		leaseRepayPlanGorm.UpdateActualData(dbGorm, u)
+		err = dbGorm.Transaction(func(tx *gorm.DB) error {
+			umap := leaseRepayPlanGorm.UpdateMap(&u)
 
-		return
+			if e := tx.Debug().Model(&leaseRepayPlanGorm).Updates(umap).Error; e != nil {
+				return e
+			}
+			var lc models.LeaseContract
+
+			tx.Debug().Where("id = ? ", u.LeaseContractID).First(&lc)
+			var (
+				temp_rp int64
+				temp_ri int64
+			)
+			if lc.ReceivedPrincipal.Valid {
+				temp_rp = lc.ReceivedPrincipal.Int64 + u.ActualPrincipal.Int64
+			}
+			lc.ReceivedPrincipal.SetValid(temp_rp)
+
+			if lc.ReceivedInterest.Valid {
+				temp_ri = lc.ReceivedInterest.Int64 + u.ActualInterest.Int64
+			}
+			lc.ReceivedInterest.SetValid(temp_ri)
+
+			fmt.Printf("%+v", lc)
+			if e := tx.Debug().Model(&lc).Select("received_principal", "received_interest").Updates(lc).Error; e != nil {
+				return e
+			}
+
+			return nil
+
+		})
+
+		return nil
 
 	})
 

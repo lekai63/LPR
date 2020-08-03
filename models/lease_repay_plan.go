@@ -7,7 +7,7 @@ import (
 	"github.com/guregu/null"
 	uuid "github.com/satori/go.uuid"
 
-	// "gorm.io/driver/postgres"
+	_ "gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	// "github.com/jinzhu/gorm"
 	// _ "github.com/jinzhu/gorm/dialects/postgres"
@@ -358,38 +358,24 @@ var lease_repay_planTableInfo = &TableInfo{
 	},
 }
 
-// UpdateActualData 更新 实际还款日期、实际还款金额、实际还款本金、实际还款利息,并更新LeaseContract中已收本金、已收利息
-func (l *LeaseRepayPlan) UpdateActualData(db *gorm.DB, u UpdateStruct) error {
-	return db.Transaction(func(tx *gorm.DB) error {
-		if err := tx.Model(&l).Omit("lease_contract_id").Updates(u).Error; err != nil {
-			return err
-		}
-		var lc *LeaseContract
+// UpdateLeaseRepayPlanMap 定义要更新的字段，因为通过 struct 只能更新非零值，若要更新零值，可以使用 map[string]interface{}
 
-		var lcUpdate struct {
-			receivedPrincipal int64
-			ReceivedInterest  int64
-		}
-
-		db.First(&lc, u.LeaseContractID)
-
-		if err := tx.Model(&lc).Updates(lcUpdate).Error; err != nil {
-			return err
-		}
-
-		return nil
-
-	})
+func (l *LeaseRepayPlan) UpdateMap(u *UpdateLeaseRepayPlanStruct) map[string]interface{} {
+	return map[string]interface{}{
+		"actual_date":      u.ActualDate.String,
+		"actual_amount":    u.ActualAmount.Int64,
+		"actual_principal": u.ActualPrincipal.Int64,
+		"actual_interest":  u.ActualInterest.Int64}
 }
 
-type UpdateStruct struct {
-	ID              int32
+type UpdateLeaseRepayPlanStruct struct {
+	// ID              int32
 	LeaseContractID int32
 
-	ActualDate      string
-	ActualAmount    int64
-	ActualPrincipal int64
-	ActualInterest  int64
+	ActualDate      null.String
+	ActualAmount    null.Int
+	ActualPrincipal null.Int
+	ActualInterest  null.Int
 }
 
 // TableName sets the insert table name for this struct type
@@ -398,7 +384,7 @@ func (l *LeaseRepayPlan) TableName() string {
 }
 
 // BeforeSave invoked before saving, return an error if field is not populated.
-func (l *LeaseRepayPlan) BeforeSave() error {
+func (l *LeaseRepayPlan) BeforeSave(db *gorm.DB) error {
 	return nil
 }
 
