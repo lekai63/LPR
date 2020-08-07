@@ -2,6 +2,8 @@ package models
 
 import (
 	"database/sql"
+	"errors"
+	"fmt"
 	"time"
 
 	"github.com/guregu/null"
@@ -66,7 +68,7 @@ type LeaseRepayPlan struct {
 	//[ 6] plan_interest                                  INT8                 null: false  primary: false  isArray: false  auto: false  col: INT8            len: -1      default: []
 	PlanInterest int64 `gorm:"column:plan_interest;type:INT8;" json:"plan_interest"`
 	//[ 7] actual_date   null.Time -> null.String                                 DATE                 null: true   primary: false  isArray: false  auto: false  col: DATE            len: -1      default: []
-	ActualDate null.String `gorm:"column:actual_date;type:DATE;" json:"actual_date"`
+	ActualDate null.Time `gorm:"column:actual_date;type:DATE;" json:"actual_date"`
 	//[ 8] actual_amount                                  INT8                 null: true   primary: false  isArray: false  auto: false  col: INT8            len: -1      default: []
 	ActualAmount null.Int `gorm:"column:actual_amount;type:INT8;" json:"actual_amount"`
 	//[ 9] actual_principal                               INT8                 null: true   primary: false  isArray: false  auto: false  col: INT8            len: -1      default: []
@@ -358,26 +360,6 @@ var lease_repay_planTableInfo = &TableInfo{
 	},
 }
 
-// UpdateLeaseRepayPlanMap 定义要更新的字段，因为通过 struct 只能更新非零值，若要更新零值，可以使用 map[string]interface{}
-
-func (l *LeaseRepayPlan) UpdateMap(u *UpdateLeaseRepayPlanStruct) map[string]interface{} {
-	return map[string]interface{}{
-		"actual_date":      u.ActualDate.String,
-		"actual_amount":    u.ActualAmount.Int64,
-		"actual_principal": u.ActualPrincipal.Int64,
-		"actual_interest":  u.ActualInterest.Int64}
-}
-
-type UpdateLeaseRepayPlanStruct struct {
-	// ID              int32
-	LeaseContractID int32
-
-	ActualDate      null.String
-	ActualAmount    null.Int
-	ActualPrincipal null.Int
-	ActualInterest  null.Int
-}
-
 // TableName sets the insert table name for this struct type
 func (l *LeaseRepayPlan) TableName() string {
 	return "lease_repay_plan"
@@ -385,6 +367,10 @@ func (l *LeaseRepayPlan) TableName() string {
 
 // BeforeSave invoked before saving, return an error if field is not populated.
 func (l *LeaseRepayPlan) BeforeSave(db *gorm.DB) error {
+	if l.ActualAmount.Int64 != l.ActualInterest.Int64+l.ActualPrincipal.Int64 {
+		return errors.New("实际还款金额≠实际还款本金+实际还款利息")
+	}
+
 	return nil
 }
 
@@ -396,6 +382,10 @@ func (l *LeaseRepayPlan) Prepare() {
 func (l *LeaseRepayPlan) Validate(action Action) error {
 	return nil
 }
+
+// func (l *LeaseRepayPlan) AfterUpdate(tx *gorm.DB) (e error) {
+// 	return nil
+// }
 
 // TableInfo return table meta data
 func (l *LeaseRepayPlan) TableInfo() *TableInfo {

@@ -32,6 +32,7 @@ func money2bigint(model types.PostFieldModel) (result interface{}) {
 }
 
 func floatStr2BigintStr(val string) (result string) {
+	val = strings.TrimSpace(val)
 	if val == "" || val == "0" {
 		result = "0"
 	} else if strings.Count(val, ".") == 1 {

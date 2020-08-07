@@ -1,9 +1,8 @@
 package tables
 
 import (
-	// "fmt"
-
 	"fmt"
+	"time"
 
 	_ "gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -120,57 +119,57 @@ func GetLeaseRepayPlanTable(ctx *context.Context) table.Table {
 	formList.AddField("修改时间", "updated_at", db.Timestamp, form.Datetime).
 		FieldHide()
 
-	formList.SetPostValidator(func(values form2.Values) error {
-		if cast.ToFloat64(values.Get("actual_amount")) != cast.ToFloat64(values.Get("actual_principal"))+cast.ToFloat64(values.Get("actual_interest")) {
-			return fmt.Errorf("实际还款金额≠实际还款本金+实际还款利息")
-		}
-		return nil
-
-	})
 
 	formList.SetUpdateFn(func(values form2.Values) (err error) {
-		// fmt.Printf("%s", values)
 
 		var leaseRepayPlanGorm models.LeaseRepayPlan
-		var u models.UpdateLeaseRepayPlanStruct
-		// u.ID = cast.ToInt32(values.Get("id"))
 
 		dbGorm.Where("id= ?", values.Get("id")).First(&leaseRepayPlanGorm)
-		// u.ID = leaseRepayPlanGorm.ID
 
-		// 需要去掉u，切换为struct更新
-		u.LeaseContractID = leaseRepayPlanGorm.LeaseContractID
-		// formatDate := "2006-01-02"
-		u.ActualDate.SetValid(values.Get("actual_date"))
-		u.ActualAmount.SetValid(cast.ToInt64(floatStr2BigintStr(values.Get("actual_amount"))))
-		u.ActualPrincipal.SetValid(cast.ToInt64(floatStr2BigintStr(values.Get("actual_principal"))))
-		u.ActualInterest.SetValid(cast.ToInt64(floatStr2BigintStr(values.Get("actual_interest"))))
+		formatDate := "2006-01-02"
+		tempDate, _ := time.Parse(formatDate, values.Get("actual_date"))
+		leaseRepayPlanGorm.ActualDate.SetValid(tempDate)
+		leaseRepayPlanGorm.ActualAmount.SetValid(cast.ToInt64(floatStr2BigintStr(values.Get("actual_amount"))))
+		leaseRepayPlanGorm.ActualPrincipal.SetValid(cast.ToInt64(floatStr2BigintStr(values.Get("actual_principal"))))
+		leaseRepayPlanGorm.ActualInterest.SetValid(cast.ToInt64(floatStr2BigintStr(values.Get("actual_interest"))))
 
 		err = dbGorm.Transaction(func(tx *gorm.DB) error {
-			umap := leaseRepayPlanGorm.UpdateMap(&u)
 
-			if e := tx.Debug().Model(&leaseRepayPlanGorm).Updates(umap).Error; e != nil {
+			if e := tx.Model(&leaseRepayPlanGorm).
+				// Gorm的Select字段 对应 Struct字段名，而非数据库字段名。
+				Select("ActualDate", "ActualAmount", "ActualPrincipal", "ActualInterest").
+				Updates(leaseRepayPlanGorm).Error; e != nil {
 				return e
 			}
+
+			// result 存储中间步骤，结构体内需为大写，否则后面Scan赋值失败。
+			type result struct {
+				Lcid           int32
+				Totalprincipal int64
+				Totalinterest  int64
+			}
+
+			var r result
+
+			tx.Session(&gorm.Session{WithConditions: false}).
+				Table("lease_repay_plan").
+				Select("lease_contract_id as lcid  , sum(actual_principal) as totalprincipal ,sum(actual_interest) as totalinterest ").
+				Where("lease_contract_id = ?", leaseRepayPlanGorm.LeaseContractID).
+				Group("lease_contract_id").
+				Scan(&r)
+
+			// fmt.Printf("%+v", r)
+
+			// 更新LeaseContract已收本金、已收利息
 			var lc models.LeaseContract
-
-			tx.Debug().Where("id = ? ", u.LeaseContractID).First(&lc)
-			var (
-				temp_rp int64
-				temp_ri int64
-			)
-			if lc.ReceivedPrincipal.Valid {
-				temp_rp = lc.ReceivedPrincipal.Int64 + u.ActualPrincipal.Int64
-			}
-			lc.ReceivedPrincipal.SetValid(temp_rp)
-
-			if lc.ReceivedInterest.Valid {
-				temp_ri = lc.ReceivedInterest.Int64 + u.ActualInterest.Int64
-			}
-			lc.ReceivedInterest.SetValid(temp_ri)
-
-			fmt.Printf("%+v", lc)
-			if e := tx.Debug().Model(&lc).Select("received_principal", "received_interest").Updates(lc).Error; e != nil {
+			lc.ID = r.Lcid
+			lc.ReceivedInterest.SetValid(r.Totalinterest)
+			lc.ReceivedPrincipal.SetValid(r.Totalprincipal)
+			// fmt.Printf("%+v", lc)
+			if e := tx.Session(&gorm.Session{WithConditions: false}).
+				Model(&lc).
+				Select("ReceivedPrincipal", "ReceivedInterest").
+				Updates(lc).Error; e != nil {
 				return e
 			}
 
