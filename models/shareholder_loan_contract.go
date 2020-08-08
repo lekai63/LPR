@@ -1,11 +1,11 @@
-package model
+package models
 
 import (
 	"database/sql"
 	"time"
 
 	"github.com/guregu/null"
-	"github.com/satori/go.uuid"
+	uuid "github.com/satori/go.uuid"
 )
 
 var (

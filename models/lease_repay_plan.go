@@ -2,7 +2,7 @@ package models
 
 import (
 	"database/sql"
-	"errors"
+	"fmt"
 
 	// "fmt"
 	"time"
@@ -369,7 +369,7 @@ func (l *LeaseRepayPlan) TableName() string {
 // BeforeSave invoked before saving, return an error if field is not populated.
 func (l *LeaseRepayPlan) BeforeSave(db *gorm.DB) error {
 	if l.ActualAmount.Int64 != l.ActualInterest.Int64+l.ActualPrincipal.Int64 {
-		return errors.New("实际还款金额≠实际还款本金+实际还款利息")
+		return fmt.Errorf("实际还款金额≠实际还款本金+实际还款利息")
 	}
 
 	return nil
