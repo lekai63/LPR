@@ -2,6 +2,7 @@ package tables
 
 import (
 	// "fmt"
+	"fmt"
 	"time"
 
 	_ "gorm.io/driver/postgres"
@@ -180,8 +181,9 @@ func GetLeaseRepayPlanTable(ctx *context.Context) table.Table {
 
 	})
 
-	formList.SetInsertFn(func(values form2.Values) (err error) {
-		return nil
+	formList.SetInsertFn(func(values form2.Values) error {
+		// return nil
+		return fmt.Errorf("请直接通过《导入租金台账》导入数据")
 	})
 
 	formList.SetTable("fzzl.lease_repay_plan").SetTitle("LeaseRepayPlan").SetDescription("LeaseRepayPlan")

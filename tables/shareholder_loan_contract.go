@@ -2,6 +2,7 @@ package tables
 
 import (
 	"strings"
+	"time"
 
 	"github.com/GoAdminGroup/go-admin/context"
 	"github.com/GoAdminGroup/go-admin/modules/db"
@@ -52,19 +53,48 @@ func GetShareholderLoanContractTable(ctx *context.Context) table.Table {
 	info.SetTable("fzzl.shareholder_loan_contract").SetTitle("ShareholderLoanContract").SetDescription("ShareholderLoanContract")
 
 	formList := shareholderLoanContract.GetForm()
-	formList.AddField("Id", "id", db.Int4, form.Default)
-	formList.AddField("Creditor", "creditor", db.Varchar, form.Text)
-	formList.AddField("Abbreviation", "abbreviation", db.Varchar, form.Text)
-	formList.AddField("Loan_principal", "loan_principal", db.Int8, form.Text)
-	formList.AddField("Loan_rate", "loan_rate", db.Int4, form.Number)
-	formList.AddField("Loan_contract_no", "loan_contract_no", db.Varchar, form.Text)
-	formList.AddField("Loan_start_date", "loan_start_date", db.Date, form.Datetime)
-	formList.AddField("Loan_end_date", "loan_end_date", db.Date, form.Datetime)
-	formList.AddField("All_repaid_principal", "all_repaid_principal", db.Int8, form.Text)
-	formList.AddField("All_repaid_interest", "all_repaid_interest", db.Int8, form.Text)
-	formList.AddField("Is_finished", "is_finished", db.Bool, form.Text)
-	formList.AddField("Created_at", "created_at", db.Timestamp, form.Datetime)
-	formList.AddField("Updated_at", "updated_at", db.Timestamp, form.Datetime)
+	formList.AddField("序号", "id", db.Int4, form.Default).FieldHide().FieldNotAllowEdit().FieldNotAllowAdd()
+	formList.AddField("出借人", "creditor", db.Varchar, form.Text)
+	formList.AddField("项目简称", "abbreviation", db.Varchar, form.Text)
+	formList.AddField("借款本金", "loan_principal", db.Int8, form.Text).
+		FieldDisplay(showMoney).
+		FieldHelpMsg("单位:元").
+		FieldPostFilterFn(money2bigint)
+	formList.AddField("借款利率", "loan_rate", db.Int, form.Rate).FieldDisplay(showMoney).FieldPostFilterFn(money2bigint)
+	formList.AddField("借款合同号", "loan_contract_no", db.Varchar, form.Text)
+	formList.AddField("起息日", "loan_start_date", db.Date, form.Date)
+	formList.AddField("到期日", "loan_end_date", db.Date, form.Date)
+	formList.AddField("All_repaid_principal", "all_repaid_principal", db.Int8, form.Text).FieldHide().
+		FieldPostFilterFn(func(model types.PostFieldModel) interface{} {
+			if len(model.Value) == 0 || model.Value.Value() == "" {
+				return "0"
+			}
+			return model.Value.Value()
+		})
+	formList.AddField("All_repaid_interest", "all_repaid_interest", db.Int8, form.Text).FieldHide().
+		FieldPostFilterFn(func(model types.PostFieldModel) interface{} {
+			if len(model.Value) == 0 || model.Value.Value() == "" {
+				return "0"
+			}
+			return model.Value.Value()
+		})
+	formList.AddField("合同执行", "is_finished", db.Bool, form.Switch).
+		FieldOptions(
+			types.FieldOptions{
+				types.FieldOption{Text: "已结束", Value: "true"},
+				types.FieldOption{Text: "执行中", Value: "false"},
+			}).FieldDefault("false")
+	formList.AddField("Created_at", "created_at", db.Timestamp, form.Datetime).FieldHide().FieldNotAllowEdit().
+		FieldPostFilterFn(func(value types.PostFieldModel) interface{} {
+			if value.Value == nil {
+				return time.Now().Format("2006-01-02 15:04:05")
+			}
+			return value.Value.Value()
+		})
+	formList.AddField("Updated_at", "updated_at", db.Timestamp, form.Datetime).FieldHide().
+		FieldPostFilterFn(func(value types.PostFieldModel) interface{} {
+			return time.Now().Format("2006-01-02 15:04:05")
+		})
 
 	formList.SetTable("fzzl.shareholder_loan_contract").SetTitle("ShareholderLoanContract").SetDescription("ShareholderLoanContract")
 

@@ -1860,3 +1860,16 @@
 2020-08-08T10:18:44.409Z	logger/logger.go:321	[GoAdmin] [37;44m 200 [0m [37;104m GET   [0m /admin/info/shareholder_loan_contract
 2020-08-08T10:18:50.971Z	logger/logger.go:321	[GoAdmin] [37;44m 200 [0m [37;104m GET   [0m /admin/info/lease_contract
 2020-08-08T10:19:03.178Z	logger/logger.go:321	[GoAdmin] [37;44m 200 [0m [37;104m GET   [0m /admin/info/shareholder_loan_contract
+2020-08-08T11:54:33.152Z	logger/logger.go:321	[GoAdmin] [37;44m 200 [0m [37;104m GET   [0m /admin/login
+2020-08-08T11:54:40.490Z	logger/logger.go:321	[GoAdmin] [37;44m 200 [0m [37;104m POST   [0m /admin/signin
+2020-08-08T11:54:43.710Z	logger/logger.go:321	[GoAdmin] [37;44m 200 [0m [37;104m GET   [0m /admin/info/shareholder_loan_contract
+2020-08-08T11:54:49.865Z	logger/logger.go:321	[GoAdmin] [37;44m 200 [0m [37;104m GET   [0m /admin/info/shareholder_loan_contract/edit
+2020-08-08T11:54:55.602Z	logger/logger.go:321	[GoAdmin] [37;44m 200 [0m [37;104m GET   [0m /admin/info/lease_contract
+2020-08-08T11:54:57.377Z	logger/logger.go:321	[GoAdmin] [37;44m 200 [0m [37;104m GET   [0m /admin/info/lease_contract/edit
+2020-08-08T11:55:13.180Z	logger/logger.go:321	[GoAdmin] [37;44m 200 [0m [37;104m GET   [0m /admin/info/shareholder_loan_contract
+2020-08-08T11:55:16.813Z	logger/logger.go:321	[GoAdmin] [37;44m 200 [0m [37;104m GET   [0m /admin/info/shareholder_loan_contract/edit
+2020-08-08T11:55:56.565Z	logger/logger.go:321	[GoAdmin] [37;44m 200 [0m [37;104m GET   [0m /admin/info/shareholder_loan_contract
+2020-08-08T11:55:58.409Z	logger/logger.go:321	[GoAdmin] [37;44m 200 [0m [37;104m GET   [0m /admin/info/shareholder_loan_contract/new
+2020-08-08T11:56:59.767Z	logger/logger.go:321	[GoAdmin] [37;44m 200 [0m [37;104m POST   [0m /admin/new/shareholder_loan_contract
+2020-08-08T11:57:12.865Z	logger/logger.go:321	[GoAdmin] [37;44m 200 [0m [37;104m POST   [0m /admin/delete/shareholder_loan_contract
+2020-08-08T11:57:12.963Z	logger/logger.go:321	[GoAdmin] [37;44m 200 [0m [37;104m GET   [0m /admin/info/shareholder_loan_contract
