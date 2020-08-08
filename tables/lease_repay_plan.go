@@ -1,7 +1,7 @@
 package tables
 
 import (
-	"fmt"
+	// "fmt"
 	"time"
 
 	_ "gorm.io/driver/postgres"
@@ -118,7 +118,6 @@ func GetLeaseRepayPlanTable(ctx *context.Context) table.Table {
 	formList.AddField("创建时间", "created_at", db.Timestamp, form.Datetime).FieldHide().FieldNotAllowEdit()
 	formList.AddField("修改时间", "updated_at", db.Timestamp, form.Datetime).
 		FieldHide()
-
 
 	formList.SetUpdateFn(func(values form2.Values) (err error) {
 

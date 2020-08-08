@@ -1,21 +1,24 @@
 package tables
 
 import (
+	"errors"
 	"fmt"
-	// "strconv"
-	// "time"
+	"os"
+
+	"encoding/csv"
 
 	"github.com/GoAdminGroup/go-admin/context"
 	"github.com/GoAdminGroup/go-admin/modules/db"
 	"github.com/GoAdminGroup/go-admin/plugins/admin/modules/table"
+	"github.com/lekai63/lpr/models"
+	"github.com/spf13/cast"
 
-	// "github.com/GoAdminGroup/go-admin/template/types"
 	"github.com/GoAdminGroup/go-admin/template/types/form"
-	// "github.com/lekai63/lpr/models"
 
 	form2 "github.com/GoAdminGroup/go-admin/plugins/admin/modules/form"
 
-	"github.com/360EntSecGroup-Skylar/excelize"
+	_ "gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 func GetLeaseRepayPlanImportTable(ctx *context.Context) table.Table {
@@ -34,26 +37,77 @@ func GetLeaseRepayPlanImportTable(ctx *context.Context) table.Table {
 	// formList.SetUpdateFn()
 	// formList.SetInsertFn()
 
-	var f *excelize.File
+	var fileName string
 	formList.SetPostValidator(func(values form2.Values) (err error) {
 		if values["custom"] == nil {
 			err = fmt.Errorf("未上传文件")
 		} else {
-			fileName := "./uploads/" + values["custom"][0]
-			f, err = excelize.OpenFile(fileName)
-
+			fileName = "./uploads/" + values["custom"][0]
+			// f, err = ioutil.ReadFile(fileName)
 		}
 		return
 	})
 
-	formList.SetPostValidator(func(values form2.Values) error {
-		//   if values.Get("actual_amount") != (values.Get("actual_principal")+values.Get("actual_interest")) {
-		// 	  err = fmt.Errorf("实际还款金额≠实际还款本金+实际还款利息")
-		// 	  return
-		//   }
-		fmt.Printf("%s", values.Get("actual_amount"))
-		return nil
+	formList.SetInsertFn(func(values form2.Values) error {
+		// 对于小文件，一次性读取所有行
+		fs1, e := os.Open(fileName)
+		if e != nil {
+			return e
+		}
+		r := csv.NewReader(fs1)
+		content, e := r.ReadAll()
+		if e != nil {
+			e = fmt.Errorf("can not readall,err is %+v", e)
+			return e
+		}
 
+		// plans 定义要插入的模型数组,要传入指针，否则plans不会被更新
+		plans := make([]models.LeaseRepayPlan, len(content)-1)
+		// lc 存储项目简称，避免多次查询数据库
+		var lc struct {
+			ID   int32
+			Abbr string
+		}
+
+		dbGorm := models.Gormv2
+		for i := 1; i < len(content); i++ {
+			row := content[i]
+			// fmt.Println(row)
+			// 若项目简称相同，则不额外查询LeaseContract ID
+			if row[0] != lc.Abbr {
+				lc.Abbr = row[0]
+				result := dbGorm.Table("lease_contract").Select("ID").Where("Abbreviation = ?", lc.Abbr).Scan(&lc)
+				// fmt.Printf("lc struct is : %+v", lc)
+				if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+					return fmt.Errorf("未在《租赁合同》中查到对应项目简称，请先在《租赁合同》中新增相关合同。详细错误信息：%s", result.Error)
+				}
+
+			}
+			var p models.LeaseRepayPlan
+			// p := plans[i-1] 方式 实际是无法修改plans的，因为是值传递
+			// 参考 https://cloudsjhan.github.io/2018/10/27/技术周刊之golang中修改struct的slice的值/
+
+			p.LeaseContractID = lc.ID
+			p.Period.SetValid(cast.ToInt64(row[1]))
+			p.PlanDate, e = cast.StringToDate(row[2])
+			if e != nil {
+				return e
+			}
+			p.PlanAmount = cast.ToInt64(floatStr2BigintStr(row[3]))
+			p.PlanPrincipal = cast.ToInt64(floatStr2BigintStr(row[4]))
+			p.PlanInterest = cast.ToInt64(floatStr2BigintStr(row[5]))
+			// 修改plans的值
+			plans[i-1] = p
+
+		}
+		// fmt.Printf("Plans are:%+v", plans)
+		dbGorm.Create(&plans)
+
+		return nil
+	})
+
+	formList.SetUpdateFn(func(values form2.Values) error {
+		return nil
 	})
 
 	formList.SetTable("fzzl.lease_repay_plan").SetTitle("LeaseRepayPlan").SetDescription("LeaseRepayPlan")

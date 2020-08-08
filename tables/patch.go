@@ -46,6 +46,7 @@ func floatStr2BigintStr(val string) (result string) {
 		}
 
 	} else {
+		// 整数直接加四个0
 		result = val + "0000"
 	}
 	return

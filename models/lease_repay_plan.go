@@ -3,7 +3,8 @@ package models
 import (
 	"database/sql"
 	"errors"
-	"fmt"
+
+	// "fmt"
 	"time"
 
 	"github.com/guregu/null"

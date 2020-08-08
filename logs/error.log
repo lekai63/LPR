@@ -6997,3 +6997,302 @@ net/http.(*conn).serve(0xc0004bbc20, 0x1972aa0, 0xc0001e4e40)
 created by net/http.(*Server).Serve
 	/usr/lib/go-1.13/src/net/http/server.go:2928 +0x384
 
+2020-08-08T06:28:50.721Z	[31mERROR[0m	logger/logger.go:284	runtime error: index out of range [21] with length 21
+2020-08-08T06:28:50.722Z	[31mERROR[0m	logger/logger.go:284	goroutine 51 [running]:
+runtime/debug.Stack(0xc0002c4038, 0x1393e02, 0x0)
+	/usr/lib/go-1.13/src/runtime/debug/stack.go:24 +0x9d
+github.com/GoAdminGroup/go-admin/plugins/admin/controller.(*Handler).GlobalDeferHandler(0xc0003c4000, 0xc000425900)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/controller/handler.go:29 +0xc6
+panic(0x1393e80, 0xc000577e20)
+	/usr/lib/go-1.13/src/runtime/panic.go:679 +0x1b2
+github.com/lekai63/lpr/tables.GetLeaseRepayPlanImportTable.func2(0xc000512480, 0xc000512480, 0x1433c7c)
+	/home/lekai/code/lpr/tables/lease_repay_plan_import.go:72 +0x9e7
+github.com/GoAdminGroup/go-admin/plugins/admin/modules/table.(*DefaultTable).InsertData(0xc000425b80, 0xc000512480, 0x0, 0x0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/modules/table/default.go:805 +0x1d3
+github.com/GoAdminGroup/go-admin/plugins/admin/controller.(*Handler).NewForm(0xc0003c4000, 0xc000425900)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/controller/new.go:113 +0xfa
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc000425900)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/plugins/admin/modules/guard.(*Guard).NewForm(0xc0004fae40, 0xc000425900)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/modules/guard/new.go:120 +0x672
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc000425900)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/plugins/admin/modules/guard.(*Guard).CheckPrefix(0xc0004fae40, 0xc000425900)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/modules/guard/guard.go:51 +0x1ef
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc000425900)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/modules/auth.(*Invoker).Middleware.func1(0xc000425900)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/modules/auth/middleware.go:131 +0x343
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc000425900)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/plugins/admin.(*Admin).globalErrorHandler(0xc0003b8080, 0xc000425900)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/router.go:94 +0x82
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc000425900)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/adapter/gin.(*Gin).AddHandler.func1(0xc00050c000)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/adapter/gin/gin.go:90 +0x2a3
+github.com/gin-gonic/gin.(*Context).Next(0xc00050c000)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161 +0x3b
+github.com/gin-gonic/gin.RecoveryWithWriter.func1(0xc00050c000)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/recovery.go:83 +0x64
+github.com/gin-gonic/gin.(*Context).Next(0xc00050c000)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161 +0x3b
+github.com/gin-gonic/gin.LoggerWithConfig.func1(0xc00050c000)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/logger.go:241 +0xe1
+github.com/gin-gonic/gin.(*Context).Next(0xc00050c000)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161 +0x3b
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest(0xc00039c640, 0xc00050c000)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409 +0x66d
+github.com/gin-gonic/gin.(*Engine).ServeHTTP(0xc00039c640, 0x1967f80, 0xc0003a6540, 0xc0004b4000)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367 +0x14e
+net/http.serverHandler.ServeHTTP(0xc0003a60e0, 0x1967f80, 0xc0003a6540, 0xc0004b4000)
+	/usr/lib/go-1.13/src/net/http/server.go:2802 +0xa4
+net/http.(*conn).serve(0xc00020e820, 0x196f880, 0xc000500f80)
+	/usr/lib/go-1.13/src/net/http/server.go:1890 +0x875
+created by net/http.(*Server).Serve
+	/usr/lib/go-1.13/src/net/http/server.go:2928 +0x384
+
+2020-08-08T06:54:32.548Z	[31mERROR[0m	logger/logger.go:284	pq: syntax error at or near "."
+2020-08-08T06:54:32.549Z	[31mERROR[0m	logger/logger.go:284	goroutine 8 [running]:
+runtime/debug.Stack(0xc000010030, 0x1308102, 0x0)
+	/usr/lib/go-1.13/src/runtime/debug/stack.go:24 +0x9d
+github.com/GoAdminGroup/go-admin/plugins/admin/controller.(*Handler).GlobalDeferHandler(0xc0003fa120, 0xc0002140c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/controller/handler.go:29 +0xc6
+panic(0x1308140, 0xc0000dab40)
+	/usr/lib/go-1.13/src/runtime/panic.go:679 +0x1b2
+github.com/GoAdminGroup/go-admin/modules/db.CommonQuery(0xc00036a480, 0xc000328980, 0x39, 0xc00000f020, 0x2, 0x2, 0x0, 0x0, 0x0, 0x0, ...)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/modules/db/performer.go:20 +0x731
+github.com/GoAdminGroup/go-admin/modules/db.(*Postgresql).QueryWithConnection(0xc0003b1da0, 0x1422b0f, 0x7, 0xc000328880, 0x37, 0xc00000f020, 0x2, 0x2, 0x0, 0x0, ...)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/modules/db/postgresql.go:41 +0xd6
+github.com/GoAdminGroup/go-admin/plugins/admin/modules/table.(*DefaultTable).getDataFromDatabase(0xc0002144c0, 0xc00009e38b, 0x1, 0x1, 0xc00009e398, 0x2, 0xa, 0x141dcd9, 0x2, 0x2227e48, ...)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/modules/table/default.go:506 +0xbac
+github.com/GoAdminGroup/go-admin/plugins/admin/modules/table.(*DefaultTable).GetData(0xc0002144c0, 0xc00009e38b, 0x1, 0x1, 0xc00009e398, 0x2, 0xa, 0xc00009e3a2, 0x2, 0x2227e48, ...)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/modules/table/default.go:120 +0x9fc
+github.com/GoAdminGroup/go-admin/plugins/admin/controller.(*Handler).showTableData(0xc0003fa120, 0xc0002140c0, 0xc0000d81a9, 0x17, 0xc00009e38b, 0x1, 0x1, 0xc00009e398, 0x2, 0xa, ...)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/controller/show.go:71 +0x214
+github.com/GoAdminGroup/go-admin/plugins/admin/controller.(*Handler).showTable(0xc0003fa120, 0xc0002140c0, 0xc0000d81a9, 0x17, 0xc00009e38b, 0x1, 0x1, 0xc00009e398, 0x2, 0xa, ...)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/controller/show.go:101 +0xc2
+github.com/GoAdminGroup/go-admin/plugins/admin/controller.(*Handler).NewForm(0xc0003fa120, 0xc0002140c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/controller/new.go:158 +0x3c8
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc0002140c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/plugins/admin/modules/guard.(*Guard).NewForm(0xc0002e80f0, 0xc0002140c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/modules/guard/new.go:120 +0x672
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc0002140c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/plugins/admin/modules/guard.(*Guard).CheckPrefix(0xc0002e80f0, 0xc0002140c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/modules/guard/guard.go:51 +0x1ef
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc0002140c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/modules/auth.(*Invoker).Middleware.func1(0xc0002140c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/modules/auth/middleware.go:131 +0x343
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc0002140c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/plugins/admin.(*Admin).globalErrorHandler(0xc0003ea220, 0xc0002140c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/router.go:94 +0x82
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc0002140c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/adapter/gin.(*Gin).AddHandler.func1(0xc0001200f0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/adapter/gin/gin.go:90 +0x2a3
+github.com/gin-gonic/gin.(*Context).Next(0xc0001200f0)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161 +0x3b
+github.com/gin-gonic/gin.RecoveryWithWriter.func1(0xc0001200f0)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/recovery.go:83 +0x64
+github.com/gin-gonic/gin.(*Context).Next(0xc0001200f0)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161 +0x3b
+github.com/gin-gonic/gin.LoggerWithConfig.func1(0xc0001200f0)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/logger.go:241 +0xe1
+github.com/gin-gonic/gin.(*Context).Next(0xc0001200f0)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161 +0x3b
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest(0xc0003c8640, 0xc0001200f0)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409 +0x66d
+github.com/gin-gonic/gin.(*Engine).ServeHTTP(0xc0003c8640, 0x1967f80, 0xc0003d62a0, 0xc0002f6300)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367 +0x14e
+net/http.serverHandler.ServeHTTP(0xc0003d60e0, 0x1967f80, 0xc0003d62a0, 0xc0002f6300)
+	/usr/lib/go-1.13/src/net/http/server.go:2802 +0xa4
+net/http.(*conn).serve(0xc0003a9180, 0x196f880, 0xc000345200)
+	/usr/lib/go-1.13/src/net/http/server.go:1890 +0x875
+created by net/http.(*Server).Serve
+	/usr/lib/go-1.13/src/net/http/server.go:2928 +0x384
+
+2020-08-08T06:59:13.319Z	[31mERROR[0m	logger/logger.go:284	pq: syntax error at or near "."
+2020-08-08T06:59:13.320Z	[31mERROR[0m	logger/logger.go:284	goroutine 21 [running]:
+runtime/debug.Stack(0xc0002bc018, 0x1308102, 0x0)
+	/usr/lib/go-1.13/src/runtime/debug/stack.go:24 +0x9d
+github.com/GoAdminGroup/go-admin/plugins/admin/controller.(*Handler).GlobalDeferHandler(0xc000428120, 0xc00035c440)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/controller/handler.go:29 +0xc6
+panic(0x1308140, 0xc000314120)
+	/usr/lib/go-1.13/src/runtime/panic.go:679 +0x1b2
+github.com/GoAdminGroup/go-admin/modules/db.CommonQuery(0xc0003a4480, 0xc00003e300, 0x39, 0xc00000e0e0, 0x2, 0x2, 0x0, 0x0, 0x0, 0x0, ...)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/modules/db/performer.go:20 +0x731
+github.com/GoAdminGroup/go-admin/modules/db.(*Postgresql).QueryWithConnection(0xc0003e9b40, 0x1422b0f, 0x7, 0xc00003e180, 0x37, 0xc00000e0e0, 0x2, 0x2, 0x0, 0x0, ...)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/modules/db/postgresql.go:41 +0xd6
+github.com/GoAdminGroup/go-admin/plugins/admin/modules/table.(*DefaultTable).getDataFromDatabase(0xc0002d6080, 0xc00050a1ab, 0x1, 0x1, 0xc00050a1b8, 0x2, 0xa, 0x141dcd9, 0x2, 0x2228e48, ...)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/modules/table/default.go:506 +0xbac
+github.com/GoAdminGroup/go-admin/plugins/admin/modules/table.(*DefaultTable).GetData(0xc0002d6080, 0xc00050a1ab, 0x1, 0x1, 0xc00050a1b8, 0x2, 0xa, 0xc00050a1c2, 0x2, 0x2228e48, ...)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/modules/table/default.go:120 +0x9fc
+github.com/GoAdminGroup/go-admin/plugins/admin/controller.(*Handler).showTableData(0xc000428120, 0xc00035c440, 0xc000504089, 0x17, 0xc00050a1ab, 0x1, 0x1, 0xc00050a1b8, 0x2, 0xa, ...)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/controller/show.go:71 +0x214
+github.com/GoAdminGroup/go-admin/plugins/admin/controller.(*Handler).showTable(0xc000428120, 0xc00035c440, 0xc000504089, 0x17, 0xc00050a1ab, 0x1, 0x1, 0xc00050a1b8, 0x2, 0xa, ...)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/controller/show.go:101 +0xc2
+github.com/GoAdminGroup/go-admin/plugins/admin/controller.(*Handler).NewForm(0xc000428120, 0xc00035c440)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/controller/new.go:158 +0x3c8
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc00035c440)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/plugins/admin/modules/guard.(*Guard).NewForm(0xc0004b8cc0, 0xc00035c440)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/modules/guard/new.go:120 +0x672
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc00035c440)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/plugins/admin/modules/guard.(*Guard).CheckPrefix(0xc0004b8cc0, 0xc00035c440)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/modules/guard/guard.go:51 +0x1ef
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc00035c440)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/modules/auth.(*Invoker).Middleware.func1(0xc00035c440)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/modules/auth/middleware.go:131 +0x343
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc00035c440)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/plugins/admin.(*Admin).globalErrorHandler(0xc0004241c0, 0xc00035c440)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/router.go:94 +0x82
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc00035c440)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/adapter/gin.(*Gin).AddHandler.func1(0xc0004f4000)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/adapter/gin/gin.go:90 +0x2a3
+github.com/gin-gonic/gin.(*Context).Next(0xc0004f4000)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161 +0x3b
+github.com/gin-gonic/gin.RecoveryWithWriter.func1(0xc0004f4000)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/recovery.go:83 +0x64
+github.com/gin-gonic/gin.(*Context).Next(0xc0004f4000)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161 +0x3b
+github.com/gin-gonic/gin.LoggerWithConfig.func1(0xc0004f4000)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/logger.go:241 +0xe1
+github.com/gin-gonic/gin.(*Context).Next(0xc0004f4000)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161 +0x3b
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest(0xc000402640, 0xc0004f4000)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409 +0x66d
+github.com/gin-gonic/gin.(*Engine).ServeHTTP(0xc000402640, 0x19680a0, 0xc0004d00e0, 0xc0002fac00)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367 +0x14e
+net/http.serverHandler.ServeHTTP(0xc00040a0e0, 0x19680a0, 0xc0004d00e0, 0xc0002fac00)
+	/usr/lib/go-1.13/src/net/http/server.go:2802 +0xa4
+net/http.(*conn).serve(0xc0003ec0a0, 0x196f9a0, 0xc0001e4000)
+	/usr/lib/go-1.13/src/net/http/server.go:1890 +0x875
+created by net/http.(*Server).Serve
+	/usr/lib/go-1.13/src/net/http/server.go:2928 +0x384
+
+2020-08-08T07:13:49.728Z	[31mERROR[0m	logger/logger.go:284	runtime error: invalid memory address or nil pointer dereference
+2020-08-08T07:13:49.729Z	[31mERROR[0m	logger/logger.go:284	goroutine 22 [running]:
+runtime/debug.Stack(0xc0002da028, 0x12efe02, 0x0)
+	/usr/lib/go-1.13/src/runtime/debug/stack.go:24 +0x9d
+github.com/GoAdminGroup/go-admin/plugins/admin/controller.(*Handler).GlobalDeferHandler(0xc0003d00c0, 0xc0000820c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/controller/handler.go:29 +0xc6
+panic(0x12efec0, 0x1fc5ed0)
+	/usr/lib/go-1.13/src/runtime/panic.go:679 +0x1b2
+github.com/lekai63/lpr/tables.GetLeaseRepayPlanImportTable.func2(0xc0002d58c0, 0xc0002d58c0, 0x1433c8e)
+	/home/lekai/code/lpr/tables/lease_repay_plan_import.go:81 +0x6f1
+github.com/GoAdminGroup/go-admin/plugins/admin/modules/table.(*DefaultTable).InsertData(0xc000082400, 0xc0002d58c0, 0x0, 0x0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/modules/table/default.go:805 +0x1d3
+github.com/GoAdminGroup/go-admin/plugins/admin/controller.(*Handler).NewForm(0xc0003d00c0, 0xc0000820c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/controller/new.go:113 +0xfa
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc0000820c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/plugins/admin/modules/guard.(*Guard).NewForm(0xc00042cde0, 0xc0000820c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/modules/guard/new.go:120 +0x672
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc0000820c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/plugins/admin/modules/guard.(*Guard).CheckPrefix(0xc00042cde0, 0xc0000820c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/modules/guard/guard.go:51 +0x1ef
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc0000820c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/modules/auth.(*Invoker).Middleware.func1(0xc0000820c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/modules/auth/middleware.go:131 +0x343
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc0000820c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/plugins/admin.(*Admin).globalErrorHandler(0xc0003d8080, 0xc0000820c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/router.go:94 +0x82
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc0000820c0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/adapter/gin.(*Gin).AddHandler.func1(0xc00015e0f0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/adapter/gin/gin.go:90 +0x2a3
+github.com/gin-gonic/gin.(*Context).Next(0xc00015e0f0)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161 +0x3b
+github.com/gin-gonic/gin.RecoveryWithWriter.func1(0xc00015e0f0)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/recovery.go:83 +0x64
+github.com/gin-gonic/gin.(*Context).Next(0xc00015e0f0)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161 +0x3b
+github.com/gin-gonic/gin.LoggerWithConfig.func1(0xc00015e0f0)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/logger.go:241 +0xe1
+github.com/gin-gonic/gin.(*Context).Next(0xc00015e0f0)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161 +0x3b
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest(0xc0003ba640, 0xc00015e0f0)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409 +0x66d
+github.com/gin-gonic/gin.(*Engine).ServeHTTP(0xc0003ba640, 0x1967fe0, 0xc0003c22a0, 0xc00015c000)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367 +0x14e
+net/http.serverHandler.ServeHTTP(0xc0003c20e0, 0x1967fe0, 0xc0003c22a0, 0xc00015c000)
+	/usr/lib/go-1.13/src/net/http/server.go:2802 +0xa4
+net/http.(*conn).serve(0xc00037a0a0, 0x196f8e0, 0xc000214000)
+	/usr/lib/go-1.13/src/net/http/server.go:1890 +0x875
+created by net/http.(*Server).Serve
+	/usr/lib/go-1.13/src/net/http/server.go:2928 +0x384
+
+2020-08-08T09:53:47.160Z	[31mERROR[0m	logger/logger.go:284	pq: syntax error at or near "."
+2020-08-08T09:53:47.162Z	[31mERROR[0m	logger/logger.go:284	goroutine 37 [running]:
+runtime/debug.Stack(0xc0004b0010, 0x1308102, 0x0)
+	/usr/lib/go-1.13/src/runtime/debug/stack.go:24 +0x9d
+github.com/GoAdminGroup/go-admin/plugins/admin/controller.(*Handler).GlobalDeferHandler(0xc0002b5f20, 0xc0003e0440)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/controller/handler.go:29 +0xc6
+panic(0x1308180, 0xc0005065a0)
+	/usr/lib/go-1.13/src/runtime/panic.go:679 +0x1b2
+github.com/GoAdminGroup/go-admin/modules/db.CommonQuery(0xc000358480, 0xc000291b80, 0x39, 0xc000575bc0, 0x2, 0x2, 0x0, 0x0, 0x0, 0x0, ...)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/modules/db/performer.go:20 +0x731
+github.com/GoAdminGroup/go-admin/modules/db.(*Postgresql).QueryWithConnection(0xc0003ab5c0, 0x1422b4f, 0x7, 0xc000291a80, 0x37, 0xc000575bc0, 0x2, 0x2, 0x0, 0x0, ...)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/modules/db/postgresql.go:41 +0xd6
+github.com/GoAdminGroup/go-admin/plugins/admin/modules/table.(*DefaultTable).getDataFromDatabase(0xc0003e0cc0, 0xc0001acd4b, 0x1, 0x1, 0xc0001acd58, 0x2, 0xa, 0x141dd19, 0x2, 0x2228e48, ...)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/modules/table/default.go:506 +0xbac
+github.com/GoAdminGroup/go-admin/plugins/admin/modules/table.(*DefaultTable).GetData(0xc0003e0cc0, 0xc0001acd4b, 0x1, 0x1, 0xc0001acd58, 0x2, 0xa, 0xc0001acd62, 0x2, 0x2228e48, ...)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/modules/table/default.go:120 +0x9fc
+github.com/GoAdminGroup/go-admin/plugins/admin/controller.(*Handler).showTableData(0xc0002b5f20, 0xc0003e0440, 0xc0002d3349, 0x17, 0xc0001acd4b, 0x1, 0x1, 0xc0001acd58, 0x2, 0xa, ...)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/controller/show.go:71 +0x214
+github.com/GoAdminGroup/go-admin/plugins/admin/controller.(*Handler).showTable(0xc0002b5f20, 0xc0003e0440, 0xc0002d3349, 0x17, 0xc0001acd4b, 0x1, 0x1, 0xc0001acd58, 0x2, 0xa, ...)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/controller/show.go:101 +0xc2
+github.com/GoAdminGroup/go-admin/plugins/admin/controller.(*Handler).NewForm(0xc0002b5f20, 0xc0003e0440)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/controller/new.go:158 +0x3c8
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc0003e0440)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/plugins/admin/modules/guard.(*Guard).NewForm(0xc00050ede0, 0xc0003e0440)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/modules/guard/new.go:120 +0x672
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc0003e0440)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/plugins/admin/modules/guard.(*Guard).CheckPrefix(0xc00050ede0, 0xc0003e0440)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/modules/guard/guard.go:51 +0x1ef
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc0003e0440)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/modules/auth.(*Invoker).Middleware.func1(0xc0003e0440)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/modules/auth/middleware.go:131 +0x343
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc0003e0440)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/plugins/admin.(*Admin).globalErrorHandler(0xc0003abda0, 0xc0003e0440)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/plugins/admin/router.go:94 +0x82
+github.com/GoAdminGroup/go-admin/context.(*Context).Next(0xc0003e0440)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/context/context.go:100 +0x44
+github.com/GoAdminGroup/go-admin/adapter/gin.(*Gin).AddHandler.func1(0xc0001f40f0)
+	/home/lekai/go/pkg/mod/github.com/!go!admin!group/go-admin@v1.2.14/adapter/gin/gin.go:90 +0x2a3
+github.com/gin-gonic/gin.(*Context).Next(0xc0001f40f0)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161 +0x3b
+github.com/gin-gonic/gin.RecoveryWithWriter.func1(0xc0001f40f0)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/recovery.go:83 +0x64
+github.com/gin-gonic/gin.(*Context).Next(0xc0001f40f0)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161 +0x3b
+github.com/gin-gonic/gin.LoggerWithConfig.func1(0xc0001f40f0)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/logger.go:241 +0xe1
+github.com/gin-gonic/gin.(*Context).Next(0xc0001f40f0)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/context.go:161 +0x3b
+github.com/gin-gonic/gin.(*Engine).handleHTTPRequest(0xc0003c2640, 0xc0001f40f0)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:409 +0x66d
+github.com/gin-gonic/gin.(*Engine).ServeHTTP(0xc0003c2640, 0x1968140, 0xc0001c4380, 0xc000475800)
+	/home/lekai/go/pkg/mod/github.com/gin-gonic/gin@v1.6.3/gin.go:367 +0x14e
+net/http.serverHandler.ServeHTTP(0xc0003ca0e0, 0x1968140, 0xc0001c4380, 0xc000475800)
+	/usr/lib/go-1.13/src/net/http/server.go:2802 +0xa4
+net/http.(*conn).serve(0xc00038a0a0, 0x196fa40, 0xc0002da5c0)
+	/usr/lib/go-1.13/src/net/http/server.go:1890 +0x875
+created by net/http.(*Server).Serve
+	/usr/lib/go-1.13/src/net/http/server.go:2928 +0x384
+
