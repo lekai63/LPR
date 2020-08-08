@@ -79,7 +79,8 @@ func GetLeaseContractTable(ctx *context.Context) table.Table {
 	formList := leaseContract.GetForm()
 	formList.AddField("序号", "id", db.Int, form.Number).FieldHide().FieldNotAllowEdit().FieldNotAllowAdd()
 	formList.AddField("合同号", "contract_no", db.Varchar, form.Text)
-	formList.AddField("承租人全称", "lessee", db.Varchar, form.Text)
+	formList.AddField("承租人全称", "lessee", db.Varchar, form.SelectSingle).
+		FieldOptionsFromTable("lessee_info", "lessee", "lessee")
 	formList.AddField("项目简称", "abbreviation", db.Varchar, form.Text)
 	formList.AddField("起始日", "start_date", db.Date, form.Date)
 	formList.AddField("到期日", "end_date", db.Date, form.Date)
@@ -165,7 +166,7 @@ func GetLeaseContractTable(ctx *context.Context) table.Table {
 	formList.SetPostValidator(func(values form2.Values) error {
 
 		// 校验承租人名称
-		if err := dbGorm.Where("lessee = $1", values.Get("lessee")).First(&lesseeInfoGorm).Error; err != nil {
+		if err := dbGorm.Where("lessee = ?", values.Get("lessee")).First(&lesseeInfoGorm).Error; err != nil {
 			return err
 		}
 
