@@ -1,10 +1,12 @@
-# dlv远程调试
+# 个人记录
+
+## dlv远程调试
 
 ```
 ~/go/bin/dlv debug --headless --listen ":2345" --log --api-version 2
 ```
 
-# use smallnest/gen to generate codes
+## use smallnest/gen to generate codes
 
 ```
 ~/go/bin/gen --sqltype=postgres \
@@ -21,7 +23,7 @@
    	--overwrite
 ```
 
-# postgres 操作
+## postgres 操作
 
 ```
 // 查看所有sequence
@@ -30,6 +32,11 @@ SELECT c.relname FROM pg_class c WHERE c.relkind = 'S';
 alter sequence lease_contract_id_seq restart with 39;
 // 删除记录
 delete from xx_table where id = 9999 ;
+```
+
+## 调整时区
+```
+sudo timedatectl set-timezone 'Asia/Shanghai'
 ```
 
 # GoAdmin 介绍
