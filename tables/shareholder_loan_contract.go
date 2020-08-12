@@ -96,6 +96,15 @@ func GetShareholderLoanContractTable(ctx *context.Context) table.Table {
 			return time.Now().Format("2006-01-02 15:04:05")
 		})
 
+	//	formList.AddField("对应的lease_contract_ids", "lease_contract_ids", db.Varchar, form.Array)
+	// form.Array 还不成熟,尽量以 form.Select 替代
+	formList.AddField("对应的lease_contract_ids", "lease_contract_ids", db.Int, form.Select).FieldOptionsFromTable("lease_contract", "abbreviation", "id").
+		FieldPostFilterFn(func(value types.PostFieldModel) interface{} {
+			val := value.Value
+			// 考虑到 既有数值的显示等，不使用简单的array转string +{} 存储，而是用 gorm处理
+			return "{" + val + "}"
+		})
+
 	formList.SetTable("fzzl.shareholder_loan_contract").SetTitle("ShareholderLoanContract").SetDescription("ShareholderLoanContract")
 
 	return shareholderLoanContract
