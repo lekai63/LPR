@@ -10,9 +10,13 @@ import (
 
 var (
 	Gormv2 *gorm.DB
+
+	GlobalConn db.Connection
 )
 
 func InitGormv2(c db.Connection) {
+	// 赋值全局数据库连接
+	GlobalConn = c
 	tables = make(map[string]*TableInfo)
 	tables["lease_contract"] = lease_contractTableInfo
 	tables["lease_repay_plan"] = lease_repay_planTableInfo

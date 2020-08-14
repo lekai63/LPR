@@ -123,7 +123,7 @@ func GetShareholderLoanContract(w http.ResponseWriter, r *http.Request, ps httpr
 // @Failure 400 {object} api.HTTPError
 // @Failure 404 {object} api.HTTPError
 // @Router /shareholderloancontract [post]
-// echo '{"loan_rate": 74,"loan_contract_no": "FapEgsCAxOJqSSOoSbVEkRkbQ","loan_start_date": "2092-01-08T05:22:46.577368818Z","is_finished": true,"abbreviation": "CGciHHgunjEEahQTQoCuqjsKu","creditor": "XwjsrCMTjUnOnxxGjufFYIJUi","loan_principal": 29,"loan_end_date": "2145-11-09T06:45:39.167096431Z","all_repaid_principal": 61,"all_repaid_interest": 90,"created_at": "2191-01-07T16:50:27.147232762Z","updated_at": "2292-06-16T15:34:16.377053985Z","id": 67}' | http POST "http://localhost:8080/shareholderloancontract" X-Api-User:user123
+// echo '{"abbreviation": "quQgIdJkfZqspZPDmVIKyvKcH","loan_rate": 20,"loan_contract_no": "OlJnOsAonuTcnsTrmnZNBvybr","all_repaid_principal": 99,"created_at": "2068-11-05T12:33:11.594084599+08:00","updated_at": "2275-07-26T05:57:44.150039016+08:00","id": 64,"creditor": "gwGudmyaueKhKTdXvhGcmFbWO","loan_principal": 38,"loan_start_date": "2187-04-27T17:57:19.022824796+08:00","loan_end_date": "2270-10-17T09:08:02.995601011+08:00","all_repaid_interest": 89,"is_finished": false}' | http POST "http://localhost:8080/shareholderloancontract" X-Api-User:user123
 func AddShareholderLoanContract(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	ctx := initializeContext(r)
 	shareholderloancontract := &model.ShareholderLoanContract{}
@@ -171,7 +171,7 @@ func AddShareholderLoanContract(w http.ResponseWriter, r *http.Request, ps httpr
 // @Failure 400 {object} api.HTTPError
 // @Failure 404 {object} api.HTTPError
 // @Router /shareholderloancontract/{argId} [patch]
-// echo '{"loan_rate": 74,"loan_contract_no": "FapEgsCAxOJqSSOoSbVEkRkbQ","loan_start_date": "2092-01-08T05:22:46.577368818Z","is_finished": true,"abbreviation": "CGciHHgunjEEahQTQoCuqjsKu","creditor": "XwjsrCMTjUnOnxxGjufFYIJUi","loan_principal": 29,"loan_end_date": "2145-11-09T06:45:39.167096431Z","all_repaid_principal": 61,"all_repaid_interest": 90,"created_at": "2191-01-07T16:50:27.147232762Z","updated_at": "2292-06-16T15:34:16.377053985Z","id": 67}' | http PUT "http://localhost:8080/shareholderloancontract/1"  X-Api-User:user123
+// echo '{"abbreviation": "quQgIdJkfZqspZPDmVIKyvKcH","loan_rate": 20,"loan_contract_no": "OlJnOsAonuTcnsTrmnZNBvybr","all_repaid_principal": 99,"created_at": "2068-11-05T12:33:11.594084599+08:00","updated_at": "2275-07-26T05:57:44.150039016+08:00","id": 64,"creditor": "gwGudmyaueKhKTdXvhGcmFbWO","loan_principal": 38,"loan_start_date": "2187-04-27T17:57:19.022824796+08:00","loan_end_date": "2270-10-17T09:08:02.995601011+08:00","all_repaid_interest": 89,"is_finished": false}' | http PUT "http://localhost:8080/shareholderloancontract/1"  X-Api-User:user123
 func UpdateShareholderLoanContract(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	ctx := initializeContext(r)
 

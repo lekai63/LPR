@@ -123,7 +123,7 @@ func GetShareholderLoanRepaidRecord(w http.ResponseWriter, r *http.Request, ps h
 // @Failure 400 {object} api.HTTPError
 // @Failure 404 {object} api.HTTPError
 // @Router /shareholderloanrepaidrecord [post]
-// echo '{"repaid_date": "2213-08-10T06:59:14.117979857Z","repaid_amount": 72,"repaid_principal": 54,"repaid_interest": 89,"shareholder_loan_contract_id": 7,"created_at": "2192-05-15T09:36:24.801207669Z","updated_at": "2021-05-12T15:35:15.000010522Z","id": 13}' | http POST "http://localhost:8080/shareholderloanrepaidrecord" X-Api-User:user123
+// echo '{"created_at": "2260-09-27T05:42:50.384349782+08:00","updated_at": "2025-02-10T10:24:54.026179139+08:00","id": 83,"repaid_date": "2059-07-14T11:05:52.232246349+08:00","repaid_amount": 91,"repaid_principal": 43,"repaid_interest": 52,"shareholder_loan_contract_id": 15}' | http POST "http://localhost:8080/shareholderloanrepaidrecord" X-Api-User:user123
 func AddShareholderLoanRepaidRecord(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	ctx := initializeContext(r)
 	shareholderloanrepaidrecord := &model.ShareholderLoanRepaidRecord{}
@@ -171,7 +171,7 @@ func AddShareholderLoanRepaidRecord(w http.ResponseWriter, r *http.Request, ps h
 // @Failure 400 {object} api.HTTPError
 // @Failure 404 {object} api.HTTPError
 // @Router /shareholderloanrepaidrecord/{argId} [patch]
-// echo '{"repaid_date": "2213-08-10T06:59:14.117979857Z","repaid_amount": 72,"repaid_principal": 54,"repaid_interest": 89,"shareholder_loan_contract_id": 7,"created_at": "2192-05-15T09:36:24.801207669Z","updated_at": "2021-05-12T15:35:15.000010522Z","id": 13}' | http PUT "http://localhost:8080/shareholderloanrepaidrecord/1"  X-Api-User:user123
+// echo '{"created_at": "2260-09-27T05:42:50.384349782+08:00","updated_at": "2025-02-10T10:24:54.026179139+08:00","id": 83,"repaid_date": "2059-07-14T11:05:52.232246349+08:00","repaid_amount": 91,"repaid_principal": 43,"repaid_interest": 52,"shareholder_loan_contract_id": 15}' | http PUT "http://localhost:8080/shareholderloanrepaidrecord/1"  X-Api-User:user123
 func UpdateShareholderLoanRepaidRecord(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	ctx := initializeContext(r)
 

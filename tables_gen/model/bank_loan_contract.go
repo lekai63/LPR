@@ -22,36 +22,37 @@ DB Table Details
 
 Table: bank_loan_contract
 [ 0] id                                             INT4                 null: false  primary: true   isArray: false  auto: true   col: INT4            len: -1      default: []
-[ 1] lease_contract_id                              INT4                 null: true   primary: false  isArray: false  auto: false  col: INT4            len: -1      default: []
-[ 2] bank_contract_no                               VARCHAR(255)         null: true   primary: false  isArray: false  auto: false  col: VARCHAR         len: 255     default: []
-[ 3] bank_contract_name                             VARCHAR(255)         null: true   primary: false  isArray: false  auto: false  col: VARCHAR         len: 255     default: []
-[ 4] bank_account                                   VARCHAR(255)         null: true   primary: false  isArray: false  auto: false  col: VARCHAR         len: 255     default: []
-[ 5] interest_calc_method                           VARCHAR(255)         null: true   primary: false  isArray: false  auto: false  col: VARCHAR         len: 255     default: []
-[ 6] bank_name                                      VARCHAR(255)         null: false  primary: false  isArray: false  auto: false  col: VARCHAR         len: 255     default: []
-[ 7] bank_branch                                    VARCHAR(255)         null: true   primary: false  isArray: false  auto: false  col: VARCHAR         len: 255     default: []
-[ 8] loan_principal                                 INT8                 null: false  primary: false  isArray: false  auto: false  col: INT8            len: -1      default: []
-[ 9] loan_method                                    VARCHAR(255)         null: true   primary: false  isArray: false  auto: false  col: VARCHAR         len: 255     default: []
-[10] contract_start_date                            DATE                 null: true   primary: false  isArray: false  auto: false  col: DATE            len: -1      default: []
-[11] contract_end_date                              DATE                 null: true   primary: false  isArray: false  auto: false  col: DATE            len: -1      default: []
-[12] actual_start_date                              DATE                 null: true   primary: false  isArray: false  auto: false  col: DATE            len: -1      default: []
-[13] is_lpr                                         BOOL                 null: true   primary: false  isArray: false  auto: false  col: BOOL            len: -1      default: []
-[14] current_reprice_day                            DATE                 null: true   primary: false  isArray: false  auto: false  col: DATE            len: -1      default: []
-[15] current_lpr                                    INT4                 null: true   primary: false  isArray: false  auto: false  col: INT4            len: -1      default: []
-[16] lpr_plus                                       INT4                 null: true   primary: false  isArray: false  auto: false  col: INT4            len: -1      default: []
-[17] current_rate                                   INT4                 null: false  primary: false  isArray: false  auto: false  col: INT4            len: -1      default: []
-[18] next_reprice_day                               DATE                 null: true   primary: false  isArray: false  auto: false  col: DATE            len: -1      default: []
-[19] all_repaid_principal                           INT8                 null: true   primary: false  isArray: false  auto: false  col: INT8            len: -1      default: []
-[20] all_repaid_interest                            INT8                 null: true   primary: false  isArray: false  auto: false  col: INT8            len: -1      default: []
-[21] is_finished                                    BOOL                 null: true   primary: false  isArray: false  auto: false  col: BOOL            len: -1      default: []
-[22] contact_person                                 VARCHAR(255)         null: true   primary: false  isArray: false  auto: false  col: VARCHAR         len: 255     default: []
-[23] contact_tel                                    VARCHAR(50)          null: true   primary: false  isArray: false  auto: false  col: VARCHAR         len: 50      default: []
-[24] created_at                                     TIMESTAMP            null: false  primary: false  isArray: false  auto: false  col: TIMESTAMP       len: -1      default: []
-[25] updated_at                                     TIMESTAMP            null: false  primary: false  isArray: false  auto: false  col: TIMESTAMP       len: -1      default: []
+[ 1] bank_contract_no                               VARCHAR(255)         null: true   primary: false  isArray: false  auto: false  col: VARCHAR         len: 255     default: []
+[ 2] bank_contract_name                             VARCHAR(255)         null: true   primary: false  isArray: false  auto: false  col: VARCHAR         len: 255     default: []
+[ 3] bank_account                                   VARCHAR(255)         null: true   primary: false  isArray: false  auto: false  col: VARCHAR         len: 255     default: []
+[ 4] interest_calc_method                           VARCHAR(255)         null: true   primary: false  isArray: false  auto: false  col: VARCHAR         len: 255     default: []
+[ 5] bank_name                                      VARCHAR(255)         null: false  primary: false  isArray: false  auto: false  col: VARCHAR         len: 255     default: []
+[ 6] bank_branch                                    VARCHAR(255)         null: true   primary: false  isArray: false  auto: false  col: VARCHAR         len: 255     default: []
+[ 7] loan_principal                                 INT8                 null: false  primary: false  isArray: false  auto: false  col: INT8            len: -1      default: []
+[ 8] loan_method                                    VARCHAR(255)         null: true   primary: false  isArray: false  auto: false  col: VARCHAR         len: 255     default: []
+[ 9] contract_start_date                            DATE                 null: true   primary: false  isArray: false  auto: false  col: DATE            len: -1      default: []
+[10] contract_end_date                              DATE                 null: true   primary: false  isArray: false  auto: false  col: DATE            len: -1      default: []
+[11] actual_start_date                              DATE                 null: true   primary: false  isArray: false  auto: false  col: DATE            len: -1      default: []
+[12] is_lpr                                         BOOL                 null: true   primary: false  isArray: false  auto: false  col: BOOL            len: -1      default: []
+[13] current_reprice_day                            DATE                 null: true   primary: false  isArray: false  auto: false  col: DATE            len: -1      default: []
+[14] current_lpr                                    INT4                 null: true   primary: false  isArray: false  auto: false  col: INT4            len: -1      default: []
+[15] lpr_plus                                       INT4                 null: true   primary: false  isArray: false  auto: false  col: INT4            len: -1      default: []
+[16] current_rate                                   INT4                 null: false  primary: false  isArray: false  auto: false  col: INT4            len: -1      default: []
+[17] next_reprice_day                               DATE                 null: true   primary: false  isArray: false  auto: false  col: DATE            len: -1      default: []
+[18] all_repaid_principal                           INT8                 null: true   primary: false  isArray: false  auto: false  col: INT8            len: -1      default: []
+[19] all_repaid_interest                            INT8                 null: true   primary: false  isArray: false  auto: false  col: INT8            len: -1      default: []
+[20] is_finished                                    BOOL                 null: true   primary: false  isArray: false  auto: false  col: BOOL            len: -1      default: []
+[21] contact_person                                 VARCHAR(255)         null: true   primary: false  isArray: false  auto: false  col: VARCHAR         len: 255     default: []
+[22] contact_tel                                    VARCHAR(50)          null: true   primary: false  isArray: false  auto: false  col: VARCHAR         len: 50      default: []
+[23] created_at                                     TIMESTAMP            null: false  primary: false  isArray: false  auto: false  col: TIMESTAMP       len: -1      default: []
+[24] updated_at                                     TIMESTAMP            null: false  primary: false  isArray: false  auto: false  col: TIMESTAMP       len: -1      default: []
+[25] lease_contract_ids                             _INT4                null: true   primary: false  isArray: false  auto: false  col: _INT4           len: -1      default: []
+[26] abbreviation                                   VARCHAR(255)         null: true   primary: false  isArray: false  auto: false  col: VARCHAR         len: 255     default: []
 
 
 JSON Sample
 -------------------------------------
-{    "updated_at": "2256-03-05T04:48:12.728069936Z",    "bank_branch": "nSpcnebeejEROBXQPGkGRudDW",    "loan_method": "osceXdoUpXtMDDvoZbMnBRPjv",    "contract_end_date": "2160-05-28T15:06:14.640345944Z",    "bank_account": "GULpfKwHPBPCOGGhFpXfiEJPg",    "contract_start_date": "2158-10-16T01:57:11.075148375Z",    "actual_start_date": "2248-01-16T13:01:58.291957537Z",    "is_lpr": true,    "current_reprice_day": "2070-06-08T03:29:31.098285897Z",    "current_lpr": 43,    "bank_contract_no": "NjvsSUtingPieqcliYdCvjVgH",    "bank_contract_name": "AsDYDIJHPlSFJERjcrGgncbin",    "interest_calc_method": "SDexZKvrRawdhYmTKBGkuIATP",    "contact_tel": "jQoPgKUglteidwSNYThwGOLwk",    "current_rate": 25,    "all_repaid_interest": 98,    "is_finished": true,    "loan_principal": 56,    "lpr_plus": 51,    "next_reprice_day": "2124-10-05T13:36:53.442867265Z",    "all_repaid_principal": 14,    "contact_person": "ekqcTkbYNOuDaTGUoxueCYGZD",    "id": 15,    "lease_contract_id": 35,    "bank_name": "CTgYtxVhiQCWowmsXncKKAGOw",    "created_at": "2098-08-23T10:17:04.730191942Z"}
+{    "current_rate": 1,    "bank_contract_no": "sJsajtmIQnpIKxKbcZnLsAfCC",    "bank_contract_name": "VFmlSvbKiwDFVqfwqeoCFURmr",    "bank_account": "ABOjtDqlybfLJyahNysRhpUWp",    "interest_calc_method": "gcROWmJQUQXoFqwWqMnQLKiJJ",    "bank_branch": "CIACbFbmxVdZOkvwBhEPVrbmp",    "actual_start_date": "2277-01-03T15:08:39.431436264+08:00",    "is_lpr": false,    "next_reprice_day": "2064-02-21T10:00:57.984833642+08:00",    "contact_tel": "aLmVvVSRxqxHUXRurhcYWXcit",    "loan_principal": 37,    "lpr_plus": 94,    "all_repaid_interest": 59,    "created_at": "2059-03-28T09:58:46.074852553+08:00",    "loan_method": "lqpfIqojWtRcfMZBnvvfYJxJt",    "contract_start_date": "2274-02-06T17:25:21.568012162+08:00",    "current_reprice_day": "2117-08-15T06:49:11.902059821+08:00",    "current_lpr": 70,    "all_repaid_principal": 54,    "updated_at": "2277-07-27T14:08:38.371517806+08:00",    "id": 24,    "bank_name": "EySWauRTiAOCMfaMCYPUvmfom",    "contract_end_date": "2069-02-18T01:28:33.54842673+08:00",    "is_finished": false,    "contact_person": "HwlaBkXnZTELbYZPKdOWbZxRa",    "lease_contract_ids": "oGQVxPujjXKlnhJRPjdkfDrCn"}
 
 
 
@@ -61,56 +62,56 @@ JSON Sample
 type BankLoanContract struct {
 	//[ 0] id                                             INT4                 null: false  primary: true   isArray: false  auto: true   col: INT4            len: -1      default: []
 	ID int32 `gorm:"primary_key;AUTO_INCREMENT;column:id;type:INT4;" json:"id"`
-	//[ 1] lease_contract_id                              INT4                 null: true   primary: false  isArray: false  auto: false  col: INT4            len: -1      default: []
-	LeaseContractID null.Int `gorm:"column:lease_contract_id;type:INT4;" json:"lease_contract_id"`
-	//[ 2] bank_contract_no                               VARCHAR(255)         null: true   primary: false  isArray: false  auto: false  col: VARCHAR         len: 255     default: []
+	//[ 1] bank_contract_no                               VARCHAR(255)         null: true   primary: false  isArray: false  auto: false  col: VARCHAR         len: 255     default: []
 	BankContractNo null.String `gorm:"column:bank_contract_no;type:VARCHAR;size:255;" json:"bank_contract_no"`
-	//[ 3] bank_contract_name                             VARCHAR(255)         null: true   primary: false  isArray: false  auto: false  col: VARCHAR         len: 255     default: []
+	//[ 2] bank_contract_name                             VARCHAR(255)         null: true   primary: false  isArray: false  auto: false  col: VARCHAR         len: 255     default: []
 	BankContractName null.String `gorm:"column:bank_contract_name;type:VARCHAR;size:255;" json:"bank_contract_name"`
-	//[ 4] bank_account                                   VARCHAR(255)         null: true   primary: false  isArray: false  auto: false  col: VARCHAR         len: 255     default: []
+	//[ 3] bank_account                                   VARCHAR(255)         null: true   primary: false  isArray: false  auto: false  col: VARCHAR         len: 255     default: []
 	BankAccount null.String `gorm:"column:bank_account;type:VARCHAR;size:255;" json:"bank_account"`
-	//[ 5] interest_calc_method                           VARCHAR(255)         null: true   primary: false  isArray: false  auto: false  col: VARCHAR         len: 255     default: []
+	//[ 4] interest_calc_method                           VARCHAR(255)         null: true   primary: false  isArray: false  auto: false  col: VARCHAR         len: 255     default: []
 	InterestCalcMethod null.String `gorm:"column:interest_calc_method;type:VARCHAR;size:255;" json:"interest_calc_method"`
-	//[ 6] bank_name                                      VARCHAR(255)         null: false  primary: false  isArray: false  auto: false  col: VARCHAR         len: 255     default: []
+	//[ 5] bank_name                                      VARCHAR(255)         null: false  primary: false  isArray: false  auto: false  col: VARCHAR         len: 255     default: []
 	BankName string `gorm:"column:bank_name;type:VARCHAR;size:255;" json:"bank_name"`
-	//[ 7] bank_branch                                    VARCHAR(255)         null: true   primary: false  isArray: false  auto: false  col: VARCHAR         len: 255     default: []
+	//[ 6] bank_branch                                    VARCHAR(255)         null: true   primary: false  isArray: false  auto: false  col: VARCHAR         len: 255     default: []
 	BankBranch null.String `gorm:"column:bank_branch;type:VARCHAR;size:255;" json:"bank_branch"`
-	//[ 8] loan_principal                                 INT8                 null: false  primary: false  isArray: false  auto: false  col: INT8            len: -1      default: []
+	//[ 7] loan_principal                                 INT8                 null: false  primary: false  isArray: false  auto: false  col: INT8            len: -1      default: []
 	LoanPrincipal int64 `gorm:"column:loan_principal;type:INT8;" json:"loan_principal"`
-	//[ 9] loan_method                                    VARCHAR(255)         null: true   primary: false  isArray: false  auto: false  col: VARCHAR         len: 255     default: []
+	//[ 8] loan_method                                    VARCHAR(255)         null: true   primary: false  isArray: false  auto: false  col: VARCHAR         len: 255     default: []
 	LoanMethod null.String `gorm:"column:loan_method;type:VARCHAR;size:255;" json:"loan_method"`
-	//[10] contract_start_date                            DATE                 null: true   primary: false  isArray: false  auto: false  col: DATE            len: -1      default: []
+	//[ 9] contract_start_date                            DATE                 null: true   primary: false  isArray: false  auto: false  col: DATE            len: -1      default: []
 	ContractStartDate null.Time `gorm:"column:contract_start_date;type:DATE;" json:"contract_start_date"`
-	//[11] contract_end_date                              DATE                 null: true   primary: false  isArray: false  auto: false  col: DATE            len: -1      default: []
+	//[10] contract_end_date                              DATE                 null: true   primary: false  isArray: false  auto: false  col: DATE            len: -1      default: []
 	ContractEndDate null.Time `gorm:"column:contract_end_date;type:DATE;" json:"contract_end_date"`
-	//[12] actual_start_date                              DATE                 null: true   primary: false  isArray: false  auto: false  col: DATE            len: -1      default: []
+	//[11] actual_start_date                              DATE                 null: true   primary: false  isArray: false  auto: false  col: DATE            len: -1      default: []
 	ActualStartDate null.Time `gorm:"column:actual_start_date;type:DATE;" json:"actual_start_date"`
-	//[13] is_lpr                                         BOOL                 null: true   primary: false  isArray: false  auto: false  col: BOOL            len: -1      default: []
+	//[12] is_lpr                                         BOOL                 null: true   primary: false  isArray: false  auto: false  col: BOOL            len: -1      default: []
 	IsLpr null.Int `gorm:"column:is_lpr;type:BOOL;" json:"is_lpr"`
-	//[14] current_reprice_day                            DATE                 null: true   primary: false  isArray: false  auto: false  col: DATE            len: -1      default: []
+	//[13] current_reprice_day                            DATE                 null: true   primary: false  isArray: false  auto: false  col: DATE            len: -1      default: []
 	CurrentRepriceDay null.Time `gorm:"column:current_reprice_day;type:DATE;" json:"current_reprice_day"`
-	//[15] current_lpr                                    INT4                 null: true   primary: false  isArray: false  auto: false  col: INT4            len: -1      default: []
+	//[14] current_lpr                                    INT4                 null: true   primary: false  isArray: false  auto: false  col: INT4            len: -1      default: []
 	CurrentLpr null.Int `gorm:"column:current_lpr;type:INT4;" json:"current_lpr"`
-	//[16] lpr_plus                                       INT4                 null: true   primary: false  isArray: false  auto: false  col: INT4            len: -1      default: []
+	//[15] lpr_plus                                       INT4                 null: true   primary: false  isArray: false  auto: false  col: INT4            len: -1      default: []
 	LprPlus null.Int `gorm:"column:lpr_plus;type:INT4;" json:"lpr_plus"`
-	//[17] current_rate                                   INT4                 null: false  primary: false  isArray: false  auto: false  col: INT4            len: -1      default: []
+	//[16] current_rate                                   INT4                 null: false  primary: false  isArray: false  auto: false  col: INT4            len: -1      default: []
 	CurrentRate int32 `gorm:"column:current_rate;type:INT4;" json:"current_rate"`
-	//[18] next_reprice_day                               DATE                 null: true   primary: false  isArray: false  auto: false  col: DATE            len: -1      default: []
+	//[17] next_reprice_day                               DATE                 null: true   primary: false  isArray: false  auto: false  col: DATE            len: -1      default: []
 	NextRepriceDay null.Time `gorm:"column:next_reprice_day;type:DATE;" json:"next_reprice_day"`
-	//[19] all_repaid_principal                           INT8                 null: true   primary: false  isArray: false  auto: false  col: INT8            len: -1      default: []
+	//[18] all_repaid_principal                           INT8                 null: true   primary: false  isArray: false  auto: false  col: INT8            len: -1      default: []
 	AllRepaidPrincipal null.Int `gorm:"column:all_repaid_principal;type:INT8;" json:"all_repaid_principal"`
-	//[20] all_repaid_interest                            INT8                 null: true   primary: false  isArray: false  auto: false  col: INT8            len: -1      default: []
+	//[19] all_repaid_interest                            INT8                 null: true   primary: false  isArray: false  auto: false  col: INT8            len: -1      default: []
 	AllRepaidInterest null.Int `gorm:"column:all_repaid_interest;type:INT8;" json:"all_repaid_interest"`
-	//[21] is_finished                                    BOOL                 null: true   primary: false  isArray: false  auto: false  col: BOOL            len: -1      default: []
+	//[20] is_finished                                    BOOL                 null: true   primary: false  isArray: false  auto: false  col: BOOL            len: -1      default: []
 	IsFinished null.Int `gorm:"column:is_finished;type:BOOL;" json:"is_finished"`
-	//[22] contact_person                                 VARCHAR(255)         null: true   primary: false  isArray: false  auto: false  col: VARCHAR         len: 255     default: []
+	//[21] contact_person                                 VARCHAR(255)         null: true   primary: false  isArray: false  auto: false  col: VARCHAR         len: 255     default: []
 	ContactPerson null.String `gorm:"column:contact_person;type:VARCHAR;size:255;" json:"contact_person"`
-	//[23] contact_tel                                    VARCHAR(50)          null: true   primary: false  isArray: false  auto: false  col: VARCHAR         len: 50      default: []
+	//[22] contact_tel                                    VARCHAR(50)          null: true   primary: false  isArray: false  auto: false  col: VARCHAR         len: 50      default: []
 	ContactTel null.String `gorm:"column:contact_tel;type:VARCHAR;size:50;" json:"contact_tel"`
-	//[24] created_at                                     TIMESTAMP            null: false  primary: false  isArray: false  auto: false  col: TIMESTAMP       len: -1      default: []
+	//[23] created_at                                     TIMESTAMP            null: false  primary: false  isArray: false  auto: false  col: TIMESTAMP       len: -1      default: []
 	CreatedAt time.Time `gorm:"column:created_at;type:TIMESTAMP;" json:"created_at"`
-	//[25] updated_at                                     TIMESTAMP            null: false  primary: false  isArray: false  auto: false  col: TIMESTAMP       len: -1      default: []
+	//[24] updated_at                                     TIMESTAMP            null: false  primary: false  isArray: false  auto: false  col: TIMESTAMP       len: -1      default: []
 	UpdatedAt time.Time `gorm:"column:updated_at;type:TIMESTAMP;" json:"updated_at"`
+	//[26] abbreviation                                   VARCHAR(255)         null: true   primary: false  isArray: false  auto: false  col: VARCHAR         len: 255     default: []
+	Abbreviation null.String `gorm:"column:abbreviation;type:VARCHAR;size:255;" json:"abbreviation"`
 }
 
 var bank_loan_contractTableInfo = &TableInfo{
@@ -140,27 +141,6 @@ var bank_loan_contractTableInfo = &TableInfo{
 
 		&ColumnInfo{
 			Index:              1,
-			Name:               "lease_contract_id",
-			Comment:            ``,
-			Notes:              ``,
-			Nullable:           true,
-			DatabaseTypeName:   "INT4",
-			DatabaseTypePretty: "INT4",
-			IsPrimaryKey:       false,
-			IsAutoIncrement:    false,
-			IsArray:            false,
-			ColumnType:         "INT4",
-			ColumnLength:       -1,
-			GoFieldName:        "LeaseContractID",
-			GoFieldType:        "null.Int",
-			JSONFieldName:      "lease_contract_id",
-			ProtobufFieldName:  "lease_contract_id",
-			ProtobufType:       "int32",
-			ProtobufPos:        2,
-		},
-
-		&ColumnInfo{
-			Index:              2,
 			Name:               "bank_contract_no",
 			Comment:            ``,
 			Notes:              ``,
@@ -177,11 +157,11 @@ var bank_loan_contractTableInfo = &TableInfo{
 			JSONFieldName:      "bank_contract_no",
 			ProtobufFieldName:  "bank_contract_no",
 			ProtobufType:       "string",
-			ProtobufPos:        3,
+			ProtobufPos:        2,
 		},
 
 		&ColumnInfo{
-			Index:              3,
+			Index:              2,
 			Name:               "bank_contract_name",
 			Comment:            ``,
 			Notes:              ``,
@@ -198,11 +178,11 @@ var bank_loan_contractTableInfo = &TableInfo{
 			JSONFieldName:      "bank_contract_name",
 			ProtobufFieldName:  "bank_contract_name",
 			ProtobufType:       "string",
-			ProtobufPos:        4,
+			ProtobufPos:        3,
 		},
 
 		&ColumnInfo{
-			Index:              4,
+			Index:              3,
 			Name:               "bank_account",
 			Comment:            ``,
 			Notes:              ``,
@@ -219,11 +199,11 @@ var bank_loan_contractTableInfo = &TableInfo{
 			JSONFieldName:      "bank_account",
 			ProtobufFieldName:  "bank_account",
 			ProtobufType:       "string",
-			ProtobufPos:        5,
+			ProtobufPos:        4,
 		},
 
 		&ColumnInfo{
-			Index:              5,
+			Index:              4,
 			Name:               "interest_calc_method",
 			Comment:            ``,
 			Notes:              ``,
@@ -240,11 +220,11 @@ var bank_loan_contractTableInfo = &TableInfo{
 			JSONFieldName:      "interest_calc_method",
 			ProtobufFieldName:  "interest_calc_method",
 			ProtobufType:       "string",
-			ProtobufPos:        6,
+			ProtobufPos:        5,
 		},
 
 		&ColumnInfo{
-			Index:              6,
+			Index:              5,
 			Name:               "bank_name",
 			Comment:            ``,
 			Notes:              ``,
@@ -261,11 +241,11 @@ var bank_loan_contractTableInfo = &TableInfo{
 			JSONFieldName:      "bank_name",
 			ProtobufFieldName:  "bank_name",
 			ProtobufType:       "string",
-			ProtobufPos:        7,
+			ProtobufPos:        6,
 		},
 
 		&ColumnInfo{
-			Index:              7,
+			Index:              6,
 			Name:               "bank_branch",
 			Comment:            ``,
 			Notes:              ``,
@@ -282,11 +262,11 @@ var bank_loan_contractTableInfo = &TableInfo{
 			JSONFieldName:      "bank_branch",
 			ProtobufFieldName:  "bank_branch",
 			ProtobufType:       "string",
-			ProtobufPos:        8,
+			ProtobufPos:        7,
 		},
 
 		&ColumnInfo{
-			Index:              8,
+			Index:              7,
 			Name:               "loan_principal",
 			Comment:            ``,
 			Notes:              ``,
@@ -303,11 +283,11 @@ var bank_loan_contractTableInfo = &TableInfo{
 			JSONFieldName:      "loan_principal",
 			ProtobufFieldName:  "loan_principal",
 			ProtobufType:       "int32",
-			ProtobufPos:        9,
+			ProtobufPos:        8,
 		},
 
 		&ColumnInfo{
-			Index:              9,
+			Index:              8,
 			Name:               "loan_method",
 			Comment:            ``,
 			Notes:              ``,
@@ -324,11 +304,11 @@ var bank_loan_contractTableInfo = &TableInfo{
 			JSONFieldName:      "loan_method",
 			ProtobufFieldName:  "loan_method",
 			ProtobufType:       "string",
-			ProtobufPos:        10,
+			ProtobufPos:        9,
 		},
 
 		&ColumnInfo{
-			Index:              10,
+			Index:              9,
 			Name:               "contract_start_date",
 			Comment:            ``,
 			Notes:              ``,
@@ -345,11 +325,11 @@ var bank_loan_contractTableInfo = &TableInfo{
 			JSONFieldName:      "contract_start_date",
 			ProtobufFieldName:  "contract_start_date",
 			ProtobufType:       "google.protobuf.Timestamp",
-			ProtobufPos:        11,
+			ProtobufPos:        10,
 		},
 
 		&ColumnInfo{
-			Index:              11,
+			Index:              10,
 			Name:               "contract_end_date",
 			Comment:            ``,
 			Notes:              ``,
@@ -366,11 +346,11 @@ var bank_loan_contractTableInfo = &TableInfo{
 			JSONFieldName:      "contract_end_date",
 			ProtobufFieldName:  "contract_end_date",
 			ProtobufType:       "google.protobuf.Timestamp",
-			ProtobufPos:        12,
+			ProtobufPos:        11,
 		},
 
 		&ColumnInfo{
-			Index:              12,
+			Index:              11,
 			Name:               "actual_start_date",
 			Comment:            ``,
 			Notes:              ``,
@@ -387,11 +367,11 @@ var bank_loan_contractTableInfo = &TableInfo{
 			JSONFieldName:      "actual_start_date",
 			ProtobufFieldName:  "actual_start_date",
 			ProtobufType:       "google.protobuf.Timestamp",
-			ProtobufPos:        13,
+			ProtobufPos:        12,
 		},
 
 		&ColumnInfo{
-			Index:              13,
+			Index:              12,
 			Name:               "is_lpr",
 			Comment:            ``,
 			Notes:              ``,
@@ -408,11 +388,11 @@ var bank_loan_contractTableInfo = &TableInfo{
 			JSONFieldName:      "is_lpr",
 			ProtobufFieldName:  "is_lpr",
 			ProtobufType:       "bool",
-			ProtobufPos:        14,
+			ProtobufPos:        13,
 		},
 
 		&ColumnInfo{
-			Index:              14,
+			Index:              13,
 			Name:               "current_reprice_day",
 			Comment:            ``,
 			Notes:              ``,
@@ -429,11 +409,11 @@ var bank_loan_contractTableInfo = &TableInfo{
 			JSONFieldName:      "current_reprice_day",
 			ProtobufFieldName:  "current_reprice_day",
 			ProtobufType:       "google.protobuf.Timestamp",
-			ProtobufPos:        15,
+			ProtobufPos:        14,
 		},
 
 		&ColumnInfo{
-			Index:              15,
+			Index:              14,
 			Name:               "current_lpr",
 			Comment:            ``,
 			Notes:              ``,
@@ -450,11 +430,11 @@ var bank_loan_contractTableInfo = &TableInfo{
 			JSONFieldName:      "current_lpr",
 			ProtobufFieldName:  "current_lpr",
 			ProtobufType:       "int32",
-			ProtobufPos:        16,
+			ProtobufPos:        15,
 		},
 
 		&ColumnInfo{
-			Index:              16,
+			Index:              15,
 			Name:               "lpr_plus",
 			Comment:            ``,
 			Notes:              ``,
@@ -471,11 +451,11 @@ var bank_loan_contractTableInfo = &TableInfo{
 			JSONFieldName:      "lpr_plus",
 			ProtobufFieldName:  "lpr_plus",
 			ProtobufType:       "int32",
-			ProtobufPos:        17,
+			ProtobufPos:        16,
 		},
 
 		&ColumnInfo{
-			Index:              17,
+			Index:              16,
 			Name:               "current_rate",
 			Comment:            ``,
 			Notes:              ``,
@@ -492,11 +472,11 @@ var bank_loan_contractTableInfo = &TableInfo{
 			JSONFieldName:      "current_rate",
 			ProtobufFieldName:  "current_rate",
 			ProtobufType:       "int32",
-			ProtobufPos:        18,
+			ProtobufPos:        17,
 		},
 
 		&ColumnInfo{
-			Index:              18,
+			Index:              17,
 			Name:               "next_reprice_day",
 			Comment:            ``,
 			Notes:              ``,
@@ -513,11 +493,11 @@ var bank_loan_contractTableInfo = &TableInfo{
 			JSONFieldName:      "next_reprice_day",
 			ProtobufFieldName:  "next_reprice_day",
 			ProtobufType:       "google.protobuf.Timestamp",
-			ProtobufPos:        19,
+			ProtobufPos:        18,
 		},
 
 		&ColumnInfo{
-			Index:              19,
+			Index:              18,
 			Name:               "all_repaid_principal",
 			Comment:            ``,
 			Notes:              ``,
@@ -534,11 +514,11 @@ var bank_loan_contractTableInfo = &TableInfo{
 			JSONFieldName:      "all_repaid_principal",
 			ProtobufFieldName:  "all_repaid_principal",
 			ProtobufType:       "int32",
-			ProtobufPos:        20,
+			ProtobufPos:        19,
 		},
 
 		&ColumnInfo{
-			Index:              20,
+			Index:              19,
 			Name:               "all_repaid_interest",
 			Comment:            ``,
 			Notes:              ``,
@@ -555,11 +535,11 @@ var bank_loan_contractTableInfo = &TableInfo{
 			JSONFieldName:      "all_repaid_interest",
 			ProtobufFieldName:  "all_repaid_interest",
 			ProtobufType:       "int32",
-			ProtobufPos:        21,
+			ProtobufPos:        20,
 		},
 
 		&ColumnInfo{
-			Index:              21,
+			Index:              20,
 			Name:               "is_finished",
 			Comment:            ``,
 			Notes:              ``,
@@ -576,11 +556,11 @@ var bank_loan_contractTableInfo = &TableInfo{
 			JSONFieldName:      "is_finished",
 			ProtobufFieldName:  "is_finished",
 			ProtobufType:       "bool",
-			ProtobufPos:        22,
+			ProtobufPos:        21,
 		},
 
 		&ColumnInfo{
-			Index:              22,
+			Index:              21,
 			Name:               "contact_person",
 			Comment:            ``,
 			Notes:              ``,
@@ -597,11 +577,11 @@ var bank_loan_contractTableInfo = &TableInfo{
 			JSONFieldName:      "contact_person",
 			ProtobufFieldName:  "contact_person",
 			ProtobufType:       "string",
-			ProtobufPos:        23,
+			ProtobufPos:        22,
 		},
 
 		&ColumnInfo{
-			Index:              23,
+			Index:              22,
 			Name:               "contact_tel",
 			Comment:            ``,
 			Notes:              ``,
@@ -618,11 +598,11 @@ var bank_loan_contractTableInfo = &TableInfo{
 			JSONFieldName:      "contact_tel",
 			ProtobufFieldName:  "contact_tel",
 			ProtobufType:       "string",
-			ProtobufPos:        24,
+			ProtobufPos:        23,
 		},
 
 		&ColumnInfo{
-			Index:              24,
+			Index:              23,
 			Name:               "created_at",
 			Comment:            ``,
 			Notes:              ``,
@@ -639,11 +619,11 @@ var bank_loan_contractTableInfo = &TableInfo{
 			JSONFieldName:      "created_at",
 			ProtobufFieldName:  "created_at",
 			ProtobufType:       "uint64",
-			ProtobufPos:        25,
+			ProtobufPos:        24,
 		},
 
 		&ColumnInfo{
-			Index:              25,
+			Index:              24,
 			Name:               "updated_at",
 			Comment:            ``,
 			Notes:              ``,
@@ -660,7 +640,28 @@ var bank_loan_contractTableInfo = &TableInfo{
 			JSONFieldName:      "updated_at",
 			ProtobufFieldName:  "updated_at",
 			ProtobufType:       "uint64",
-			ProtobufPos:        26,
+			ProtobufPos:        25,
+		},
+
+		&ColumnInfo{
+			Index:              26,
+			Name:               "abbreviation",
+			Comment:            ``,
+			Notes:              ``,
+			Nullable:           true,
+			DatabaseTypeName:   "VARCHAR",
+			DatabaseTypePretty: "VARCHAR(255)",
+			IsPrimaryKey:       false,
+			IsAutoIncrement:    false,
+			IsArray:            false,
+			ColumnType:         "VARCHAR",
+			ColumnLength:       255,
+			GoFieldName:        "Abbreviation",
+			GoFieldType:        "null.String",
+			JSONFieldName:      "abbreviation",
+			ProtobufFieldName:  "abbreviation",
+			ProtobufType:       "string",
+			ProtobufPos:        27,
 		},
 	},
 }

@@ -123,7 +123,7 @@ func GetBankRepayPlan(w http.ResponseWriter, r *http.Request, ps httprouter.Para
 // @Failure 400 {object} api.HTTPError
 // @Failure 404 {object} api.HTTPError
 // @Router /bankrepayplan [post]
-// echo '{"plan_amount": 91,"plan_interest": 66,"actual_amount": 26,"actual_principal": 26,"updated_at": "2300-01-18T08:02:37.147327156Z","id": 67,"bank_loan_contract_id": 16,"plan_date": "2159-08-03T14:14:14.922878857Z","plan_principal": 90,"actual_date": "2084-06-07T08:57:10.753963539Z","actual_interest": 35,"created_at": "2219-01-24T11:56:18.51500847Z"}' | http POST "http://localhost:8080/bankrepayplan" X-Api-User:user123
+// echo '{"actual_amount": 9,"actual_principal": 66,"actual_interest": 61,"bank_loan_contract_id": 28,"plan_date": "2040-01-08T02:23:21.300499445+08:00","plan_amount": 37,"plan_principal": 80,"plan_interest": 5,"id": 10,"actual_date": "2147-04-09T16:36:37.88072823+08:00","created_at": "2083-05-14T06:45:46.803222063+08:00","updated_at": "2149-09-15T11:08:14.658388566+08:00"}' | http POST "http://localhost:8080/bankrepayplan" X-Api-User:user123
 func AddBankRepayPlan(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	ctx := initializeContext(r)
 	bankrepayplan := &model.BankRepayPlan{}
@@ -171,7 +171,7 @@ func AddBankRepayPlan(w http.ResponseWriter, r *http.Request, ps httprouter.Para
 // @Failure 400 {object} api.HTTPError
 // @Failure 404 {object} api.HTTPError
 // @Router /bankrepayplan/{argId} [patch]
-// echo '{"plan_amount": 91,"plan_interest": 66,"actual_amount": 26,"actual_principal": 26,"updated_at": "2300-01-18T08:02:37.147327156Z","id": 67,"bank_loan_contract_id": 16,"plan_date": "2159-08-03T14:14:14.922878857Z","plan_principal": 90,"actual_date": "2084-06-07T08:57:10.753963539Z","actual_interest": 35,"created_at": "2219-01-24T11:56:18.51500847Z"}' | http PUT "http://localhost:8080/bankrepayplan/1"  X-Api-User:user123
+// echo '{"actual_amount": 9,"actual_principal": 66,"actual_interest": 61,"bank_loan_contract_id": 28,"plan_date": "2040-01-08T02:23:21.300499445+08:00","plan_amount": 37,"plan_principal": 80,"plan_interest": 5,"id": 10,"actual_date": "2147-04-09T16:36:37.88072823+08:00","created_at": "2083-05-14T06:45:46.803222063+08:00","updated_at": "2149-09-15T11:08:14.658388566+08:00"}' | http PUT "http://localhost:8080/bankrepayplan/1"  X-Api-User:user123
 func UpdateBankRepayPlan(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	ctx := initializeContext(r)
 

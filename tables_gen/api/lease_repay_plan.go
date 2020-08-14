@@ -123,7 +123,7 @@ func GetLeaseRepayPlan(w http.ResponseWriter, r *http.Request, ps httprouter.Par
 // @Failure 400 {object} api.HTTPError
 // @Failure 404 {object} api.HTTPError
 // @Router /leaserepayplan [post]
-// echo '{"id": 61,"plan_interest": 37,"updated_at": "2204-05-14T22:40:04.418355921Z","actual_principal": 70,"lease_contract_id": 39,"period": 91,"plan_date": "2155-05-26T21:04:56.758641363Z","plan_amount": 63,"plan_principal": 12,"actual_date": "2150-12-24T22:55:11.841700994Z","actual_amount": 57,"actual_interest": 61,"created_at": "2148-05-10T08:25:28.04157684Z"}' | http POST "http://localhost:8080/leaserepayplan" X-Api-User:user123
+// echo '{"period": 70,"plan_amount": 78,"actual_date": "2032-06-16T21:40:39.011280264+08:00","actual_amount": 66,"created_at": "2170-08-30T00:56:07.420982522+08:00","updated_at": "2166-11-06T17:35:51.032828976+08:00","id": 12,"plan_date": "2113-02-01T04:32:14.216889545+08:00","plan_principal": 74,"plan_interest": 71,"actual_principal": 65,"actual_interest": 37,"lease_contract_id": 20}' | http POST "http://localhost:8080/leaserepayplan" X-Api-User:user123
 func AddLeaseRepayPlan(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	ctx := initializeContext(r)
 	leaserepayplan := &model.LeaseRepayPlan{}
@@ -171,7 +171,7 @@ func AddLeaseRepayPlan(w http.ResponseWriter, r *http.Request, ps httprouter.Par
 // @Failure 400 {object} api.HTTPError
 // @Failure 404 {object} api.HTTPError
 // @Router /leaserepayplan/{argId} [patch]
-// echo '{"id": 61,"plan_interest": 37,"updated_at": "2204-05-14T22:40:04.418355921Z","actual_principal": 70,"lease_contract_id": 39,"period": 91,"plan_date": "2155-05-26T21:04:56.758641363Z","plan_amount": 63,"plan_principal": 12,"actual_date": "2150-12-24T22:55:11.841700994Z","actual_amount": 57,"actual_interest": 61,"created_at": "2148-05-10T08:25:28.04157684Z"}' | http PUT "http://localhost:8080/leaserepayplan/1"  X-Api-User:user123
+// echo '{"period": 70,"plan_amount": 78,"actual_date": "2032-06-16T21:40:39.011280264+08:00","actual_amount": 66,"created_at": "2170-08-30T00:56:07.420982522+08:00","updated_at": "2166-11-06T17:35:51.032828976+08:00","id": 12,"plan_date": "2113-02-01T04:32:14.216889545+08:00","plan_principal": 74,"plan_interest": 71,"actual_principal": 65,"actual_interest": 37,"lease_contract_id": 20}' | http PUT "http://localhost:8080/leaserepayplan/1"  X-Api-User:user123
 func UpdateLeaseRepayPlan(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	ctx := initializeContext(r)
 

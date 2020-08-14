@@ -123,7 +123,7 @@ func GetLesseeInfo(w http.ResponseWriter, r *http.Request, ps httprouter.Params)
 // @Failure 400 {object} api.HTTPError
 // @Failure 404 {object} api.HTTPError
 // @Router /lesseeinfo [post]
-// echo '{"business_license": "ihwaAiJCTJWVjMbPCekNJuKQX","lessee": "QfsIAhXYaegccuQDSUAVQUHvW","short_name": "cMKbLWDTLDFutYXyIqDabRESC","email": "mDleomEDHngLEJdLqjxODCjVN","contact_person": "PoMNgJBmHJQcBomaCFsIYTtOT","contact_tel": "LBXucnnUBGfLZSrjquJnqLCRi","risk_manager": "FvjnCGuYAPnGrbdBGvBEeOfID","id": 39,"customer_manager": "USjonDdCTXwSRIIZFqxqxoiJI","created_at": "2106-02-28T16:54:26.994308429Z","updated_at": "2275-08-12T05:23:30.253323103Z"}' | http POST "http://localhost:8080/lesseeinfo" X-Api-User:user123
+// echo '{"risk_manager": "UQkCQvnEnXdimwRAndvxpeBEg","updated_at": "2203-12-18T00:15:09.592017221+08:00","short_name": "hRLnORpoVrElJpQogeXiwFaLb","business_license": "tQgavamVtqXaySmXRwhJEiynL","lessee": "EDvcBRteANammOLKKTyHghYpC","email": "RgyQZpphlpeRWeZSbQKdWeguN","contact_person": "TlLiecQGPKJRLSxcJLjuCrjUY","contact_tel": "bTJKGVPOoOnfvbKHeQOMCOVNA","customer_manager": "lcuueCgYKfBEkyLPMtmloSTOb","created_at": "2257-05-24T23:14:37.612734479+08:00","id": 61}' | http POST "http://localhost:8080/lesseeinfo" X-Api-User:user123
 func AddLesseeInfo(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	ctx := initializeContext(r)
 	lesseeinfo := &model.LesseeInfo{}
@@ -171,7 +171,7 @@ func AddLesseeInfo(w http.ResponseWriter, r *http.Request, ps httprouter.Params)
 // @Failure 400 {object} api.HTTPError
 // @Failure 404 {object} api.HTTPError
 // @Router /lesseeinfo/{argId} [patch]
-// echo '{"business_license": "ihwaAiJCTJWVjMbPCekNJuKQX","lessee": "QfsIAhXYaegccuQDSUAVQUHvW","short_name": "cMKbLWDTLDFutYXyIqDabRESC","email": "mDleomEDHngLEJdLqjxODCjVN","contact_person": "PoMNgJBmHJQcBomaCFsIYTtOT","contact_tel": "LBXucnnUBGfLZSrjquJnqLCRi","risk_manager": "FvjnCGuYAPnGrbdBGvBEeOfID","id": 39,"customer_manager": "USjonDdCTXwSRIIZFqxqxoiJI","created_at": "2106-02-28T16:54:26.994308429Z","updated_at": "2275-08-12T05:23:30.253323103Z"}' | http PUT "http://localhost:8080/lesseeinfo/1"  X-Api-User:user123
+// echo '{"risk_manager": "UQkCQvnEnXdimwRAndvxpeBEg","updated_at": "2203-12-18T00:15:09.592017221+08:00","short_name": "hRLnORpoVrElJpQogeXiwFaLb","business_license": "tQgavamVtqXaySmXRwhJEiynL","lessee": "EDvcBRteANammOLKKTyHghYpC","email": "RgyQZpphlpeRWeZSbQKdWeguN","contact_person": "TlLiecQGPKJRLSxcJLjuCrjUY","contact_tel": "bTJKGVPOoOnfvbKHeQOMCOVNA","customer_manager": "lcuueCgYKfBEkyLPMtmloSTOb","created_at": "2257-05-24T23:14:37.612734479+08:00","id": 61}' | http PUT "http://localhost:8080/lesseeinfo/1"  X-Api-User:user123
 func UpdateLesseeInfo(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	ctx := initializeContext(r)
 

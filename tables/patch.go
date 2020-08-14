@@ -2,6 +2,7 @@ package tables
 
 import (
 	"database/sql"
+	"fmt"
 	"strings"
 
 	"github.com/GoAdminGroup/go-admin/template/types"
@@ -80,4 +81,60 @@ func id2String(n int32) string {
 			return string(buf[pos:])
 		}
 	}
+}
+
+// mapArr2strArr 将数据库查询数据 提取需要的字段值后，重组为[]string
+func mapArr2strArr(mapArr []map[string]interface{}, col string) (strArr []string, err error) {
+
+	if len(mapArr) == 0 {
+		return
+	}
+	for _, item := range mapArr {
+		if _, ok := item[col]; !ok {
+			err = fmt.Errorf("不存在 %s 字段", col)
+			break
+		}
+		if i, ok := item[col].(string); !ok {
+			err = fmt.Errorf("map item 无法断言为string")
+			break
+		} else {
+			strArr = append(strArr, i)
+		}
+
+	}
+
+	return
+}
+
+// print_map 解析 map[string]interface{} 数据格式
+func print_map(m map[string]interface{}) string {
+	for k, v := range m {
+		switch value := v.(type) {
+		case nil:
+			fmt.Println(k, "is nil", "null")
+			return "nilValue"
+		case string:
+			fmt.Println(k, "is string", value)
+			return "string"
+		case int:
+			fmt.Println(k, "is int", value)
+			return "int"
+		case float64:
+			fmt.Println(k, "is float64", value)
+			return "float64"
+		case []interface{}:
+			fmt.Println(k, "is an array:")
+			for i, u := range value {
+				fmt.Println(i, u)
+			}
+			return "array"
+		case map[string]interface{}:
+			fmt.Println(k, "is an map:")
+			print_map(value)
+		default:
+			fmt.Println(k, "is unknown type", fmt.Sprintf("%T", v))
+			return "unkown"
+		}
+	}
+	return "unkown"
 }

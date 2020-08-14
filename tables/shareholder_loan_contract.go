@@ -1,6 +1,7 @@
 package tables
 
 import (
+	"fmt"
 	"strings"
 	"time"
 
@@ -9,6 +10,9 @@ import (
 	"github.com/GoAdminGroup/go-admin/plugins/admin/modules/table"
 	"github.com/GoAdminGroup/go-admin/template/types"
 	"github.com/GoAdminGroup/go-admin/template/types/form"
+
+	// use pg for array https://www.opsdash.com/blog/postgres-arrays-golang.html
+	"github.com/lekai63/lpr/models"
 )
 
 func GetShareholderLoanContractTable(ctx *context.Context) table.Table {
@@ -98,14 +102,50 @@ func GetShareholderLoanContractTable(ctx *context.Context) table.Table {
 
 	//	formList.AddField("对应的lease_contract_ids", "lease_contract_ids", db.Varchar, form.Array)
 	// form.Array 还不成熟,尽量以 form.Select 替代
-	formList.AddField("对应的lease_contract_ids", "lease_contract_ids", db.Int, form.Select).FieldOptionsFromTable("lease_contract", "abbreviation", "id").
+	formList.AddField("对应的lease_contract_ids", "lease_contract_ids", db.Int, form.Select).
+		FieldOptionsFromTable("lease_contract", "abbreviation", "id").
 		FieldPostFilterFn(func(value types.PostFieldModel) interface{} {
 			val := value.Value
-			// 考虑到 既有数值的显示等，不使用简单的array转string +{} 存储，而是用 gorm处理
-			return "{" + val + "}"
+			// 使用简单的array转string +{} 存储到pgsql数组
+			str := strings.Replace(strings.Trim(fmt.Sprint(val), "[]"), " ", ",", -1)
+			return "{" + str + "}"
+		}).
+		FieldDisplay(func(model types.FieldModel) interface{} {
+			row := model.Row
+			item := row["lease_contract_ids"]
+			if item == nil {
+				return []string{}
+			}
+			if a := item.([]uint8); len(a) == 0 {
+				return []string{}
+			}
+
+			str := fmt.Sprintf("%s", item) // row item type: []unit8
+			conn := models.GlobalConn
+			queryCol := "abbreviation"
+			sel := "SELECT " + queryCol + " FROM lease_contract WHERE id = any($1)"
+			if abbr, err := conn.Query(sel, str); err != nil {
+				return err
+			} else {
+				r, _ := mapArr2strArr(abbr, queryCol)
+				return r
+			}
+
 		})
 
 	formList.SetTable("fzzl.shareholder_loan_contract").SetTitle("ShareholderLoanContract").SetDescription("ShareholderLoanContract")
 
 	return shareholderLoanContract
 }
+
+/*
+// https://www.opsdash.com/blog/postgres-arrays-golang.html
+func getArrbMaybeNull(db *sql.DB, str string) (tags []string) {
+	sel := "SELECT abbreviation FROM lease_contract WHERE id = any($1)"
+	if err := db.QueryRow(sel, str).Scan(pq.Array(&tags)); err != nil {
+		log.Fatal(err)
+	}
+	return
+}
+
+*/
