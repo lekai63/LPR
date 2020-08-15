@@ -1,4 +1,3 @@
 # ignore logs
-logs/*
-logs/info.log
-logs/access.log
+logs/
+
