@@ -61,7 +61,7 @@ func GetLeaseContractTable(ctx *context.Context) table.Table {
 	info.AddField("Irr", "irr", db.Int).FieldDisplay(showMoney)
 	info.AddField("Is_lpr", "is_lpr", db.Bool).FieldHide()
 	info.AddField("Current_reprice_day", "current_reprice_day", db.Date).FieldHide()
-	info.AddField("Current_LPR", "current_LPR", db.Int).FieldHide()
+	info.AddField("Current_lpr", "current_lpr", db.Int).FieldHide()
 	info.AddField("Lpr_plus", "lpr_plus", db.Int).FieldHide()
 	info.AddField("当前租息率", "current_rate", db.Int).FieldDisplay(showMoney)
 	info.AddField("Next_reprice_day", "next_reprice_day", db.Date).FieldHide()
@@ -115,10 +115,10 @@ func GetLeaseContractTable(ctx *context.Context) table.Table {
 			{Text: "基于LPR定价", Value: "true"},
 			{Text: "基于基准定价", Value: "false"},
 		}).FieldDefault("基于LPR定价").
-		FieldOnChooseHide("基于基准定价", "current_reprice_day", "current_LPR", "lpr_plus", "next_reprice_day")
+		FieldOnChooseHide("基于基准定价", "current_reprice_day", "current_lpr", "lpr_plus", "next_reprice_day")
 		//默认隐藏LPR表单项
 	formList.AddField("当前执行利率的重定价日", "current_reprice_day", db.Date, form.Date).FieldPostFilterFn(allowReturnNullString)
-	formList.AddField("当前基于的LPR利率", "current_LPR", db.Int, form.Rate).FieldPostFilterFn(allowReturnNullString)
+	formList.AddField("当前基于的LPR利率", "current_lpr", db.Int, form.Rate).FieldPostFilterFn(allowReturnNullString)
 	formList.AddField("LPR加点值", "lpr_plus", db.Int, form.Number).FieldHelpMsg("单位:bp. 请填写整数").FieldPostFilterFn(allowReturnNullString)
 	formList.AddField("下一重定价日", "next_reprice_day", db.Date, form.Date).FieldPostFilterFn(allowReturnNullString)
 
@@ -160,6 +160,9 @@ func GetLeaseContractTable(ctx *context.Context) table.Table {
 			return time.Now().Format("2006-01-02 15:04:05")
 		})
 
+		// 从lessee_info中获取承租人id，并写入本表对应字段
+	formList.AddField("承租人ID", "lessee_info_id", db.Int, form.Number).FieldHide()
+
 	formList.SetTable("fzzl.lease_contract").SetTitle("LeaseContract").SetDescription("LeaseContract")
 
 	// 数据校验
@@ -187,9 +190,6 @@ func GetLeaseContractTable(ctx *context.Context) table.Table {
 		values.Add("lessee_info_id", id2String(lesseeInfoGorm.ID))
 		return values
 	})
-
-	// 从lessee_info中获取承租人id，并写入本表对应字段
-	formList.AddField("承租人ID", "lessee_info_id", db.Int, form.Number).FieldHide()
 
 	return leaseContract
 }
