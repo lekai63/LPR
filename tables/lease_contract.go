@@ -46,7 +46,7 @@ func GetLeaseContractTable(ctx *context.Context) table.Table {
 		FieldSubstr(0, 10).
 		FieldSortable().
 		FieldFilterable(types.FilterType{FormType: form.DateRange})
-	info.AddField("手续费", "fee", db.Int8).
+	info.AddField("已收手续费", "fee", db.Int8).
 		FieldDisplay(showMoney)
 	info.AddField("保证金", "margin", db.Int8).
 		FieldDisplay(showMoney)

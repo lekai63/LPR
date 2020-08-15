@@ -23,7 +23,7 @@ func InitGormv2(c db.Connection) {
 	tables["lessee_info"] = lessee_infoTableInfo
 
 	// 暂时注释掉，完成哪个表单就取消注释哪个
-	// tables["bank_loan_contract"] = bank_loan_contractTableInfo
+	tables["bank_loan_contract"] = bank_loan_contractTableInfo
 	// tables["bank_repay_plan"] = bank_repay_planTableInfo
 
 	tables["shareholder_loan_contract"] = shareholder_loan_contractTableInfo

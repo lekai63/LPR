@@ -72,6 +72,8 @@ type ShareholderLoanContract struct {
 	CreatedAt time.Time `gorm:"column:created_at;type:TIMESTAMP;" json:"created_at"`
 	//[12] updated_at                                     TIMESTAMP            null: false  primary: false  isArray: false  auto: false  col: TIMESTAMP       len: -1      default: []
 	UpdatedAt time.Time `gorm:"column:updated_at;type:TIMESTAMP;" json:"updated_at"`
+	// lease_contract_ids 为int[]  gorm不直接支持，此处省略之
+	// LeaseContractIds string
 }
 
 var shareholder_loan_contractTableInfo = &TableInfo{

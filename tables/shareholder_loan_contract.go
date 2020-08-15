@@ -102,7 +102,7 @@ func GetShareholderLoanContractTable(ctx *context.Context) table.Table {
 
 	//	formList.AddField("对应的lease_contract_ids", "lease_contract_ids", db.Varchar, form.Array)
 	// form.Array 还不成熟,尽量以 form.Select 替代
-	formList.AddField("对应的lease_contract_ids", "lease_contract_ids", db.Int, form.Select).
+	formList.AddField("对应的项目", "lease_contract_ids", db.Int, form.Select).
 		FieldOptionsFromTable("lease_contract", "abbreviation", "id").
 		FieldPostFilterFn(func(value types.PostFieldModel) interface{} {
 			val := value.Value
