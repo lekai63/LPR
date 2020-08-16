@@ -34,7 +34,7 @@ func GetBankLoanContractTable(ctx *context.Context) table.Table {
 	info.AddField("计息方式", "interest_calc_method", db.Varchar)
 	info.AddField("银行", "bank_name", db.Varchar)
 	info.AddField("支行", "bank_branch", db.Varchar)
-	info.AddField("借款本金", "loan_principal", db.Int8)
+	info.AddField("借款本金", "loan_principal", db.Int8).FieldDisplay(showMoney)
 	info.AddField("贷款方式", "loan_method", db.Varchar)
 
 	info.AddField("合同起始日", "contract_start_date", db.Date).

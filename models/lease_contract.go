@@ -36,7 +36,7 @@ Table: lease_contract
 [12] irr                                            INT4                 null: true   primary: false  isArray: false  auto: false  col: INT4            len: -1      default: []
 [13] is_lpr                                         BOOL                 null: false  primary: false  isArray: false  auto: false  col: BOOL            len: -1      default: []
 [14] current_reprice_day                            DATE                 null: true   primary: false  isArray: false  auto: false  col: DATE            len: -1      default: []
-[15] current_LPR                                    INT4                 null: true   primary: false  isArray: false  auto: false  col: INT4            len: -1      default: []
+[15] current_lpr                                    INT4                 null: true   primary: false  isArray: false  auto: false  col: INT4            len: -1      default: []
 [16] lpr_plus                                       INT4                 null: true   primary: false  isArray: false  auto: false  col: INT4            len: -1      default: []
 [17] current_rate                                   INT4                 null: true   primary: false  isArray: false  auto: false  col: INT4            len: -1      default: []
 [18] next_reprice_day                               DATE                 null: true   primary: false  isArray: false  auto: false  col: DATE            len: -1      default: []
@@ -89,7 +89,7 @@ type LeaseContract struct {
 	//[14] current_reprice_day                            DATE                 null: true   primary: false  isArray: false  auto: false  col: DATE            len: -1      default: []
 	CurrentRepriceDay null.Time `gorm:"column:current_reprice_day;type:DATE;" json:"current_reprice_day"`
 	//[15] current_LPR                                    INT4                 null: true   primary: false  isArray: false  auto: false  col: INT4            len: -1      default: []
-	CurrentLPR null.Int `gorm:"column:current_LPR;type:INT4;" json:"current_lpr"`
+	CurrentLpr null.Int `gorm:"column:current_lpr;type:INT4;" json:"current_lpr"`
 	//[16] lpr_plus                                       INT4                 null: true   primary: false  isArray: false  auto: false  col: INT4            len: -1      default: []
 	LprPlus null.Int `gorm:"column:lpr_plus;type:INT4;" json:"lpr_plus"`
 	//[17] current_rate                                   INT4                 null: true   primary: false  isArray: false  auto: false  col: INT4            len: -1      default: []
@@ -431,7 +431,7 @@ var lease_contractTableInfo = &TableInfo{
 
 		&ColumnInfo{
 			Index:              15,
-			Name:               "current_LPR",
+			Name:               "current_lpr",
 			Comment:            ``,
 			Notes:              ``,
 			Nullable:           true,
@@ -442,7 +442,7 @@ var lease_contractTableInfo = &TableInfo{
 			IsArray:            false,
 			ColumnType:         "INT4",
 			ColumnLength:       -1,
-			GoFieldName:        "CurrentLPR",
+			GoFieldName:        "CurrentLpr",
 			GoFieldType:        "null.Int",
 			JSONFieldName:      "current_lpr",
 			ProtobufFieldName:  "current_lpr",

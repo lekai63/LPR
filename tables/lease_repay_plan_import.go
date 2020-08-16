@@ -27,11 +27,9 @@ func GetLeaseRepayPlanImportTable(ctx *context.Context) table.Table {
 
 	// info := leaseRepayPlan.GetInfo()
 
-	// dbGorm := models.Gorm
-	// var leaseContractGorm models.LeaseContract
 	formList := leaseRepayPlan.GetForm()
 
-	formList.AddField("导入租金台账", "custom", db.Varchar, form.File).FieldNotAllowEdit()
+	formList.AddField("导入租金台账", "file", db.Varchar, form.File).FieldNotAllowEdit()
 
 	// formList.SetPostHook()
 	// formList.SetUpdateFn()
@@ -39,10 +37,10 @@ func GetLeaseRepayPlanImportTable(ctx *context.Context) table.Table {
 
 	var fileName string
 	formList.SetPostValidator(func(values form2.Values) (err error) {
-		if values["custom"] == nil {
+		if values["file"] == nil {
 			err = fmt.Errorf("未上传文件")
 		} else {
-			fileName = "./uploads/" + values["custom"][0]
+			fileName = "./uploads/" + values["file"][0]
 			// f, err = ioutil.ReadFile(fileName)
 		}
 		return
@@ -110,7 +108,7 @@ func GetLeaseRepayPlanImportTable(ctx *context.Context) table.Table {
 		return nil
 	})
 
-	formList.SetTable("fzzl.lease_repay_plan").SetTitle("LeaseRepayPlan").SetDescription("LeaseRepayPlan")
+	formList.SetTable("fzzl.lease_repay_plan").SetTitle("LeaseRepayPlanImport").SetDescription("LeaseRepayPlanImport")
 
 	return leaseRepayPlan
 }
