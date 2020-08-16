@@ -49,7 +49,16 @@ func GetBankLoanContractTable(ctx *context.Context) table.Table {
 		FieldSortable().
 		FieldFilterable(types.FilterType{FormType: form.DateRange})
 
-	info.AddField("定价模式", "is_lpr", db.Bool).FieldBool("LPR", "基准定价")
+	info.AddField("定价模式", "is_lpr", db.Bool).FieldDisplay(func(model types.FieldModel) interface{} {
+		switch model.Value {
+		case "true":
+			return "LPR"
+		case "false":
+			return "基准"
+		default:
+			return "未定义"
+		}
+	})
 	info.AddField("Current_reprice_day", "current_reprice_day", db.Date).FieldHide()
 	info.AddField("Current_lpr", "current_lpr", db.Int).FieldHide()
 	info.AddField("Lpr_plus", "lpr_plus", db.Int).FieldHide()
@@ -60,7 +69,16 @@ func GetBankLoanContractTable(ctx *context.Context) table.Table {
 		FieldFilterable(types.FilterType{FormType: form.DateRange})
 	info.AddField("已还本金", "all_repaid_principal", db.Int8).FieldDisplay(showMoney)
 	info.AddField("已还利息", "all_repaid_interest", db.Int8).FieldDisplay(showMoney)
-	info.AddField("合同执行", "is_finished", db.Bool).FieldBool("已结束", "")
+	info.AddField("合同执行", "is_finished", db.Bool).FieldDisplay(func(model types.FieldModel) interface{} {
+		switch model.Value {
+		case "true":
+			return "已结束"
+		case "false":
+			return "执行中"
+		default:
+			return "未定义"
+		}
+	})
 	info.AddField("银行联系人", "contact_person", db.Varchar)
 	info.AddField("联系电话", "contact_tel", db.Varchar).FieldHide()
 	// 对应的租赁合同id数组

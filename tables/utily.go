@@ -106,7 +106,7 @@ func mapArr2strArr(mapArr []map[string]interface{}, col string) (strArr []string
 	return
 }
 
-// print_map 解析 map[string]interface{} 数据格式
+// print_map 解析 map[string]interface{} 数据格式  暂未使用该函数
 func print_map(m map[string]interface{}) string {
 	for k, v := range m {
 		switch value := v.(type) {

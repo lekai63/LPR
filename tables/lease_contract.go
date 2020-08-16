@@ -69,7 +69,16 @@ func GetLeaseContractTable(ctx *context.Context) table.Table {
 		FieldDisplay(showMoney)
 	info.AddField("已收利息", "received_interest", db.Int8).
 		FieldDisplay(showMoney)
-	info.AddField("合同执行", "is_finished", db.Bool).FieldBool("已结束", "")
+	info.AddField("合同执行", "is_finished", db.Bool)FieldDisplay(func(model types.FieldModel) interface{} {
+		switch model.Value {
+		case "true":
+			return "已结束"
+		case "false":
+			return "执行中"
+		default:
+			return "未定义"
+		}
+	})
 	info.AddField("Customer_id", "customer_id", db.Int4).FieldHide()
 	info.AddField("创建时间", "created_at", db.Timestamp).FieldHide()
 	info.AddField("修改时间", "updated_at", db.Timestamp).FieldHide()

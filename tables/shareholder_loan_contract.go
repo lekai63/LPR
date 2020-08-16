@@ -50,7 +50,16 @@ func GetShareholderLoanContractTable(ctx *context.Context) table.Table {
 		FieldDisplay(showMoney)
 	info.AddField("已还利息", "all_repaid_interest", db.Int8).
 		FieldDisplay(showMoney)
-	info.AddField("合同执行", "is_finished", db.Bool).FieldBool("已结束", "")
+	info.AddField("合同执行", "is_finished", db.Bool).FieldDisplay(func(model types.FieldModel) interface{} {
+		switch model.Value {
+		case "true":
+			return "已结束"
+		case "false":
+			return "执行中"
+		default:
+			return "未定义"
+		}
+	})
 	info.AddField("Created_at", "created_at", db.Timestamp).FieldHide()
 	info.AddField("Updated_at", "updated_at", db.Timestamp).FieldHide()
 
