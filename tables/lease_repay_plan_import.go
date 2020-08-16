@@ -27,7 +27,7 @@ func GetLeaseRepayPlanImportTable(ctx *context.Context) table.Table {
 
 	formList := leaseRepayPlan.GetForm()
 
-	formList.AddField("导入租金台账", "file", db.Varchar, form.File).FieldNotAllowEdit()
+	formList.AddField("导入租金台账", "file", db.Varchar, form.File).FieldNotAllowEdit().FieldHelpMsg(`<a href="../../../uploads/csv/lease_repay_plan_model.csv" download >右击另存模板</a>日期格式需为yyyy-mm-dd,存为UTF8的csv后上传`)
 
 	// formList.SetPostHook()
 	// formList.SetUpdateFn()

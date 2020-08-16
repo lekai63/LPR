@@ -19,7 +19,10 @@ func GetBankRepayPlanImportTable(ctx *context.Context) table.Table {
 	bankRepayPlan := table.NewDefaultTable(table.DefaultConfigWithDriver("postgresql"))
 	formList := bankRepayPlan.GetForm()
 
-	formList.AddField("导入银行还款台账", "file", db.Varchar, form.File).FieldNotAllowEdit()
+	// 文件模板待完善
+	formList.AddField("导入银行还款台账", "file", db.Varchar, form.File).FieldNotAllowEdit().FieldHelpMsg(`<a href="../../../uploads/csv/bank_repay_plan_model.csv" download >右击另存模板</a>日期格式需为yyyy-mm-dd,存为UTF8的csv后上传`)
+
+	formList.SetTable("fzzl.bank_repay_plan").SetTitle("BankRepayPlan").SetDescription("BankRepayPlan")
 
 	formList.SetInsertFn(func(values form2.Values) (err error) {
 		var fileName string
