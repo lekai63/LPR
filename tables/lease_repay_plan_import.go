@@ -1,7 +1,6 @@
 package tables
 
 import (
-	"errors"
 	"fmt"
 	"os"
 
@@ -18,7 +17,6 @@ import (
 	form2 "github.com/GoAdminGroup/go-admin/plugins/admin/modules/form"
 
 	_ "gorm.io/driver/postgres"
-	"gorm.io/gorm"
 )
 
 func GetLeaseRepayPlanImportTable(ctx *context.Context) table.Table {
@@ -35,28 +33,29 @@ func GetLeaseRepayPlanImportTable(ctx *context.Context) table.Table {
 	// formList.SetUpdateFn()
 	// formList.SetInsertFn()
 
-	var fileName string
-	formList.SetPostValidator(func(values form2.Values) (err error) {
-		if values["file"] == nil {
+	formList.SetInsertFn(func(values form2.Values) (err error) {
+
+		var fileName string
+
+		if a := values["file"]; a[0] == "" {
 			err = fmt.Errorf("未上传文件")
+			return
 		} else {
-			fileName = "./uploads/" + values["file"][0]
+			fileName = "./uploads/" + a[0]
 			// f, err = ioutil.ReadFile(fileName)
 		}
-		return
-	})
 
-	formList.SetInsertFn(func(values form2.Values) error {
 		// 对于小文件，一次性读取所有行
 		fs1, e := os.Open(fileName)
 		if e != nil {
-			return e
+			err = e
+			return
 		}
 		r := csv.NewReader(fs1)
 		content, e := r.ReadAll()
 		if e != nil {
-			e = fmt.Errorf("can not readall,err is %+v", e)
-			return e
+			err = fmt.Errorf("can not readall,err is %+v", e)
+			return
 		}
 
 		// plans 定义要插入的模型数组,要传入指针，否则plans不会被更新
@@ -76,8 +75,9 @@ func GetLeaseRepayPlanImportTable(ctx *context.Context) table.Table {
 				lc.Abbr = row[0]
 				result := dbGorm.Table("lease_contract").Select("ID").Where("Abbreviation = ?", lc.Abbr).Scan(&lc)
 				// fmt.Printf("lc struct is : %+v", lc)
-				if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-					return fmt.Errorf("未在《租赁合同》中查到对应项目简称，请先在《租赁合同》中新增相关合同。详细错误信息：%s", result.Error)
+				if result.RowsAffected == 0 {
+					err = fmt.Errorf("未在《租赁合同》中查到对应项目简称，请先在《租赁合同》中新增相关合同。详细错误信息：%s", result.Error)
+					break
 				}
 
 			}
@@ -98,10 +98,12 @@ func GetLeaseRepayPlanImportTable(ctx *context.Context) table.Table {
 			plans[i-1] = p
 
 		}
-		// fmt.Printf("Plans are:%+v", plans)
+		if err != nil {
+			return
+		}
 		dbGorm.Create(&plans)
 
-		return nil
+		return
 	})
 
 	formList.SetUpdateFn(func(values form2.Values) error {

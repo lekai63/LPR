@@ -336,6 +336,15 @@ func (b *BankRepayPlan) TableName() string {
 
 // BeforeSave invoked before saving, return an error if field is not populated.
 func (b *BankRepayPlan) BeforeSave() error {
+
+	// if b.ActualAmount.Int64 != b.ActualInterest.Int64+b.ActualPrincipal.Int64 {
+	// 	return fmt.Errorf("实际还款金额≠实际还款本金+实际还款利息")
+	// }
+
+	// if b.PlanAmount != b.PlanPrincipal+b.PlanInterest {
+	// 	return fmt.Errorf("计划还款金额≠计划还款本金+计划还款利息")
+	// }
+
 	return nil
 }
 

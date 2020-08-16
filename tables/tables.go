@@ -32,8 +32,9 @@ var Generators = map[string]table.Generator{
 	"lease_repay_plan":        GetLeaseRepayPlanTable,
 	"lease_repay_plan_import": GetLeaseRepayPlanImportTable,
 
-	"bank_loan_contract": GetBankLoanContractTable,
-	"bank_repay_plan":    GetBankRepayPlanTable,
+	"bank_loan_contract":     GetBankLoanContractTable,
+	"bank_repay_plan":        GetBankRepayPlanTable,
+	"bank_repay_plan_import": GetBankRepayPlanImportTable,
 
 	"shareholder_loan_contract":      GetShareholderLoanContractTable,
 	"shareholder_loan_repaid_record": GetShareholderLoanRepaidRecordTable,

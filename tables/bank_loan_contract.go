@@ -91,7 +91,7 @@ func GetBankLoanContractTable(ctx *context.Context) table.Table {
 
 	formList := bankLoanContract.GetForm()
 	formList.AddField("序号", "id", db.Int, form.Default).FieldHide().FieldNotAllowEdit().FieldNotAllowAdd()
-
+	formList.AddField("项目简称", "abbreviation", db.Varchar, form.Text)
 	formList.AddField("银行借款合同号", "bank_contract_no", db.Varchar, form.Text)
 	formList.AddField("银行借款合同名称", "bank_contract_name", db.Varchar, form.Text)
 	formList.AddField("保理户账号", "bank_account", db.Varchar, form.Text)
