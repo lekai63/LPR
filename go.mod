@@ -22,12 +22,12 @@ require (
 	github.com/imkira/go-interpol v1.1.0 // indirect
 	github.com/jackc/pgproto3/v2 v2.0.4 // indirect
 	github.com/jackc/pgx/v4 v4.8.1 // indirect
-	github.com/jinzhu/gorm v1.9.15
+	github.com/jinzhu/gorm v1.9.15 // indirect
 	github.com/json-iterator/go v1.1.10 // indirect
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88 // indirect
 	github.com/karrick/godirwalk v1.15.6 // indirect
-	github.com/lib/pq v1.8.0
+	github.com/lib/pq v1.8.0 // indirect
 	github.com/mattn/go-colorable v0.1.7 // indirect
 	github.com/mgutz/ansi v0.0.0-20200706080929-d51e80ef957d // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect

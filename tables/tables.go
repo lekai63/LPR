@@ -27,10 +27,9 @@ import "github.com/GoAdminGroup/go-admin/plugins/admin/modules/table"
 //
 var Generators = map[string]table.Generator{
 
-	"lease_contract":   GetLeaseContractTable,
-	"lessee_info":      GetLesseeInfoTable,
-	"lease_repay_plan": GetLeaseRepayPlanTable,
-
+	"lease_contract":          GetLeaseContractTable,
+	"lessee_info":             GetLesseeInfoTable,
+	"lease_repay_plan":        GetLeaseRepayPlanTable,
 	"lease_repay_plan_import": GetLeaseRepayPlanImportTable,
 
 	"bank_loan_contract": GetBankLoanContractTable,

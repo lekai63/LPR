@@ -64,7 +64,7 @@ func GetLeaseRepayPlanTable(ctx *context.Context) table.Table {
 				return ""
 			}
 		})
-	info.AddField("实际还款利息", "actual_interest", db.Int8).FieldDisplay(showMoney).
+	info.AddField("实际还款利息", "actual_interest", db.Int8).
 		FieldDisplay(func(model types.FieldModel) interface{} {
 			row := model.Row
 			if row["actual_interest"] != nil {
@@ -76,7 +76,7 @@ func GetLeaseRepayPlanTable(ctx *context.Context) table.Table {
 	info.AddField("Created_at", "created_at", db.Timestamp).FieldHide()
 	info.AddField("Updated_at", "updated_at", db.Timestamp).FieldHide()
 
-	info.HideNewButton()
+	info.HideNewButton() //隐藏新增按钮
 	info.SetTable("fzzl.lease_repay_plan").SetTitle("租金台账").SetDescription("LeaseRepayPlan")
 
 	dbGorm := models.Gormv2
@@ -107,7 +107,7 @@ func GetLeaseRepayPlanTable(ctx *context.Context) table.Table {
 	formList.AddField("计划还款本金", "plan_principal", db.Int8, form.Text).FieldNotAllowAdd().FieldNotAllowEdit().FieldDisplay(showMoney)
 	formList.AddField("计划还款利息", "plan_interest", db.Int8, form.Text).FieldNotAllowAdd().FieldNotAllowEdit().FieldDisplay(showMoney)
 	formList.AddField("实际还款日期", "actual_date", db.Date, form.Date)
-	formList.AddField("实际还款金额", "actual_amount", db.Int8, form.Text).
+	formList.AddField("实际还款租金合计", "actual_amount", db.Int8, form.Text).
 		FieldDisplay(showMoney).
 		FieldHelpMsg("单位:元")
 	formList.AddField("实际还款本金", "actual_principal", db.Int8, form.Text).
@@ -177,7 +177,7 @@ func GetLeaseRepayPlanTable(ctx *context.Context) table.Table {
 
 		})
 
-		return nil
+		return
 
 	})
 
