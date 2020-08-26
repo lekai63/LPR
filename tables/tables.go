@@ -27,6 +27,7 @@ import "github.com/GoAdminGroup/go-admin/plugins/admin/modules/table"
 //
 var Generators = map[string]table.Generator{
 
+	// tables
 	"lease_contract":          GetLeaseContractTable,
 	"lessee_info":             GetLesseeInfoTable,
 	"lease_repay_plan":        GetLeaseRepayPlanTable,
@@ -38,6 +39,8 @@ var Generators = map[string]table.Generator{
 
 	"shareholder_loan_contract":      GetShareholderLoanContractTable,
 	"shareholder_loan_repaid_record": GetShareholderLoanRepaidRecordTable,
+
+	// reports
 
 	// generators end
 }

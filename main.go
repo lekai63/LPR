@@ -3,6 +3,7 @@ package main
 import (
 	"io/ioutil"
 	"log"
+	"net/http"
 	"os"
 	"os/signal"
 
@@ -18,6 +19,7 @@ import (
 	"github.com/GoAdminGroup/go-admin/template/chartjs"
 	"github.com/gin-gonic/gin"
 
+	"github.com/lekai63/lpr/lpr"
 	"github.com/lekai63/lpr/models"
 	"github.com/lekai63/lpr/pages"
 	"github.com/lekai63/lpr/tables"
@@ -50,6 +52,29 @@ func startServer() {
 	eng.HTMLFile("GET", "/admin/hello", "./html/hello.tmpl", map[string]interface{}{
 		"msg": "Hello world",
 	})
+
+	// 增加tools页面
+	eng.HTML("GET", "/admin/tools", pages.GetTools)
+
+	r.POST("/admin/tools/", func(c *gin.Context) {
+		res := make(gin.H)
+		switch c.PostForm("calc") {
+		case "insterestAll":
+			// todo modify
+			lpr.GetQframe(eng.PostgresqlConnection())
+			res["code"] = 0
+			res["msg"] = "成功调用"
+			res["status_code"] = http.StatusOK
+		default:
+			res["code"] = 1
+			res["msg"] = "调用失败"
+			res["status_code"] = http.StatusBadRequest
+		}
+
+		c.JSON(http.StatusOK, res)
+	})
+
+	// tools分组
 
 	// models.Init(eng.PostgresqlConnection())
 	// models.Init()
