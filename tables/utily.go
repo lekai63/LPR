@@ -12,17 +12,39 @@ import (
 // 数据库以bigint存储精度至0.01分，可以将该数据转换为“元”；
 // 数据库以int存储精度至0.0001%（比如8.68%存储为86800），故也可以将该数据转换为百分数
 func showMoney(model types.FieldModel) interface{} {
-	switch n := len(model.Value); {
-	case n == 0:
+	val := model.Value
+	return bigintStr2floatStr(val, 4)
+}
+
+// showLprPlus 显示LPR加点值
+func showLprPlus(model types.FieldModel) interface{} {
+	val := model.Value
+	return bigintStr2floatStr(val, 2)
+}
+
+// bigintStr2floatStr实际将小数点向左移动n位
+// n默认为4时：
+// 数据库以bigint存储精度至0.01分，可以将该数据转换为“元”；
+// 数据库以int存储精度至0.0001%（比如8.68%存储为86800），故也可以将该数据转换为百分数
+// n为2时：将int存储的lpr加点值转换为字符串展示
+func bigintStr2floatStr(val string, numbers ...int) (result string) {
+	var n int
+	if len(numbers) == 0 {
+		n = 4
+	} else {
+		n = numbers[0]
+	}
+	switch a := len(val); {
+	case a == 0:
 		return ""
-	case n <= 4:
-		if model.Value == "" || model.Value == "0" {
-			return model.Value
+	case a <= n:
+		if val == "" || val == "0" {
+			return val
 		} else {
-			return "0." + model.Value
+			return "0." + val
 		}
 	default:
-		return model.Value[:len(model.Value)-4] + "." + model.Value[len(model.Value)-4:len(model.Value)-2]
+		return val[:a-n] + "." + val[a-n:a-n+2] //保留2位小数
 	}
 }
 
@@ -32,14 +54,29 @@ func money2bigint(model types.PostFieldModel) (result interface{}) {
 	return floatStr2BigintStr(val)
 }
 
-func floatStr2BigintStr(val string) (result string) {
+// lprplus2int 将lpr加点值转换为int存储
+func lprplus2int(model types.PostFieldModel) (result interface{}) {
+	val := model.Value.Value()
+	return floatStr2BigintStr(val, 2)
+}
+
+// 参数n表示加n个0，n默认为4
+// 当n为4（默认值）时，即将1.01 -- > 10100 , 用于金额类小数转bigint存储，以及百分比转int存储
+// 当n为2时，即将40.5 --> 4050 ，用于将lpr加点值转换为int存储
+func floatStr2BigintStr(val string, numbers ...int) (result string) {
 	val = strings.TrimSpace(val)
+	var n int
+	if len(numbers) == 0 {
+		n = 4
+	} else {
+		n = numbers[0]
+	}
 	if val == "" || val == "0" {
 		result = "0"
 	} else if strings.Count(val, ".") == 1 {
 		// 小数的处理
 		digitals := strings.Split(val, ".")
-		temp := digitals[1] + strings.Repeat("0", (4-len(digitals[1])))
+		temp := digitals[1] + strings.Repeat("0", (n-len(digitals[1])))
 		if digitals[0] == "0" {
 			result = temp
 		} else {
@@ -47,8 +84,8 @@ func floatStr2BigintStr(val string) (result string) {
 		}
 
 	} else {
-		// 整数直接加四个0
-		result = val + "0000"
+		// 整数直接加n个0
+		result = val + strings.Repeat("0", n)
 	}
 	return
 }

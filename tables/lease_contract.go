@@ -128,7 +128,7 @@ func GetLeaseContractTable(ctx *context.Context) table.Table {
 		//默认隐藏LPR表单项
 	formList.AddField("当前执行利率的重定价日", "current_reprice_day", db.Date, form.Date).FieldPostFilterFn(allowReturnNullString)
 	formList.AddField("当前基于的LPR利率", "current_lpr", db.Int, form.Rate).FieldDisplay(showMoney).FieldPostFilterFn(allowReturnNullString).FieldPostFilterFn(money2bigint)
-	formList.AddField("LPR加点值", "lpr_plus", db.Int, form.Number).FieldHelpMsg("单位:bp. 请填写整数").FieldPostFilterFn(allowReturnNullString)
+	formList.AddField("LPR加点值", "lpr_plus", db.Int, form.Number).FieldDisplay(showLprPlus).FieldHelpMsg("单位:bp. 即0.01%. 加50.5bp就输入50.5").FieldPostFilterFn(allowReturnNullString).FieldPostFilterFn(lprplus2int)
 	formList.AddField("下一重定价日", "next_reprice_day", db.Date, form.Date).FieldPostFilterFn(allowReturnNullString)
 
 	formList.AddField("当前租息率", "current_rate", db.Int, form.Rate).
