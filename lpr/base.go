@@ -1,17 +1,19 @@
 package lpr
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/guregu/null"
 	"github.com/lekai63/lpr/models"
+	dataframe "github.com/rocketlaunchr/dataframe-go"
 )
 
 // BankRepayPlanCalcModel  定义单个合同的计算模型
 type BankRepayPlanCalcModel struct {
 	Bc BankLoanContractMini
 	// Brp []BankRepayPlan
-	Brp map[string]interface{}
+	Brps dataframe.DataFrame
 }
 
 // BankLoanContractMini 提取BankLoanContract与利息计算相关的字段
@@ -53,22 +55,55 @@ type BankRepayPlan struct {
 	ActualInterest null.Int `gorm:"column:actual_interest;type:INT8;" json:"actual_interest"`
 }
 
+type SliceBankRepayPlans struct {
+	IDs                 []int32
+	BankLoanContractIDs []int32
+	PlanDates           []time.Time
+	PlanAmounts         []int64
+	PlanPrincipals      []int64
+	PlanInterests       []int64
+	ActualDates         []time.Time
+	ActualAmounts       []int64
+	ActualPrincipals    []int64
+	ActualInterests     []int64
+}
+
 // GetOneContractRepayPlan 获取银行剩余本金的还本计划
-func GetOneContractRepayPlan(bankLoanContractID int32) (model BankRepayPlanCalcModel) {
-	dbGorm := models.Gormv2
+func GetOneContractRepayPlan(bankLoanContractID int32) (model BankRepayPlanCalcModel, err error) {
+	db := models.Gormv2
+
 	var bc BankLoanContractMini
 	bc.ID = bankLoanContractID
-	dbGorm.Table("bank_loan_contract").Debug().First(&bc)
-	// fmt.Printf("bc: %+v \n", bc)
-	/* var brp []map[string]interface{}
-	dbGorm.Table("bank_repay_plan").Debug().Where("bank_loan_contract_id = ? AND (actual_amount is null) ", bankLoanContractID).Scan(&brp) */
-	// fmt.Printf("brp: %+v \n", brp)
+	db.Table("bank_loan_contract").Debug().First(&bc)
 	model.Bc = bc
 
-	// model.Brp = brp
+	var slices SliceBankRepayPlans
+	rows, e := db.Table("bank_repay_plan").Debug().Where("bank_loan_contract_id = ?", bankLoanContractID).Rows()
+	if e != nil {
+		err = e
+		return
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var brp BankRepayPlan
+		// ScanRows is a method of `gorm.DB`, it can be used to scan a row into a struct
+		db.ScanRows(rows, &brp)
+		// do something
+		slices.getData(&brp)
+		fmt.Printf("slices:\n %+v", slices)
+
+	}
 
 	return
+}
 
+func (s *SliceBankRepayPlans) getData(brp *BankRepayPlan) {
+	s.IDs = append(s.IDs, brp.ID)
+	s.BankLoanContractIDs = append(s.BankLoanContractIDs, brp.BankLoanContractID)
+	s.PlanAmounts = append(s.PlanAmounts, brp.PlanAmount.ValueOrZero())
+	s.PlanDates = append(s.PlanDates, brp.PlanDate)
+	s.PlanPrincipals = append(s.PlanPrincipals, brp.PlanPrincipal)
+	s.PlanInterests = append(s.PlanInterests, brp.PlanInterest.ValueOrZero())
 }
 
 // CalcOneInterestPlan 计算未来的还息计划

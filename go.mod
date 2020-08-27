@@ -16,7 +16,6 @@ require (
 	github.com/go-playground/validator/v10 v10.3.0 // indirect
 	github.com/gobuffalo/packr/v2 v2.8.0 // indirect
 	github.com/golang/snappy v0.0.1 // indirect
-	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/guregu/null v4.0.0+incompatible
 	github.com/imkira/go-interpol v1.1.0 // indirect
@@ -34,6 +33,7 @@ require (
 	github.com/modern-go/reflect2 v1.0.1 // indirect
 	github.com/moul/http2curl v1.0.0 // indirect
 	github.com/onsi/ginkgo v1.14.0 // indirect
+	github.com/rocketlaunchr/dataframe-go v0.0.0-20200824084024-e087e9c030ef
 	github.com/satori/go.uuid v1.2.0
 	github.com/sclevine/agouti v3.0.0+incompatible // indirect
 	github.com/sergi/go-diff v1.1.0 // indirect
