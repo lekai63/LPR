@@ -68,6 +68,19 @@ type SliceBankRepayPlans struct {
 	ActualInterests     []int64
 }
 
+/* type SeriesBankRepayPlans struct {
+	IDs                 dataframe.SeriesInt64
+	BankLoanContractIDs dataframe.SeriesInt64
+	PlanDates           dataframe.SeriesTime
+	PlanAmounts         dataframe.SeriesInt64
+	PlanPrincipals      dataframe.SeriesInt64
+	PlanInterests       dataframe.SeriesInt64
+	ActualDates         dataframe.SeriesTime
+	ActualAmounts       dataframe.SeriesInt64
+	ActualPrincipals    dataframe.SeriesInt64
+	ActualInterests     dataframe.SeriesInt64
+} */
+
 // GetOneContractRepayPlan 获取银行剩余本金的还本计划
 func GetOneContractRepayPlan(bankLoanContractID int32) (model BankRepayPlanCalcModel, err error) {
 	db := models.Gormv2
