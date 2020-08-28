@@ -15,3 +15,7 @@ func Icbc() {
 	fmt.Print(res.Brps.Table())
 
 }
+
+/* func Icbc(model *BankRepayPlanCalcModel) {
+
+} */

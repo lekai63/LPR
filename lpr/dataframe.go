@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"strings"
 
+	"cloud.google.com/go/civil"
 	"github.com/lekai63/lpr/models"
 	dataframe "github.com/rocketlaunchr/dataframe-go"
 )
@@ -19,10 +20,7 @@ func Test() {
 func InitDataframe(brp models.BankRepayPlan) (df *dataframe.DataFrame, err error) {
 	typ := reflect.TypeOf(brp)
 	val := reflect.ValueOf(brp)
-	// sliceInt64 := make([]dataframe.SeriesInt64, 0)
-	// sliceTime := make([]dataframe.SeriesTime, 0)
 	for i := 0; i < val.NumField(); i++ {
-		// name:=typ.Field(i).Name
 		gormTag := typ.Field(i).Tag.Get("gorm")
 		colname, typename := getColnameWithType(gormTag)
 		switch typename {
@@ -42,20 +40,30 @@ func InitDataframe(brp models.BankRepayPlan) (df *dataframe.DataFrame, err error
 			} else {
 				df.AddSeries(se, nil)
 			}
+		case "date":
+			se := dataframe.NewSeriesGeneric(colname, civil.Date{}, nil)
+			if df == nil {
+				df = dataframe.NewDataFrame(se)
+			} else {
+				df.AddSeries(se, nil)
+			}
 		default:
-			err = fmt.Errorf("无法识别的gorm type")
+			err = fmt.Errorf("无法识别:", typename)
 			return
 		}
 
 	}
 
-	// df = dataframe.NewDataFrame(&sliceInt64[0], &sliceInt64[1], &sliceTime[1])
-
 	return
 
 }
 
-// getColnameWithType 返回gormTag 对应的colname,type(只判断int,date)
+/* getColnameWithType 返回gormTag 对应的colname,type
+type转换关系:
+int-->int64
+date-->civil.date
+timestamp-->time.time
+*/
 func getColnameWithType(gormTag string) (colname, typename string) {
 	slice := strings.Split(gormTag, ";")
 	for _, s := range slice {
@@ -66,13 +74,22 @@ func getColnameWithType(gormTag string) (colname, typename string) {
 		}
 		if strings.HasPrefix(s, "type:") {
 			temp := strings.Split(s, ":")
-			if strings.HasPrefix(temp[1], "INT") {
+			t := temp[1]
+			switch {
+			case strings.HasPrefix(t, "INT"):
 				typename = "int"
 				continue
-			} else if strings.HasPrefix(temp[1], "DATE") || strings.HasPrefix(temp[1], "TIMESTAMP") {
+			case strings.HasPrefix(t, "DATE"):
+				typename = "date"
+				continue
+			case strings.HasPrefix(t, "TIMESTAMP"):
 				typename = "time"
 				continue
+			default:
+				typename = "unsupport type : " + t
+				continue
 			}
+
 		}
 
 	}

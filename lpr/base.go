@@ -3,7 +3,12 @@ package lpr
 import (
 	"database/sql"
 	"fmt"
+	"strings"
+	"time"
 
+	// "fmt"
+
+	"cloud.google.com/go/civil"
 	"github.com/guregu/null"
 	"github.com/lekai63/lpr/models"
 	dataframe "github.com/rocketlaunchr/dataframe-go"
@@ -50,15 +55,16 @@ func GetOneContractRepayPlan(bankLoanContractID int32) (model BankRepayPlanCalcM
 	}
 	defer rows.Close()
 	maps, e := Rows2Maps(rows)
-	fmt.Printf("\n maps: \n %+v", maps)
+	// fmt.Printf("\n maps: \n %+v", maps)
 	if e != nil {
 		err = e
 		return
 	}
 
 	// 组装dataframe
-	// 注意maps中字段要与上面的sn的series一一对应，否则报错"no. of args not equal to no. of series"
+	// 注意maps中字段要与series一一对应，否则报错"no. of args not equal to no. of series"
 	for _, val := range maps {
+
 		brpDF.Append(nil, val)
 	}
 
@@ -92,14 +98,23 @@ func Rows2Maps(rows *sql.Rows) ([]map[string]interface{}, error) {
 		m := make(map[string]interface{})
 		for i, colName := range cols {
 			val := columnPointers[i].(*interface{})
-			m[colName] = *val
+
+			// date格式转换为civil date, "_date"是为了剔除掉updated_at字段
+			if strings.Contains(colName, "_date") && ((*val) != nil) {
+
+				m[colName] = civil.DateOf((*val).(time.Time))
+
+			} else {
+				m[colName] = *val
+			}
+
 		}
 
 		// Outputs: map[columnName:value columnName2:value2 columnName3:value3 ...]
 		// fmt.Printf("%+v \n")
 		maps = append(maps, m)
 	}
-
+	fmt.Printf("maps:%+v", maps)
 	return maps, nil
 
 }

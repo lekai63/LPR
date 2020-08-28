@@ -3,6 +3,7 @@ module github.com/lekai63/lpr
 go 1.13
 
 require (
+	cloud.google.com/go v0.57.0
 	github.com/360EntSecGroup-Skylar/excelize/v2 v2.2.0 // indirect
 	github.com/GoAdminGroup/go-admin v1.2.16
 	github.com/GoAdminGroup/themes v0.0.38
