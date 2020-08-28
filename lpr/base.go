@@ -1,8 +1,8 @@
 package lpr
 
 import (
+	"database/sql"
 	"fmt"
-	"time"
 
 	"github.com/guregu/null"
 	"github.com/lekai63/lpr/models"
@@ -13,7 +13,7 @@ import (
 type BankRepayPlanCalcModel struct {
 	Bc BankLoanContractMini
 	// Brp []BankRepayPlan
-	Brps dataframe.DataFrame
+	Brps *dataframe.DataFrame
 }
 
 // BankLoanContractMini 提取BankLoanContract与利息计算相关的字段
@@ -31,92 +31,77 @@ type BankLoanContractMini struct {
 	CurrentRate int32 `gorm:"column:current_rate;type:INT4;" json:"current_rate"`
 }
 
-// BankRepayPlan 源于models中BankRepayPlan，但去掉了CreatedAt UpdatedAt两个无关的计算项目
-type BankRepayPlan struct {
-	//[ 0] id                                             INT4                 null: false  primary: true   isArray: false  auto: true   col: INT4            len: -1      default: []
-	ID int32 `gorm:"primary_key;AUTO_INCREMENT;column:id;type:INT4;" json:"id"`
-	//[ 1] bank_loan_contract_id                          INT4                 null: false  primary: false  isArray: false  auto: false  col: INT4            len: -1      default: []
-	BankLoanContractID int32 `gorm:"column:bank_loan_contract_id;type:INT4;" json:"bank_loan_contract_id"`
-	//[ 2] plan_date                                      DATE                 null: false  primary: false  isArray: false  auto: false  col: DATE            len: -1      default: []
-	PlanDate time.Time `gorm:"column:plan_date;type:DATE;" json:"plan_date"`
-	//[ 3] plan_amount                                    INT8                 null: true   primary: false  isArray: false  auto: false  col: INT8            len: -1      default: []
-	PlanAmount null.Int `gorm:"column:plan_amount;type:INT8;" json:"plan_amount"`
-	//[ 4] plan_principal                                 INT8                 null: false  primary: false  isArray: false  auto: false  col: INT8            len: -1      default: []
-	PlanPrincipal int64 `gorm:"column:plan_principal;type:INT8;" json:"plan_principal"`
-	//[ 5] plan_interest                                  INT8                 null: true   primary: false  isArray: false  auto: false  col: INT8            len: -1      default: []
-	PlanInterest null.Int `gorm:"column:plan_interest;type:INT8;" json:"plan_interest"`
-	//[ 6] actual_date                                    DATE                 null: true   primary: false  isArray: false  auto: false  col: DATE            len: -1      default: []
-	ActualDate null.Time `gorm:"column:actual_date;type:DATE;" json:"actual_date"`
-	//[ 7] actual_amount                                  INT8                 null: true   primary: false  isArray: false  auto: false  col: INT8            len: -1      default: []
-	ActualAmount null.Int `gorm:"column:actual_amount;type:INT8;" json:"actual_amount"`
-	//[ 8] actual_principal                               INT8                 null: true   primary: false  isArray: false  auto: false  col: INT8            len: -1      default: []
-	ActualPrincipal null.Int `gorm:"column:actual_principal;type:INT8;" json:"actual_principal"`
-	//[ 9] actual_interest                                INT8                 null: true   primary: false  isArray: false  auto: false  col: INT8            len: -1      default: []
-	ActualInterest null.Int `gorm:"column:actual_interest;type:INT8;" json:"actual_interest"`
-}
-
-type SliceBankRepayPlans struct {
-	IDs                 []int32
-	BankLoanContractIDs []int32
-	PlanDates           []time.Time
-	PlanAmounts         []int64
-	PlanPrincipals      []int64
-	PlanInterests       []int64
-	ActualDates         []time.Time
-	ActualAmounts       []int64
-	ActualPrincipals    []int64
-	ActualInterests     []int64
-}
-
-/* type SeriesBankRepayPlans struct {
-	IDs                 dataframe.SeriesInt64
-	BankLoanContractIDs dataframe.SeriesInt64
-	PlanDates           dataframe.SeriesTime
-	PlanAmounts         dataframe.SeriesInt64
-	PlanPrincipals      dataframe.SeriesInt64
-	PlanInterests       dataframe.SeriesInt64
-	ActualDates         dataframe.SeriesTime
-	ActualAmounts       dataframe.SeriesInt64
-	ActualPrincipals    dataframe.SeriesInt64
-	ActualInterests     dataframe.SeriesInt64
-} */
-
 // GetOneContractRepayPlan 获取银行剩余本金的还本计划
 func GetOneContractRepayPlan(bankLoanContractID int32) (model BankRepayPlanCalcModel, err error) {
 	db := models.Gormv2
 
 	var bc BankLoanContractMini
 	bc.ID = bankLoanContractID
-	db.Table("bank_loan_contract").Debug().First(&bc)
+	db.Table("bank_loan_contract").First(&bc)
 	model.Bc = bc
 
-	var slices SliceBankRepayPlans
-	rows, e := db.Table("bank_repay_plan").Debug().Where("bank_loan_contract_id = ?", bankLoanContractID).Rows()
+	var brp models.BankRepayPlan
+	brpDF, err := InitDataframe(brp)
+	// rows, e := db.Model(&brp).Debug().Select("ID", "BankLoanContractID", "PlanDate", "PlanAmount", "PlanPrincipal", "PlanInterest").Where("bank_loan_contract_id = ? and actual_amount is null", bankLoanContractID).Rows()
+	rows, e := db.Model(&brp).Where("bank_loan_contract_id = ? and actual_amount is null", bankLoanContractID).Rows()
 	if e != nil {
 		err = e
 		return
 	}
 	defer rows.Close()
-	for rows.Next() {
-		var brp BankRepayPlan
-		// ScanRows is a method of `gorm.DB`, it can be used to scan a row into a struct
-		db.ScanRows(rows, &brp)
-		// do something
-		slices.getData(&brp)
-		fmt.Printf("slices:\n %+v", slices)
-
+	maps, e := Rows2Maps(rows)
+	fmt.Printf("\n maps: \n %+v", maps)
+	if e != nil {
+		err = e
+		return
 	}
+
+	// 组装dataframe
+	// 注意maps中字段要与上面的sn的series一一对应，否则报错"no. of args not equal to no. of series"
+	for _, val := range maps {
+		brpDF.Append(nil, val)
+	}
+
+	// fmt.Print(brps.Table())
+	model.Brps = brpDF
 
 	return
 }
 
-func (s *SliceBankRepayPlans) getData(brp *BankRepayPlan) {
-	s.IDs = append(s.IDs, brp.ID)
-	s.BankLoanContractIDs = append(s.BankLoanContractIDs, brp.BankLoanContractID)
-	s.PlanAmounts = append(s.PlanAmounts, brp.PlanAmount.ValueOrZero())
-	s.PlanDates = append(s.PlanDates, brp.PlanDate)
-	s.PlanPrincipals = append(s.PlanPrincipals, brp.PlanPrincipal)
-	s.PlanInterests = append(s.PlanInterests, brp.PlanInterest.ValueOrZero())
+//Rows2Map store rows in map
+//ref https://kylewbanks.com/blog/query-result-to-map-in-golang
+func Rows2Maps(rows *sql.Rows) ([]map[string]interface{}, error) {
+	cols, _ := rows.Columns()
+	var maps []map[string]interface{}
+	for rows.Next() {
+		// Create a slice of interface{}'s to represent each column,
+		// and a second slice to contain pointers to each item in the columns slice.
+		columns := make([]interface{}, len(cols))
+		columnPointers := make([]interface{}, len(cols))
+		for i, _ := range columns {
+			columnPointers[i] = &columns[i]
+		}
+
+		// Scan the result into the column pointers...
+		if err := rows.Scan(columnPointers...); err != nil {
+			return nil, err
+		}
+
+		// Create our map, and retrieve the value for each column from the pointers slice,
+		// storing it in the map with the name of the column as the key.
+		m := make(map[string]interface{})
+		for i, colName := range cols {
+			val := columnPointers[i].(*interface{})
+			m[colName] = *val
+		}
+
+		// Outputs: map[columnName:value columnName2:value2 columnName3:value3 ...]
+		// fmt.Printf("%+v \n")
+		maps = append(maps, m)
+	}
+
+	return maps, nil
+
 }
 
 // CalcOneInterestPlan 计算未来的还息计划
