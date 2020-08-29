@@ -1,6 +1,7 @@
 package lpr
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"strings"
@@ -14,11 +15,41 @@ import (
 	dataframe "github.com/rocketlaunchr/dataframe-go"
 )
 
+func Test() {
+	model, err := GetOneContractRepayPlan(3)
+	if err != nil {
+		panic(err)
+	}
+	a, b := model.AddRemainPrincipalSeries(context.TODO())
+	fmt.Printf("a:\n %s", a)
+	fmt.Printf("\nb:\n %s", b)
+}
+
 // BankRepayPlanCalcModel  定义单个合同的计算模型
 type BankRepayPlanCalcModel struct {
 	Bc BankLoanContractMini
 	// Brp []BankRepayPlan
 	Brps *dataframe.DataFrame
+}
+
+// 计算剩余本金
+func (model *BankRepayPlanCalcModel) AddRemainPrincipalSeries(ctx context.Context) (int64, *dataframe.ErrorCollection) {
+	brps := model.Brps
+	errorColl := dataframe.NewErrorCollection()
+	i, err := brps.NameToColumn("plan_principal")
+	if err != nil {
+		errorColl.AddError(err)
+	}
+	// fmt.Printf("se type : %s", brps.Series[i].Type())
+	if se, ok := brps.Series[i].(*dataframe.SeriesInt64); ok {
+		sum, err := se.Sum(ctx)
+		if err != nil {
+			errorColl.AddError(err)
+		}
+
+		return int64(sum), errorColl
+	}
+	return 0, errorColl
 }
 
 // BankLoanContractMini 提取BankLoanContract与利息计算相关的字段
@@ -47,8 +78,10 @@ func GetOneContractRepayPlan(bankLoanContractID int32) (model BankRepayPlanCalcM
 
 	var brp models.BankRepayPlan
 	brpDF, err := InitDataframe(brp)
-	// rows, e := db.Model(&brp).Debug().Select("ID", "BankLoanContractID", "PlanDate", "PlanAmount", "PlanPrincipal", "PlanInterest").Where("bank_loan_contract_id = ? and actual_amount is null", bankLoanContractID).Rows()
-	rows, e := db.Model(&brp).Where("bank_loan_contract_id = ? and actual_amount is null", bankLoanContractID).Rows()
+
+	// rows, e := db.Model(&brp).Where("bank_loan_contract_id = ? and actual_amount is null", bankLoanContractID).Rows()
+
+	rows, e := db.Model(&brp).Where("bank_loan_contract_id = ? ", bankLoanContractID).Rows()
 	if e != nil {
 		err = e
 		return
@@ -67,14 +100,19 @@ func GetOneContractRepayPlan(bankLoanContractID int32) (model BankRepayPlanCalcM
 
 		brpDF.Append(nil, val)
 	}
+	
+	brpDF.Sort(context.TODO(), []dataframe.SortKey{
+		{Key: "plan_date", Desc: false},
+	})
 
+	fmt.Print(brpDF.Table())
 	// fmt.Print(brps.Table())
 	model.Brps = brpDF
 
 	return
 }
 
-//Rows2Map store rows in map
+//Rows2Maps store rows in map
 //ref https://kylewbanks.com/blog/query-result-to-map-in-golang
 func Rows2Maps(rows *sql.Rows) ([]map[string]interface{}, error) {
 	cols, _ := rows.Columns()
@@ -84,7 +122,7 @@ func Rows2Maps(rows *sql.Rows) ([]map[string]interface{}, error) {
 		// and a second slice to contain pointers to each item in the columns slice.
 		columns := make([]interface{}, len(cols))
 		columnPointers := make([]interface{}, len(cols))
-		for i, _ := range columns {
+		for i := 0; i < len(columns); i++ {
 			columnPointers[i] = &columns[i]
 		}
 
@@ -114,7 +152,7 @@ func Rows2Maps(rows *sql.Rows) ([]map[string]interface{}, error) {
 		// fmt.Printf("%+v \n")
 		maps = append(maps, m)
 	}
-	fmt.Printf("maps:%+v", maps)
+	// fmt.Printf("maps:%+v", maps)
 	return maps, nil
 
 }

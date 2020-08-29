@@ -1,10 +1,6 @@
 package lpr
 
-import (
-	"fmt"
-)
-
-func Icbc() {
+/* func Icbc() {
 	fmt.Println("成功调用icbc函数")
 	res, err := GetOneContractRepayPlan(3)
 	if err != nil {
@@ -14,8 +10,8 @@ func Icbc() {
 	fmt.Printf("\n res.Brps.Table:\n")
 	fmt.Print(res.Brps.Table())
 
-}
-
-/* func Icbc(model *BankRepayPlanCalcModel) {
-
 } */
+
+func icbc(model *BankRepayPlanCalcModel) {
+
+}

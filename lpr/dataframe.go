@@ -10,13 +10,7 @@ import (
 	dataframe "github.com/rocketlaunchr/dataframe-go"
 )
 
-func Test() {
-	var brp models.BankRepayPlan
-	df, _ := InitDataframe(brp)
-	fmt.Print(df.Table())
-}
-
-// Gen dataframe from BankRepayPlan Struct
+// InitDataframe  Gen dataframe from BankRepayPlan Struct
 func InitDataframe(brp models.BankRepayPlan) (df *dataframe.DataFrame, err error) {
 	typ := reflect.TypeOf(brp)
 	val := reflect.ValueOf(brp)
@@ -42,13 +36,21 @@ func InitDataframe(brp models.BankRepayPlan) (df *dataframe.DataFrame, err error
 			}
 		case "date":
 			se := dataframe.NewSeriesGeneric(colname, civil.Date{}, nil)
+
+			// 定义比较函数，以便用于排序
+			f := func(a, b interface{}) bool {
+				a1 := a.(civil.Date)
+				b1 := b.(civil.Date)
+				return a1.Before(b1)
+			}
+			se.SetIsLessThanFunc(f)
 			if df == nil {
 				df = dataframe.NewDataFrame(se)
 			} else {
 				df.AddSeries(se, nil)
 			}
 		default:
-			err = fmt.Errorf("无法识别:", typename)
+			err = fmt.Errorf("无法识别:%s", typename)
 			return
 		}
 

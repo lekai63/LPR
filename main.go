@@ -61,7 +61,7 @@ func startServer() {
 		switch c.PostForm("calc") {
 		case "insterestAll":
 			// todo modify
-			lpr.Icbc()
+			lpr.Test()
 			res["code"] = 0
 			res["msg"] = "成功调用"
 			res["status_code"] = http.StatusOK
