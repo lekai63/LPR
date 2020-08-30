@@ -83,7 +83,7 @@ func NewCalcModel(model BankRepayPlanCalcModel) (*BankRepayPlanCalcModel, error)
 
 // AddAccruedPrincipalSeries 添加应计本金列,用于计算此row的plan_interest
 //假定截至9月10日，应计本金为100万，每季还本，9月11日根据还款计划归还10万，则9月11日row的应计本金仍写作100万，12月11日row应计本金写作90万。
-func (model *BankRepayPlanCalcModel) AddAccruedPrincipalSeries(ctx context.Context) (*BankRepayPlanCalcModel, *dataframe.ErrorCollection) {
+func (model *BankRepayPlanCalcModel) AddAccruedPrincipalSeries(ctx context.Context) *BankRepayPlanCalcModel {
 	brps := model.Brps
 	errorColl := dataframe.NewErrorCollection()
 	i, err := brps.NameToColumn("plan_principal")
@@ -102,13 +102,14 @@ func (model *BankRepayPlanCalcModel) AddAccruedPrincipalSeries(ctx context.Conte
 			}
 			sums.Append(sum)
 		}
-		fmt.Printf("sums:\n %s", sums)
+		/* fmt.Printf("sums:\n %s", sums)
 		fmt.Println("origin brps:\n")
-		fmt.Print(brps.Table())
+		fmt.Print(brps.Table()) */
 		brps.AddSeries(sums, nil)
 
 	}
-	return model, errorColl
+	fmt.Printf("%s", errorColl)
+	return model
 }
 
 // getLatestNilActualRowNum 返回第一笔实际未付的记录序号，如全部已付，则返回-1
