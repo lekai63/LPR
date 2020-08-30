@@ -3,7 +3,6 @@ package lpr
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"strings"
 	"time"
 
@@ -20,9 +19,10 @@ func Test() {
 	if err != nil {
 		panic(err)
 	}
-	a, b := model.AddRemainPrincipalSeries(context.TODO())
-	fmt.Printf("a:\n %s", a)
-	fmt.Printf("\nb:\n %s", b)
+	icbc(model)
+
+	// a, b := model.AddRemainPrincipalSeries(context.TODO())
+
 }
 
 // BankRepayPlanCalcModel  定义单个合同的计算模型
@@ -30,26 +30,6 @@ type BankRepayPlanCalcModel struct {
 	Bc BankLoanContractMini
 	// Brp []BankRepayPlan
 	Brps *dataframe.DataFrame
-}
-
-// 计算剩余本金
-func (model *BankRepayPlanCalcModel) AddRemainPrincipalSeries(ctx context.Context) (int64, *dataframe.ErrorCollection) {
-	brps := model.Brps
-	errorColl := dataframe.NewErrorCollection()
-	i, err := brps.NameToColumn("plan_principal")
-	if err != nil {
-		errorColl.AddError(err)
-	}
-	// fmt.Printf("se type : %s", brps.Series[i].Type())
-	if se, ok := brps.Series[i].(*dataframe.SeriesInt64); ok {
-		sum, err := se.Sum(ctx)
-		if err != nil {
-			errorColl.AddError(err)
-		}
-
-		return int64(sum), errorColl
-	}
-	return 0, errorColl
 }
 
 // BankLoanContractMini 提取BankLoanContract与利息计算相关的字段
@@ -100,13 +80,13 @@ func GetOneContractRepayPlan(bankLoanContractID int32) (model BankRepayPlanCalcM
 
 		brpDF.Append(nil, val)
 	}
-	
+
 	brpDF.Sort(context.TODO(), []dataframe.SortKey{
 		{Key: "plan_date", Desc: false},
 	})
 
-	fmt.Print(brpDF.Table())
-	// fmt.Print(brps.Table())
+	// fmt.Print(brpDF.Table())
+
 	model.Brps = brpDF
 
 	return
