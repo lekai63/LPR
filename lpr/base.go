@@ -19,7 +19,7 @@ func Test() {
 	if err != nil {
 		panic(err)
 	}
-	icbc(model)
+	icbc(&model)
 
 	// a, b := model.AddRemainPrincipalSeries(context.TODO())
 

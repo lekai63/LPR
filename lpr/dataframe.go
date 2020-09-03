@@ -67,8 +67,8 @@ func InitDataframe(brp models.BankRepayPlan) (df *dataframe.DataFrame, err error
 
 }
 
-// NewCalcModel 从原始dataframe（含所有已还款记录），抽离出最近一期还款+未还款记录
-func NewCalcModel(model BankRepayPlanCalcModel) (*BankRepayPlanCalcModel, error) {
+// NewCalcModel 从原始dataframe（含所有已还款记录），抽离出最近一期还款(row=0)+未还款记录
+func NewCalcModel(model *BankRepayPlanCalcModel) (*BankRepayPlanCalcModel, error) {
 	i, err := getLatestNilActualRowNum(model.Brps)
 	if err != nil {
 		model.Brps = nil
@@ -78,11 +78,11 @@ func NewCalcModel(model BankRepayPlanCalcModel) (*BankRepayPlanCalcModel, error)
 	r[0] = dataframe.Range{&withLastPaidRcord, nil}
 	df := model.Brps.Copy(r...)
 	model.Brps = df
-	return &model, nil
+	return model, nil
 }
 
 // AddAccruedPrincipalSeries 添加应计本金列,用于计算此row的plan_interest
-//假定截至9月10日，应计本金为100万，每季还本，9月11日根据还款计划归还10万，则9月11日row的应计本金仍写作100万，12月11日row应计本金写作90万。
+//假定截至9月10日，应计本金为100万，每季还本，9月11日根据还款计划归还10万，则9月11日row的应计本金仍写作100万，10月11日row应计本金写作90万。
 func (model *BankRepayPlanCalcModel) AddAccruedPrincipalSeries(ctx context.Context) *BankRepayPlanCalcModel {
 	brps := model.Brps
 	errorColl := dataframe.NewErrorCollection()
@@ -102,11 +102,7 @@ func (model *BankRepayPlanCalcModel) AddAccruedPrincipalSeries(ctx context.Conte
 			}
 			sums.Append(sum)
 		}
-		/* fmt.Printf("sums:\n %s", sums)
-		fmt.Println("origin brps:\n")
-		fmt.Print(brps.Table()) */
 		brps.AddSeries(sums, nil)
-
 	}
 	fmt.Printf("%s", errorColl)
 	return model
