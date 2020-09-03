@@ -29,21 +29,34 @@ func (model *BankRepayPlanCalcModel) CalcIcbcIns() *BankRepayPlanCalcModel {
 	iterator := df.ValuesIterator(dataframe.ValuesOptions{0, 1, true})
 	df.Lock()
 	var upperVal map[interface{}]interface{}
+	var temp int64
 	for {
 		row, vals, _ := iterator()
 		if row == nil {
 			break
 		}
-		// 第0行为最后一笔还款记录，不需要测算
+
+		// 第0行为最后一笔实际还款记录，不需要测算利息
+		// 生成每个plan_date 的利息
 		if *row != 0 {
 			calcDays := vals["plan_date"].(civil.Date).DaysSince(upperVal["plan_date"].(civil.Date))
-			// 仅第一笔算数正确，还需要调整 point问题
 			planInsB := big.NewInt(0)
 			accruedB := big.NewInt(vals["accrued_principal"].(int64))
 			RateB := big.NewInt(int64(model.Bc.CurrentRate))
-			// plan_ins := vals["accrued_principal"].(int64) * int64(model.Bc.CurrentRate) / 3600000 * int64(calcDays)
+			// 计划利息 = 应计本金×年利率×期间天数/360 （因利率单位为0.01%，所以再除以10000）
 			planInsB = planInsB.Mul(accruedB, RateB).Mul(planInsB, big.NewInt(int64(calcDays))).Div(planInsB, big.NewInt(3600000))
-			fmt.Printf("row:%d, plan_ins:%d \n", *row, planInsB)
+			vals["plan_interest"] = planInsB.Int64()
+
+			// 因工行保理利息在每月21日扣，故本金还款日当天的利息，应加到下一个最近的21日一并扣息
+			// 本row还款日非21日，将计划还款利息暂存入temp
+			if d := vals["plan_date"].(civil.Date); d.Day != 21 {
+				temp = vals["plan_interest"].(int64)
+				vals["plan_interest"] = 0
+			}
+			// 上一row为非21日，将temp提取出来，加入本row
+			if d := upperVal["plan_date"].(civil.Date); d.Day != 21 {
+				vals["plan_interest"] = vals["plan_interest"].(int64) + temp
+			}
 		}
 
 		// 本次循环结束时，将本行赋值给upperVal用于下次循环
