@@ -34,18 +34,20 @@ func (model *BankRepayPlanCalcModel) CalcIcbcIns() *BankRepayPlanCalcModel {
 		if row == nil {
 			break
 		}
-		if *row == 0 {
-			upperVal = vals
-		} else {
+		// 第0行为最后一笔还款记录，不需要测算
+		if *row != 0 {
 			calcDays := vals["plan_date"].(civil.Date).DaysSince(upperVal["plan_date"].(civil.Date))
-			// 仅第一笔算数正确，还需要调整
+			// 仅第一笔算数正确，还需要调整 point问题
 			planInsB := big.NewInt(0)
 			accruedB := big.NewInt(vals["accrued_principal"].(int64))
 			RateB := big.NewInt(int64(model.Bc.CurrentRate))
 			// plan_ins := vals["accrued_principal"].(int64) * int64(model.Bc.CurrentRate) / 3600000 * int64(calcDays)
 			planInsB = planInsB.Mul(accruedB, RateB).Mul(planInsB, big.NewInt(int64(calcDays))).Div(planInsB, big.NewInt(3600000))
-			fmt.Printf("plan_ins:", planInsB)
+			fmt.Printf("row:%d, plan_ins:%d \n", *row, planInsB)
 		}
+
+		// 本次循环结束时，将本行赋值给upperVal用于下次循环
+		upperVal = vals
 
 	}
 	df.Unlock()
