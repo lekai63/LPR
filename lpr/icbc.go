@@ -16,57 +16,99 @@ func icbc(model *BankRepayPlanCalcModel) {
 		panic(err)
 	}
 	m.addIcbcInsPlanDate().AddAccruedPrincipalSeries(context.TODO())
-	fmt.Println("还款计划表:\n")
-	fmt.Print(m.Brps.Table())
-	m.CalcIcbcIns()
+	// fmt.Println("还款计划表:\n")
+	// fmt.Print(m.Brps.Table())
+	err = m.CalcIcbcFactoringIns().CreateInsToDB()
+	if err != nil {
+		fmt.Printf("写入错误:\n", err)
+	}
 
 }
 
-func (model *BankRepayPlanCalcModel) CalcIcbcIns() *BankRepayPlanCalcModel {
+// CalcIcbcFactoringIns 计算工行保理利息
+func (model *BankRepayPlanCalcModel) CalcIcbcFactoringIns() *BankRepayPlanCalcModel {
 	df := model.Brps
+	// upperVal 用于存储上一个row的信息
+	var upperVals map[interface{}]interface{}
+	var temp int64
+	// planInsterest Slice用于存储计算后的计划利息,因最后要将 planInsterest 传入NewSeries，故类型直接选择[]interface{} ,如定义为[]int,还需再循环转换为[]interface{}
+	// https://golang.org/doc/faq#convert_slice_of_interface
+	nrows := df.NRows()
+	planInsterest := make([]interface{}, nrows)
+	// fmt.Println("完成planIns初始化")
 
-	// 生成中间过程
 	iterator := df.ValuesIterator(dataframe.ValuesOptions{0, 1, true})
 	df.Lock()
-	var upperVal map[interface{}]interface{}
-	var temp int64
 	for {
+
 		row, vals, _ := iterator()
 		if row == nil {
 			break
 		}
 
-		// 第0行为最后一笔实际还款记录，不需要测算利息
-		// 生成每个plan_date 的利息
-		if *row != 0 {
-			calcDays := vals["plan_date"].(civil.Date).DaysSince(upperVal["plan_date"].(civil.Date))
-			planInsB := big.NewInt(0)
-			accruedB := big.NewInt(vals["accrued_principal"].(int64))
-			RateB := big.NewInt(int64(model.Bc.CurrentRate))
-			// 计划利息 = 应计本金×年利率×期间天数/360 （因利率单位为0.01%，所以再除以10000）
-			planInsB = planInsB.Mul(accruedB, RateB).Mul(planInsB, big.NewInt(int64(calcDays))).Div(planInsB, big.NewInt(3600000))
-			vals["plan_interest"] = planInsB.Int64()
+		switch {
+		// 第0行为最后一笔实际还款记录，计划利息已算好，无需重新测算
+		case (*row) == 0:
+			if vals["plan_interest"] != nil {
+				planInsterest[0] = vals["plan_interest"].(int64)
+			} else {
+				planInsterest[0] = 0
+			}
+
+			// 最后一行利随本清
+		case (*row) == nrows-1: // 如使用(*row) == df.NRows() 游标直接到最后，从而无法执行
+			planInsterest[*row] = icbcOneInsCalc(vals, upperVals, model)
+
+		default:
 
 			// 因工行保理利息在每月21日扣，故本金还款日当天的利息，应加到下一个最近的21日一并扣息
 			// 本row还款日非21日，将计划还款利息暂存入temp
 			if d := vals["plan_date"].(civil.Date); d.Day != 21 {
-				temp = vals["plan_interest"].(int64)
-				vals["plan_interest"] = 0
-			}
-			// 上一row为非21日，将temp提取出来，加入本row
-			if d := upperVal["plan_date"].(civil.Date); d.Day != 21 {
-				vals["plan_interest"] = vals["plan_interest"].(int64) + temp
+				temp = icbcOneInsCalc(vals, upperVals, model)
+				planInsterest[*row] = 0
+			} else if x := upperVals["plan_date"].(civil.Date); x.Day != 21 {
+				// 上一row为非21日，将temp提取出来，加入本row
+				planInsterest[*row] = icbcOneInsCalc(vals, upperVals, model) + temp
+			} else {
+				// 默认planInsterest算法
+				planInsterest[*row] = icbcOneInsCalc(vals, upperVals, model)
 			}
 		}
 
-		// 本次循环结束时，将本行赋值给upperVal用于下次循环
-		upperVal = vals
+		// 存在数据竞争，如直接更新row，最后的df数据不全，故删去，转而在前面数据处理时，组装一个series，再将series整体加入到df
+		// df.UpdateRow(*row, &dataframe.DontLock, vals)
 
+		// 本次循环结束时，将本行赋值给upperVal用于下次循环
+		upperVals = vals
 	}
 	df.Unlock()
+	// 移除旧的plan_interest 以及不需要用的几个字段
+	df.RemoveSeries("plan_interest")
+	df.RemoveSeries("created_at")
+	df.RemoveSeries("updated_at")
+	df.RemoveSeries("accrued_principal")
 
-	// to modify
-	return nil
+	//添加新的plan_interest
+	se := dataframe.NewSeriesInt64("plan_interest", nil, planInsterest...)
+	df.AddSeries(se, nil)
+
+	// 对原始df的直接迭代更新，只能更新部分数据，故每次都另外生成slice，再添加到df
+	planAmount := make([]interface{}, nrows)
+	applyDfFn := dataframe.ApplyDataFrameFn(func(val map[interface{}]interface{}, row, nRows int) map[interface{}]interface{} {
+		planAmount[row] = CalcPlanAmount(val)
+		return val
+	})
+
+	ctx, cancel := context.WithTimeout(context.Background(), 50*time.Millisecond)
+	defer cancel()
+	dataframe.Apply(ctx, df, applyDfFn, dataframe.FilterOptions{InPlace: true})
+
+	se2 := dataframe.NewSeriesInt64("plan_amount", nil, planAmount...)
+	df.RemoveSeries("plan_amount")
+	df.AddSeries(se2, nil)
+
+	model.Brps = df
+	return model
 }
 
 func (model *BankRepayPlanCalcModel) addIcbcInsPlanDate() *BankRepayPlanCalcModel {
@@ -148,4 +190,15 @@ func genIcbcInsPlanDate(start, end civil.Date) (dates []interface{}) {
 	// dates = append(dates, end)
 
 	return
+}
+
+// 工行单个保理利息计算
+func icbcOneInsCalc(vals map[interface{}]interface{}, upperVals map[interface{}]interface{}, model *BankRepayPlanCalcModel) int64 {
+	calcDays := vals["plan_date"].(civil.Date).DaysSince(upperVals["plan_date"].(civil.Date))
+	planInsB := big.NewInt(0)
+	accruedB := big.NewInt(vals["accrued_principal"].(int64))
+	RateB := big.NewInt(int64(model.Bc.CurrentRate))
+	// 计划利息 = 应计本金×年利率×期间天数/360 （因利率单位为0.01%，所以再除以10000）
+	planInsB = planInsB.Mul(accruedB, RateB).Mul(planInsB, big.NewInt(int64(calcDays))).Div(planInsB, big.NewInt(3600000))
+	return planInsB.Int64()
 }

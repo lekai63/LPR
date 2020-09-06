@@ -137,6 +137,16 @@ func Rows2Maps(rows *sql.Rows) ([]map[string]interface{}, error) {
 
 }
 
+func CalcPlanAmount(vals map[interface{}]interface{}) (planAmount int64) {
+	planInterest := vals["plan_interest"].(int64)
+	if vals["plan_principal"] == nil {
+		planAmount = planInterest
+	} else {
+		planAmount = planInterest + vals["plan_principal"].(int64)
+	}
+	return
+}
+
 // CalcOneInterestPlan 计算未来的还息计划
 /* func CalcOneInterestPlan(model BankRepayPlanCalcModel) (plan BankRepayPlan) {
 	switch model.Bc.BankName {

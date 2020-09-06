@@ -9,13 +9,69 @@ import (
 	"cloud.google.com/go/civil"
 	"github.com/lekai63/lpr/models"
 	dataframe "github.com/rocketlaunchr/dataframe-go"
+	"github.com/rocketlaunchr/dataframe-go/exports"
 )
 
-// CalcModel define the interest calc model
-// type CalcModel struct {
-// 	BaseInfo BankLoanContractMini
-// 	Ins      *dataframe.DataFrame
-// }
+// CreateInsToDB 将利息计划写入数据库（Create）
+func (model *BankRepayPlanCalcModel) CreateInsToDB() error {
+	df := model.Brps
+	filterFn := dataframe.FilterDataFrameFn(func(vals map[interface{}]interface{}, row, nRows int) (dataframe.FilterAction, error) {
+		if vals["id"] == nil {
+			return dataframe.KEEP, nil
+		}
+		return dataframe.DROP, nil
+	})
+	newDf := df.Copy()
+	newDf.Names()
+	_, err := dataframe.Filter(context.TODO(), newDf, filterFn, dataframe.FilterOptions{InPlace: true})
+	if err != nil {
+		return err
+	}
+	fmt.Println("newDf:\n")
+	fmt.Print(newDf.Table())
+	ctx := context.TODO()
+	conn := models.GlobalConn
+	tx := conn.BeginTx()
+
+	m := map[string]*string{
+		"id":                    nil,
+		"bank_loan_contract_id": &[]string{"bank_loan_contract_id"}[0],
+		"plan_date":             &[]string{"plan_date"}[0],
+		"plan_insterest":        &[]string{"plan_insterest"}[0],
+		"plan_amount":           &[]string{"plan_amount"}[0],
+		// 设为nil的字段不导出至sql
+		"actual_date":      nil,
+		"actual_principal": nil,
+		"actual_amount":    nil,
+		"actual_interest":  nil,
+	}
+	op := exports.SQLExportOptions{
+		NullString: &[]string{"0"}[0],
+		Range:      dataframe.Range{},
+		/* PrimaryKey: &exports.PrimaryKey{
+			PrimaryKey: "id",
+			Value: func(row int, n int) *string {
+				return nil
+			},
+		}, */
+		BatchSize:      &[]uint{50}[0],
+		SeriesToColumn: m,
+		Database:       exports.PostgreSQL,
+	}
+	err = exports.ExportToSQL(ctx, tx, newDf, "bank_repay_plan", op)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	tx.Commit()
+	return nil
+}
+
+// 将计划还款总额更新到数据库，仅针对之前已有principal的数据，之前如无principal，则计划还款总额plan_amount数据已通过CreateInsToDB写入数据库
+func UpdateAmountToDB(model *BankRepayPlanCalcModel) (*BankRepayPlanCalcModel, error) {
+	return nil, nil
+}
 
 // InitDataframe  Gen dataframe from BankRepayPlan Struct
 func InitDataframe(brp models.BankRepayPlan) (df *dataframe.DataFrame, err error) {
@@ -56,6 +112,17 @@ func InitDataframe(brp models.BankRepayPlan) (df *dataframe.DataFrame, err error
 			} else {
 				df.AddSeries(se, nil)
 			}
+
+			/* // 定义string函数，用于显示和最后的exports to sql
+			fs := func(val interface{}) string {
+				if val == nil {
+					return "NaN"
+				}
+				v := val.(civil.Date)
+				return v.String()
+			}
+			se.SetValueToStringFormatter(fs) */
+
 		default:
 			err = fmt.Errorf("无法识别:%s", typename)
 			return
