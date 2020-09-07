@@ -6,6 +6,7 @@ import (
 	"github.com/GoAdminGroup/go-admin/modules/db"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/schema"
 )
 
 var (
@@ -15,8 +16,7 @@ var (
 )
 
 func InitGormv2(c db.Connection) {
-	// 赋值全局数据库连接
-	GlobalConn = c
+
 	tables = make(map[string]*TableInfo)
 	tables["lease_contract"] = lease_contractTableInfo
 	tables["lease_repay_plan"] = lease_repay_planTableInfo
@@ -29,18 +29,30 @@ func InitGormv2(c db.Connection) {
 	tables["shareholder_loan_contract"] = shareholder_loan_contractTableInfo
 	tables["shareholder_loan_repaid_record"] = shareholder_loan_repaid_recordTableInfo
 
-	dsn := "host=192.168.5.11 user=fzzl password=fzzl032003 dbname=lpr port=5432 sslmode=disable TimeZone=Asia/Shanghai"
 	var err error
-	sqldb := c.GetDB("default")
-	var conf = postgres.Config{
-		DSN:                  dsn,
-		PreferSimpleProtocol: true,
-		Conn:                 sqldb,
+	if c == nil {
+		dsn := "user=fzzl password=fzzl032003 dbname=lpr port=5432 sslmode=disable TimeZone=Asia/Shanghai"
+		Gormv2, err = gorm.Open(postgres.Open(dsn), &gorm.Config{
+			NamingStrategy: schema.NamingStrategy{
+				//	TablePrefix:   "t_", // 表名前缀，`User` 的表名应该是 `t_users`
+				SingularTable: true, // 使用单数表名，启用该选项，此时，`User` 的表名应该是 `t_user`
+			},
+		})
+		// sqlDB, _ := Gormv2.DB()
+
+	} else {
+		// 赋值全局数据库连接
+		GlobalConn = c
+		sqlDB := c.GetDB("default")
+
+		Gormv2, err = gorm.Open(postgres.New(postgres.Config{
+			Conn: sqlDB,
+		}), &gorm.Config{
+			NamingStrategy: schema.NamingStrategy{
+				SingularTable: true,
+			},
+		})
 	}
-	var d = postgres.Dialector{
-		&conf,
-	}
-	Gormv2, err = gorm.Open(&d, &gorm.Config{})
 
 	if err != nil {
 		fmt.Printf("%s", err)
