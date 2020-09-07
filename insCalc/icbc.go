@@ -9,18 +9,32 @@ import (
 	dataframe "github.com/rocketlaunchr/dataframe-go"
 )
 
+// 填充生成的planDate，并按planDate升序排序，其他字段以nil进行填充 （bank_loan_contract_id 用 bc.id填充）
 func (model *BankRepayPlanCalcModel) fillInsPlanDateICBC() *BankRepayPlanCalcModel {
 	brps := model.Brps
 	col, _ := brps.NameToColumn("plan_date")
 	se := brps.Series[col]
-		
-	// 替换"plan_date"列
-	startDate := se.Value(0).(civil.Date)
-	endDate := se.Value(se.NRows() - 1).(civil.Date)
+	se.Sort(context.TODO(), dataframe.SortOptions{Desc: false})
+
+	n, err := getLatestNilActualRowNum(brps)
+	nrow := se.NRows()
+	check(err)
+
+	startDate := se.Value(n).(civil.Date)
+	endDate := se.Value(nrow - 1).(civil.Date)
 	planDateSlice := genIcbcInsPlanDate(startDate, endDate)
-	
-	
-	brps.Sort(context.TODO(), []dataframe.SortKey{
+
+	// 填充生成的planDate，并对其他字段进行填充
+	model.Brps = brps
+	maps := model.slice2maps("plan_date", planDateSlice...)
+
+	// 组装dataframe
+	// 注意maps中字段要与series一一对应，否则报错"no. of args not equal to no. of series"
+	for _, val := range maps {
+		brps.Append(nil, val)
+	}
+
+	brps.Sort(ctx, []dataframe.SortKey{
 		{Key: "plan_date", Desc: false},
 	})
 
