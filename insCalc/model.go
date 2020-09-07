@@ -3,13 +3,17 @@ package insCalc
 import (
 	"context"
 	"fmt"
+	"log"
+	"os"
+	"strconv"
+	"strings"
+	"time"
 
+	"cloud.google.com/go/civil"
 	"github.com/guregu/null"
+
 	dataframe "github.com/rocketlaunchr/dataframe-go"
 	"github.com/rocketlaunchr/dataframe-go/imports"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
-	"gorm.io/gorm/schema"
 )
 
 // BankRepayPlanCalcModel  定义单个合同的计算模型
@@ -34,13 +38,14 @@ type BankLoanContractMini struct {
 	CurrentRate int32 `gorm:"column:current_rate;type:INT4;" json:"current_rate"`
 }
 
+var ctx = context.Background()
+
 // NewModel 根据bankLoanContractID 从数据库中获取数据 并生成 BankRepayPlanCalcModel
-func NewBankRepayPlanCalcModel(bankLoanContractID int32) (model BankRepayPlanCalcModel, err error) {
+func NewModel(bankLoanContractID int32) (model BankRepayPlanCalcModel, err error) {
 	// conn := models.GlobalConn
 	// to change back to models.GlobalConn
-	db, _ := GormInitForTest()
+	db, _ := gormInitForTest()
 
-	ctx := context.Background()
 	// gen model.Bc
 	var bc BankLoanContractMini
 	bc.ID = bankLoanContractID
@@ -52,48 +57,130 @@ func NewBankRepayPlanCalcModel(bankLoanContractID int32) (model BankRepayPlanCal
 	sqldb, _ := db.DB()
 	tx, _ := sqldb.Begin()
 	op := imports.SQLLoadOptions{
-		// KnownRowCount: &[]int{11}[0],
+		// KnownRowCount: &[]int{13}[0],
 		DictateDataType: map[string]interface{}{
 			"id":                    int64(0),
 			"bank_loan_contract_id": int64(0),
-			// "plan_date":             time.Now,
-			"plan_amount":    int64(0),
-			"plan_principal": int64(0),
-			"plan_interest":  int64(0),
-			//	"actual_date":           time.Now,
-			"actual_amount":    int64(0),
-			"actual_principal": int64(0),
-			"actual_interest":  int64(0),
-			// "created_at":        time.Now,
-			// "updated_at":        time.Now,
-			"accrued_principal": int64(0),
+			"plan_date":             time.Unix(0, 0),
+			"plan_amount":           int64(0),
+			"plan_principal":        int64(0),
+			"plan_interest":         int64(0),
+			"actual_date":           time.Unix(0, 0),
+			"actual_amount":         int64(0),
+			"actual_principal":      int64(0),
+			"actual_interest":       int64(0),
+			"created_at":            time.Unix(0, 0),
+			"updated_at":            time.Unix(0, 0),
+			"accrued_principal":     int64(0),
 		},
 		Database: imports.PostgreSQL,
-		Query:    `select * from "bank_repay_plan"`,
+		Query:    `select * from "bank_repay_plan"` + `where bank_loan_contract_id =` + strconv.Itoa(int(bc.ID)),
 	}
 	brps, err := imports.LoadFromSQL(ctx, tx, &op)
 	if err != nil {
 		fmt.Printf("从数据库中读取数据组装dataframe时发生错误：%+v", err)
 		return model, err
 	}
-	// fmt.Println("brps:\n")
-	fmt.Print(brps.Table())
 	model.Brps = brps
+	model.convTimeToDate()
 	return model, nil
 
 }
 
-func GormInitForTest() (*gorm.DB, error) {
-	dsn := "host=192.168.5.11 user=fzzl password=fzzl032003 dbname=lpr port=5432 sslmode=disable TimeZone=Asia/Shanghai"
-	gormv2, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
-		NamingStrategy: schema.NamingStrategy{
-			//	TablePrefix:   "t_", // 表名前缀，`User` 的表名应该是 `t_users`
-			SingularTable: true, // 使用单数表名，启用该选项，此时，`User` 的表名应该是 `t_user`
-		},
-	})
+// CalcAccruedPrincipal 重新计算应计本金并替换原Series
+// todo:根据实际还款情况计算未还部分的应计本金
+func (model *BankRepayPlanCalcModel) CalcAccruedPrincipal(ctx context.Context) *BankRepayPlanCalcModel {
+	brps := model.Brps
+	errorColl := dataframe.NewErrorCollection()
+	i, err := brps.NameToColumn("plan_principal")
 	if err != nil {
-		return nil, err
+		errorColl.AddError(err)
 	}
-	return gormv2, err
 
+	copiedSerie, ok := brps.Series[i].Copy().(*dataframe.SeriesInt64)
+	sums := dataframe.NewSeriesInt64("accrued_principal", nil)
+	if ok {
+		for i = 0; i < copiedSerie.NRows(); copiedSerie.Remove(i) {
+			sumfloat, err := copiedSerie.Sum(ctx)
+			sum := int64(sumfloat)
+			if err != nil {
+				errorColl.AddError(err)
+				fmt.Printf("%s", errorColl)
+			}
+			sums.Append(sum)
+		}
+		brps.RemoveSeries("accrued_principal")
+		brps.AddSeries(sums, nil)
+	}
+
+	return model
+}
+
+// todo:根据银行不同 生成不同的计划还款日期
+func (model *BankRepayPlanCalcModel) FillInsPlanDate() *BankRepayPlanCalcModel {
+
+	return nil
+}
+
+// ConvTimeToDate 将 model 中含有_date字段 的 time转换为civil.date：time2date
+func (model *BankRepayPlanCalcModel) convTimeToDate() *BankRepayPlanCalcModel {
+	df := model.Brps
+	for _, name := range df.Names() {
+		if strings.Contains(name, "_date") {
+			n, err := df.NameToColumn(name)
+			check(err)
+			se, err := timeSerie2dateSerie(&df.Series[n])
+			check(err)
+			err = df.RemoveSeries(name)
+			check(err)
+			err = df.AddSeries(se, nil)
+			check(err)
+		}
+	}
+	model.Brps = df
+	return model
+}
+
+func timeSerie2dateSerie(t *dataframe.Series) (*dataframe.SeriesGeneric, error) {
+	typ := (*t).Type()
+	if typ != "time" {
+		fmt.Println(typ)
+		return nil, fmt.Errorf("格式错误")
+	}
+	colname := (*t).Name()
+	// vals := []civil.Date{}
+	x := (*t).NRows()
+	vals := make([]interface{}, x)
+	// 将time转换为date并放到另一个slice中 （直接in place替换，可能会有更新不全的问题）
+	fconvert := dataframe.ApplySeriesFn(func(val interface{}, row, nRows int) interface{} {
+		if val == nil {
+			vals[row] = nil
+		} else {
+			t := val.(time.Time)
+			vals[row] = civil.DateOf(t)
+		}
+		return val
+	})
+	dataframe.Apply(ctx, *t, fconvert, dataframe.FilterOptions{InPlace: true})
+
+	// 生成dateSerie
+	se := dataframe.NewSeriesGeneric(colname, civil.Date{}, nil, vals...)
+
+	// 定义比较函数，以便用于排序
+	f := func(a, b interface{}) bool {
+		a1 := a.(civil.Date)
+		b1 := b.(civil.Date)
+		return a1.Before(b1)
+	}
+	se.SetIsLessThanFunc(f)
+
+	return se, nil
+
+}
+
+func check(err error) {
+	if err != nil {
+		log.Fatalln(err)
+		os.Exit(10086)
+	}
 }
