@@ -1,4 +1,4 @@
-package insCalc
+package inscalc
 
 import (
 	"context"
@@ -83,6 +83,7 @@ func NewModel(bankLoanContractID int32) (model BankRepayPlanCalcModel, err error
 	}
 	model.Brps = brps
 	model.convTimeToDate()
+
 	return model, nil
 
 }
@@ -98,6 +99,7 @@ func (model *BankRepayPlanCalcModel) CalcAccruedPrincipal(ctx context.Context) *
 	}
 
 	copiedSerie, ok := brps.Series[i].Copy().(*dataframe.SeriesInt64)
+
 	sums := dataframe.NewSeriesInt64("accrued_principal", nil)
 	if ok {
 		for i = 0; i < copiedSerie.NRows(); copiedSerie.Remove(i) {
@@ -122,6 +124,18 @@ func (model *BankRepayPlanCalcModel) FillInsPlanDate() *BankRepayPlanCalcModel {
 	return nil
 }
 
+// model 根据fieldname字段升序排列
+func (model *BankRepayPlanCalcModel) Sort(fieldname string) *BankRepayPlanCalcModel {
+	df := model.Brps
+
+	df.Sort(ctx, []dataframe.SortKey{
+		{Key: fieldname, Desc: false},
+	})
+
+	model.Brps = df
+	return model
+}
+
 // ConvTimeToDate 将 model 中含有_date字段 的 time转换为civil.date：time2date
 func (model *BankRepayPlanCalcModel) convTimeToDate() *BankRepayPlanCalcModel {
 	df := model.Brps
@@ -141,27 +155,29 @@ func (model *BankRepayPlanCalcModel) convTimeToDate() *BankRepayPlanCalcModel {
 	return model
 }
 
-func timeSerie2dateSerie(t *dataframe.Series) (*dataframe.SeriesGeneric, error) {
-	typ := (*t).Type()
+func timeSerie2dateSerie(d *dataframe.Series) (*dataframe.SeriesGeneric, error) {
+
+	typ := (*d).Type()
 	if typ != "time" {
 		fmt.Println(typ)
 		return nil, fmt.Errorf("格式错误")
 	}
-	colname := (*t).Name()
+	t := (*d).Copy()
+	colname := (t).Name()
 	// vals := []civil.Date{}
-	x := (*t).NRows()
+	x := (t).NRows()
 	vals := make([]interface{}, x)
 	// 将time转换为date并放到另一个slice中 （直接in place替换，可能会有更新不全的问题）
 	fconvert := dataframe.ApplySeriesFn(func(val interface{}, row, nRows int) interface{} {
 		if val == nil {
 			vals[row] = nil
 		} else {
-			t := val.(time.Time)
-			vals[row] = civil.DateOf(t)
+			z := val.(time.Time)
+			vals[row] = civil.DateOf(z)
 		}
 		return val
 	})
-	dataframe.Apply(ctx, *t, fconvert, dataframe.FilterOptions{InPlace: true})
+	dataframe.Apply(ctx, t, fconvert, dataframe.FilterOptions{InPlace: true})
 
 	// 生成dateSerie
 	se := dataframe.NewSeriesGeneric(colname, civil.Date{}, nil, vals...)

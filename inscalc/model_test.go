@@ -1,4 +1,4 @@
-package insCalc
+package inscalc
 
 import (
 	"context"
@@ -13,14 +13,12 @@ func TestNewBankRepayPlanCalcModel(t *testing.T) {
 	)
 	actual, err := NewModel(int32(in))
 
-	// fmt.Print(actual.Brps.Table())
-	// actual.fillInsPlanDateICBC().CalcAccruedPrincipal(context.TODO())
-	// actual.Brps.Sort(context.TODO(), []dataframe.SortKey{
-	// 	{Key: "plan_date", Desc: false},
-	// })
-	// fmt.Print(actual.Brps.Table())
 	p := &actual
-	p.fillInsPlanDateICBC().CalcAccruedPrincipal(context.TODO())
+	p.Sort("plan_date")
+	fmt.Println("origin Table")
+	fmt.Print(p.Brps.Table())
+	// 注意使用括号决定计算优先级，不要直接链式调用
+	(p.FillPlanDateMonthly()).CalcAccruedPrincipal(context.TODO())
 
 	if err != nil {
 		fmt.Println(err)

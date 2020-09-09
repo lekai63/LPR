@@ -1,4 +1,4 @@
-package insCalc
+package inscalc
 
 import (
 	"fmt"

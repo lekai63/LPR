@@ -1,7 +1,7 @@
-package insCalc
+package inscalc
 
 import (
-	"context"
+	// "context"
 	"math/big"
 	"time"
 
@@ -9,12 +9,13 @@ import (
 	dataframe "github.com/rocketlaunchr/dataframe-go"
 )
 
-// 填充生成的planDate，并按planDate升序排序，其他字段以nil进行填充 （bank_loan_contract_id 用 bc.id填充）
-func (model *BankRepayPlanCalcModel) fillInsPlanDateICBC() *BankRepayPlanCalcModel {
+// FillPlanDateMonthly 对还未还款的记录（actual_date 为nil），生成每月21日的还息日期plan_date，并按planDate升序排序。
+// 其他字段以nil进行填充 （bank_loan_contract_id 用 bc.id填充）
+func (model *BankRepayPlanCalcModel) FillPlanDateMonthly() *BankRepayPlanCalcModel {
 	brps := model.Brps
 	col, _ := brps.NameToColumn("plan_date")
 	se := brps.Series[col]
-	se.Sort(context.TODO(), dataframe.SortOptions{Desc: false})
+	se.Sort(ctx, dataframe.SortOptions{Desc: false})
 
 	n, err := getLatestNilActualRowNum(brps)
 	nrow := se.NRows()
