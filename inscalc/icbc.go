@@ -1,18 +1,24 @@
 package inscalc
 
 import (
+	"errors"
+
 	"cloud.google.com/go/civil"
 	dataframe "github.com/rocketlaunchr/dataframe-go"
 )
 
 // ToICBC 根据model 生成工行还本付息计划
-func (model *BankRepayPlanCalcModel) ToICBC() *BankRepayPlanCalcModel {
+func (model *BankRepayPlanCalcModel) ToICBC() (*BankRepayPlanCalcModel, error) {
+	if model.Bc.BankName != "工商银行" {
+		return nil, errors.New("输入模型的银行名称不是工商银行，请检查")
+	}
+
 	// 注意使用括号决定计算优先级，不要直接链式调用
 	model.FillPlanDateMonthly()
 	model.AddAccruedPrincipal()
 	model.AddIcbcFactoringIns()
 	model.AddPlanAmount()
-	return model
+	return model, nil
 }
 
 // AddIcbcFactoringIns 计算工行保理利息并添加到列，本函数将df.lock 注意避免与其他函数形成死锁
