@@ -5,6 +5,7 @@ import (
 	dataframe "github.com/rocketlaunchr/dataframe-go"
 )
 
+// ToICBC 根据model 生成工行还本付息计划
 func (model *BankRepayPlanCalcModel) ToICBC() *BankRepayPlanCalcModel {
 	// 注意使用括号决定计算优先级，不要直接链式调用
 	model.FillPlanDateMonthly()
