@@ -1,7 +1,6 @@
 package inscalc
 
 import (
-	"context"
 	"fmt"
 	"testing"
 )
@@ -17,8 +16,7 @@ func TestNewBankRepayPlanCalcModel(t *testing.T) {
 	p.Sort("plan_date")
 	fmt.Println("origin Table")
 	fmt.Print(p.Brps.Table())
-	// 注意使用括号决定计算优先级，不要直接链式调用
-	(p.FillPlanDateMonthly()).CalcAccruedPrincipal(context.TODO())
+	p.ToICBC()
 
 	if err != nil {
 		fmt.Println(err)

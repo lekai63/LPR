@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"math/big"
 	"os"
 	"strconv"
 	"strings"
@@ -88,9 +89,10 @@ func NewModel(bankLoanContractID int32) (model BankRepayPlanCalcModel, err error
 
 }
 
-// CalcAccruedPrincipal 重新计算应计本金并替换原Series
+// AddAccruedPrincipal 重新计算应计本金并替换原Series
 // todo:根据实际还款情况计算未还部分的应计本金
-func (model *BankRepayPlanCalcModel) CalcAccruedPrincipal(ctx context.Context) *BankRepayPlanCalcModel {
+func (model *BankRepayPlanCalcModel) AddAccruedPrincipal() *BankRepayPlanCalcModel {
+	model.Sort("plan_date")
 	brps := model.Brps
 	errorColl := dataframe.NewErrorCollection()
 	i, err := brps.NameToColumn("plan_principal")
@@ -124,7 +126,7 @@ func (model *BankRepayPlanCalcModel) FillInsPlanDate() *BankRepayPlanCalcModel {
 	return nil
 }
 
-// model 根据fieldname字段升序排列
+// Sort 根据 model 的 fieldname 字段升序排列
 func (model *BankRepayPlanCalcModel) Sort(fieldname string) *BankRepayPlanCalcModel {
 	df := model.Brps
 
@@ -133,6 +135,37 @@ func (model *BankRepayPlanCalcModel) Sort(fieldname string) *BankRepayPlanCalcMo
 	})
 
 	model.Brps = df
+	return model
+}
+
+// FillPlanDateMonthly 对还未还款的记录（actual_date 为nil），生成每月21日的还息日期plan_date，并按planDate升序排序。
+// 其他字段以nil进行填充 （bank_loan_contract_id 用 bc.id填充）
+func (model *BankRepayPlanCalcModel) FillPlanDateMonthly() *BankRepayPlanCalcModel {
+	brps := model.Brps
+	col, _ := brps.NameToColumn("plan_date")
+	se := brps.Series[col]
+	se.Sort(ctx, dataframe.SortOptions{Desc: false})
+
+	n, err := getLatestNilActualRowNum(brps)
+	nrow := se.NRows()
+	check(err)
+
+	startDate := se.Value(n).(civil.Date)
+	endDate := se.Value(nrow - 1).(civil.Date)
+	planDateSlice := genIcbcInsPlanDate(startDate, endDate)
+
+	// 填充生成的planDate，并对其他字段进行填充
+	model.Brps = brps
+	maps := model.slice2maps("plan_date", planDateSlice...)
+
+	// 组装dataframe
+	// 注意maps中字段要与series一一对应，否则报错"no. of args not equal to no. of series"
+	for _, val := range maps {
+		brps.Append(nil, val)
+	}
+
+	model.Brps = brps
+
 	return model
 }
 
@@ -153,6 +186,52 @@ func (model *BankRepayPlanCalcModel) convTimeToDate() *BankRepayPlanCalcModel {
 	}
 	model.Brps = df
 	return model
+}
+
+// AddPlanAmount 加入列“计划还款总额”
+func (model *BankRepayPlanCalcModel) AddPlanAmount() *BankRepayPlanCalcModel {
+	df := model.Brps
+	nrows := df.NRows()
+	// 对原始df的直接迭代更新，只能更新部分数据，故每次都另外生成slice，再添加到df
+	planAmount := make([]interface{}, nrows)
+
+	// 计算当前行的计划还款总额planAmount
+	rowPlanAmountCalc := func(vals map[interface{}]interface{}) (planAmount int64) {
+		planInterest := vals["plan_interest"].(int64)
+		if vals["plan_principal"] == nil {
+			planAmount = planInterest
+		} else {
+			planAmount = planInterest + vals["plan_principal"].(int64)
+		}
+		return
+	}
+
+	applyDfFn := dataframe.ApplyDataFrameFn(func(val map[interface{}]interface{}, row, nRows int) map[interface{}]interface{} {
+		planAmount[row] = rowPlanAmountCalc(val)
+		return val
+	})
+
+	dataframe.Apply(ctx, df, applyDfFn, dataframe.FilterOptions{InPlace: true})
+
+	se2 := dataframe.NewSeriesInt64("plan_amount", nil, planAmount...)
+	df.RemoveSeries("plan_amount")
+	df.AddSeries(se2, nil)
+	model.Brps = df
+	return model
+}
+
+// rowInsCalc 计算本行的计划利息。参数vals传入本行row值，upperVals传入上一行值
+// 在传入本函数前，应该先完成sort排序 model.Sort("plan_date")
+// 不在本函数里做sort 是担心与其他调用函数形成死锁
+func (model *BankRepayPlanCalcModel) rowInsCalc(vals map[interface{}]interface{}, upperVals map[interface{}]interface{}) int64 {
+
+	calcDays := vals["plan_date"].(civil.Date).DaysSince(upperVals["plan_date"].(civil.Date))
+	planInsB := big.NewInt(0)
+	accruedB := big.NewInt(vals["accrued_principal"].(int64))
+	RateB := big.NewInt(int64(model.Bc.CurrentRate))
+	// 计划利息 = 应计本金×年利率×期间天数/360 （因利率单位为0.01%，所以再除以10000）
+	planInsB = planInsB.Mul(accruedB, RateB).Mul(planInsB, big.NewInt(int64(calcDays))).Div(planInsB, big.NewInt(3600000))
+	return planInsB.Int64()
 }
 
 func timeSerie2dateSerie(d *dataframe.Series) (*dataframe.SeriesGeneric, error) {
