@@ -14,6 +14,8 @@ import (
 	"github.com/guregu/null"
 
 	dataframe "github.com/rocketlaunchr/dataframe-go"
+	// "github.com/rocketlaunchr/dataframe-go/exports"
+
 	"github.com/rocketlaunchr/dataframe-go/imports"
 )
 
@@ -40,6 +42,7 @@ type BankLoanContractMini struct {
 }
 
 var ctx = context.Background()
+var db, _ = gormInitForTest()
 
 // NewModel 根据bankLoanContractID 从数据库中获取数据 并生成 BankRepayPlanCalcModel
 func NewModel(bankLoanContractID int32) (model BankRepayPlanCalcModel, err error) {
@@ -89,8 +92,171 @@ func NewModel(bankLoanContractID int32) (model BankRepayPlanCalcModel, err error
 
 }
 
+// AfterDay 仅提取某一日之后的dataframe
+func (model *BankRepayPlanCalcModel) AfterDay(day civil.Date) (*BankRepayPlanCalcModel, error) {
+	model.Sort("plan_date")
+	df := model.Brps
+	iterator := df.ValuesIterator(dataframe.ValuesOptions{0, 1, true}) // Don't apply read lock because we are write locking from outside.
+	df.Lock()
+	n := -1
+	for {
+		row, vals, _ := iterator()
+		if row == nil {
+			break
+		}
+
+		if d := (vals["plan_date"]).(civil.Date); d.After(day) {
+			n = *row
+			break
+		}
+	}
+	df.Unlock()
+	if n < 0 {
+		return model, fmt.Errorf("不存在%s之后的还款计划", day)
+	}
+	df.Lock()
+	newDf := df.Copy(dataframe.Range{&n, nil})
+	df.Unlock()
+	model.Brps = newDf
+	return model, nil
+}
+
+// Update 筛选id为nil的值，插入到数据库
+func (model *BankRepayPlanCalcModel) Update() error {
+
+	df := model.Brps
+	df.Lock()
+	newDf := df.Copy()
+	df.Unlock()
+
+	fnToUpdate := dataframe.FilterDataFrameFn(func(vals map[interface{}]interface{}, row, nRows int) (dataframe.FilterAction, error) {
+		if vals["id"] == nil {
+			return dataframe.DROP, nil
+		}
+		return dataframe.KEEP, nil
+	})
+
+	newDf.Names()
+	_, err := dataframe.Filter(ctx, newDf, fnToUpdate, dataframe.FilterOptions{InPlace: true})
+	if err != nil {
+		return err
+	}
+	/* 	fmt.Println("toCreateDf:")
+	   	fmt.Print(newDf.Table()) */
+
+	//  conn := models.GlobalConn
+	//  tx := conn.BeginTx()
+
+	sqldb, err := db.DB()
+	check(err)
+	tx, err := sqldb.Begin()
+	check(err)
+
+	m := map[string]*string{
+		"id":                    &[]string{"id"}[0],
+		"bank_loan_contract_id": &[]string{"bank_loan_contract_id"}[0],
+		"plan_date":             &[]string{"plan_date"}[0],
+		"plan_insterest":        &[]string{"plan_insterest"}[0],
+		"plan_amount":           &[]string{"plan_amount"}[0],
+		// 设为nil的字段不导出至sql
+		"actual_date":      nil,
+		"actual_principal": nil,
+		"actual_amount":    nil,
+		"actual_interest":  nil,
+	}
+	op := SQLExportOptions{
+		NullString: &[]string{"0"}[0],
+		Range:      dataframe.Range{},
+		/* PrimaryKey: &exports.PrimaryKey{
+			PrimaryKey: "id",
+			Value: func(row int, n int) *string {
+				return nil
+			},
+		}, */
+		BatchSize:      &[]uint{50}[0],
+		SeriesToColumn: m,
+		Database:       PostgreSQL,
+	}
+
+	err = ExportToSQL(ctx, tx, newDf, "bank_repay_plan", true, op)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	err = tx.Commit()
+	return err
+
+}
+
+// Insert 筛选id为nil的值，插入到数据库
+func (model *BankRepayPlanCalcModel) Insert() error {
+
+	df := model.Brps
+	df.Lock()
+	newDf := df.Copy()
+	df.Unlock()
+
+	fnToInsert := dataframe.FilterDataFrameFn(func(vals map[interface{}]interface{}, row, nRows int) (dataframe.FilterAction, error) {
+		if vals["id"] == nil {
+			return dataframe.KEEP, nil
+		}
+		return dataframe.DROP, nil
+	})
+
+	newDf.Names()
+	_, err := dataframe.Filter(ctx, newDf, fnToInsert, dataframe.FilterOptions{InPlace: true})
+	if err != nil {
+		return err
+	}
+
+	//  conn := models.GlobalConn
+	//  tx := conn.BeginTx()
+
+	sqldb, err := db.DB()
+	check(err)
+	tx, err := sqldb.Begin()
+	check(err)
+
+	m := map[string]*string{
+		"id":                    nil,
+		"bank_loan_contract_id": &[]string{"bank_loan_contract_id"}[0],
+		"plan_date":             &[]string{"plan_date"}[0],
+		"plan_insterest":        &[]string{"plan_insterest"}[0],
+		"plan_amount":           &[]string{"plan_amount"}[0],
+		// 设为nil的字段不导出至sql
+		"actual_date":      nil,
+		"actual_principal": nil,
+		"actual_amount":    nil,
+		"actual_interest":  nil,
+	}
+	op := SQLExportOptions{
+		NullString: &[]string{"0"}[0],
+		Range:      dataframe.Range{},
+		/* PrimaryKey: &exports.PrimaryKey{
+			PrimaryKey: "id",
+			Value: func(row int, n int) *string {
+				return nil
+			},
+		}, */
+		BatchSize:      &[]uint{50}[0],
+		SeriesToColumn: m,
+		Database:       PostgreSQL,
+	}
+
+	err = ExportToSQL(ctx, tx, newDf, "bank_repay_plan", false, op)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	err = tx.Commit()
+	return err
+
+}
+
 // AddAccruedPrincipal 重新计算应计本金并替换原Series
-// todo:根据实际还款情况计算未还部分的应计本金
+// TODO:根据实际还款情况计算未还部分的应计本金
 func (model *BankRepayPlanCalcModel) AddAccruedPrincipal() *BankRepayPlanCalcModel {
 	model.Sort("plan_date")
 	brps := model.Brps
@@ -120,10 +286,17 @@ func (model *BankRepayPlanCalcModel) AddAccruedPrincipal() *BankRepayPlanCalcMod
 	return model
 }
 
-// todo:根据银行不同 生成不同的计划还款日期
+// TODO:根据银行不同 生成不同的计划还款日期
 func (model *BankRepayPlanCalcModel) FillInsPlanDate() *BankRepayPlanCalcModel {
+	bankName := model.Bc.BankName
+	switch bankName {
+	case "工商银行":
+		model.FillPlanDateMonthly()
+	default:
 
-	return nil
+	}
+
+	return model
 }
 
 // Sort 根据 model 的 fieldname 字段升序排列

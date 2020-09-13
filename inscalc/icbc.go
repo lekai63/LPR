@@ -8,13 +8,16 @@ import (
 )
 
 // ToICBC 根据model 生成工行还本付息计划
-func (model *BankRepayPlanCalcModel) ToICBC() (*BankRepayPlanCalcModel, error) {
+// 首次生成，则isFirst 为true；
+func (model *BankRepayPlanCalcModel) ToICBC(isFirst bool) (*BankRepayPlanCalcModel, error) {
 	if model.Bc.BankName != "工商银行" {
 		return nil, errors.New("输入模型的银行名称不是工商银行，请检查")
 	}
 
 	// 注意使用括号决定计算优先级，不要直接链式调用
-	model.FillPlanDateMonthly()
+	if isFirst {
+		model.FillInsPlanDate()
+	}
 	model.AddAccruedPrincipal()
 	model.AddIcbcFactoringIns()
 	model.AddPlanAmount()
@@ -78,7 +81,7 @@ func (model *BankRepayPlanCalcModel) AddIcbcFactoringIns() *BankRepayPlanCalcMod
 	df.RemoveSeries("plan_interest")
 	df.RemoveSeries("created_at")
 	df.RemoveSeries("updated_at")
-	df.RemoveSeries("accrued_principal")
+	// df.RemoveSeries("accrued_principal")
 
 	//添加新的plan_interest
 	se := dataframe.NewSeriesInt64("plan_interest", nil, planInsterest...)

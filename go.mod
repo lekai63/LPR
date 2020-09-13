@@ -33,6 +33,7 @@ require (
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	github.com/onsi/ginkgo v1.14.0 // indirect
 	github.com/rocketlaunchr/dataframe-go v0.0.0-20200824084024-e087e9c030ef
+	github.com/rocketlaunchr/dbq/v2 v2.5.0
 	github.com/satori/go.uuid v1.2.0
 	github.com/sclevine/agouti v3.0.0+incompatible // indirect
 	github.com/sergi/go-diff v1.1.0 // indirect
