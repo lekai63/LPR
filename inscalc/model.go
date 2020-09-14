@@ -256,7 +256,6 @@ func (model *BankRepayPlanCalcModel) Insert() error {
 }
 
 // AddAccruedPrincipal 重新计算应计本金并替换原Series
-// TODO:根据实际还款情况计算未还部分的应计本金
 func (model *BankRepayPlanCalcModel) AddAccruedPrincipal() *BankRepayPlanCalcModel {
 	model.Sort("plan_date")
 	brps := model.Brps
