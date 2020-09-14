@@ -45,13 +45,16 @@ func (model *BankRepayPlanCalcModel) AddIcbcFactoringIns() *BankRepayPlanCalcMod
 			break
 		}
 		switch {
-		// 第0行为最后一笔实际还款记录，计划利息已算好，无需重新测算
+		// 第0行为第一笔利息还款计划
 		case (*row) == 0:
-			if vals["plan_interest"] != nil {
-				planInsterest[0] = vals["plan_interest"].(int64)
-			} else {
-				planInsterest[0] = 0
-			}
+			upperVals["plan_date"] = model.Bc.ActualStartDate
+			planInsterest[*row] = model.rowInsCalc(vals, upperVals)
+			/* 			if vals["plan_interest"] != nil {
+			   				planInsterest[0] = vals["plan_interest"].(int64)
+			   			} else {
+			   				planInsterest[0] = 0
+			   			} */
+
 			// 最后一行利随本清
 		case (*row) == nrows-1: // 如使用(*row) == df.NRows() 游标直接到最后，从而无法执行
 			planInsterest[*row] = model.rowInsCalc(vals, upperVals)

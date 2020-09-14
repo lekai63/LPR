@@ -37,6 +37,8 @@ type BankLoanContractMini struct {
 	BankName string `gorm:"column:bank_name;type:VARCHAR;size:255;" json:"bank_name"`
 	//[ 8] loan_method                                    VARCHAR(255)         null: true   primary: false  isArray: false  auto: false  col: VARCHAR         len: 255     default: []
 	LoanMethod null.String `gorm:"column:loan_method;type:VARCHAR;size:255;" json:"loan_method"`
+	//[11] actual_start_date                              DATE                 null: true   primary: false  isArray: false  auto: false  col: DATE            len: -1      default: []
+	ActualStartDate null.Time `gorm:"column:actual_start_date;type:DATE;" json:"actual_start_date"`
 	//[16] current_rate                                   INT4                 null: false  primary: false  isArray: false  auto: false  col: INT4            len: -1      default: []
 	CurrentRate int32 `gorm:"column:current_rate;type:INT4;" json:"current_rate"`
 }
@@ -324,7 +326,39 @@ func (model *BankRepayPlanCalcModel) FillPlanDateMonthly() *BankRepayPlanCalcMod
 
 	startDate := se.Value(n).(civil.Date)
 	endDate := se.Value(nrow - 1).(civil.Date)
-	planDateSlice := genIcbcInsPlanDate(startDate, endDate)
+	planDateSlice := genMonthlyInsPlanDate(startDate, endDate)
+
+	// 填充生成的planDate，并对其他字段进行填充
+	model.Brps = brps
+	maps := model.slice2maps("plan_date", planDateSlice...)
+
+	// 组装dataframe
+	// 注意maps中字段要与series一一对应，否则报错"no. of args not equal to no. of series"
+	for _, val := range maps {
+		brps.Append(nil, val)
+	}
+
+	model.Brps = brps
+
+	return model
+}
+
+
+// FillPlanDateSeasonly 对还未还款的记录（actual_date 为nil），生成每季度21日的还息日期plan_date，并按planDate升序排序。
+// 其他字段以nil进行填充 （bank_loan_contract_id 用 bc.id填充）
+func (model *BankRepayPlanCalcModel) FillPlanDateSeasonly() *BankRepayPlanCalcModel {
+	brps := model.Brps
+	col, _ := brps.NameToColumn("plan_date")
+	se := brps.Series[col]
+	se.Sort(ctx, dataframe.SortOptions{Desc: false})
+
+	n, err := getLatestNilActualRowNum(brps)
+	nrow := se.NRows()
+	check(err)
+
+	startDate := se.Value(n).(civil.Date)
+	endDate := se.Value(nrow - 1).(civil.Date)
+	planDateSlice := genSeasonlyInsPlanDate(startDate, endDate)
 
 	// 填充生成的planDate，并对其他字段进行填充
 	model.Brps = brps

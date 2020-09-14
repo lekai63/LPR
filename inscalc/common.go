@@ -55,11 +55,11 @@ func getLatestNilActualRowNum(df *dataframe.DataFrame) (int, error) {
 
 }
 
-// genIcbcInsPayDate 生成利息还款计划，默认每月21日扣息.
+// genMonthlyInsPlanDate 生成利息还款计划，默认每月21日扣息.
 // 若起始日为21日以后（含21日当日），则生成的第一个扣息日为下月21日
 // 若起始日为21日以前，则生成的第一个扣息日为本月21日
 // 最后一期利随本清,不额外生成一个利息还款计划
-func genIcbcInsPlanDate(start, end civil.Date) (dates []interface{}) {
+func genMonthlyInsPlanDate(start, end civil.Date) (dates []interface{}) {
 	termMonths := 12*(end.Year-start.Year) + (int(end.Month) - int(start.Month))
 	plus := 0
 	if start.Day >= 21 {
@@ -84,6 +84,41 @@ func genIcbcInsPlanDate(start, end civil.Date) (dates []interface{}) {
 			dates = append(dates, d)
 		}
 	}
+	// 不额外生成最后一期利随本清还息日期
+	// dates = append(dates, end)
+
+	return
+}
+
+// genSeasonlyInsPlanDate 生成利息还款计划，默认每季度（3、6、9、12月）21日扣息.
+// 第一个扣息日为距离start_date 最近的一个季度末月的21日
+// 最后一期利随本清,不额外生成一个利息还款计划
+func genSeasonlyInsPlanDate(start, end civil.Date) (dates []interface{}) {
+	var d civil.Date
+	for i := time.March; i <= time.December; i = i + 3 {
+		m := civil.Date{
+			Year:  start.Year,
+			Month: i,
+			Day:   21,
+		}
+		if start.Before(m) {
+			d = m
+			break
+		} else {
+			// start 日期处于12月21日至12月31日时
+			d = civil.Date{
+				Year:  start.Year + 1,
+				Month: time.March,
+				Day:   21,
+			}
+			break
+		}
+	}
+	// TODO:循环+3个月
+	if d.Before(end) {
+		dates = append(dates, d)
+	}
+
 	// 不额外生成最后一期利随本清还息日期
 	// dates = append(dates, end)
 
