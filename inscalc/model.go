@@ -289,10 +289,12 @@ func (model *BankRepayPlanCalcModel) AddAccruedPrincipal() *BankRepayPlanCalcMod
 
 // TODO:根据银行不同 生成不同的计划还款日期
 func (model *BankRepayPlanCalcModel) FillInsPlanDate() *BankRepayPlanCalcModel {
-	bankName := model.Bc.BankName
-	switch bankName {
-	case "工商银行":
+	method := model.Bc.InterestCalcMethod
+	switch method.String {
+	case "按月扣息":
 		model.FillPlanDateMonthly()
+	case "按季扣息":
+		model.FillPlanDateSeasonly()
 	default:
 
 	}
@@ -342,7 +344,6 @@ func (model *BankRepayPlanCalcModel) FillPlanDateMonthly() *BankRepayPlanCalcMod
 
 	return model
 }
-
 
 // FillPlanDateSeasonly 对还未还款的记录（actual_date 为nil），生成每季度21日的还息日期plan_date，并按planDate升序排序。
 // 其他字段以nil进行填充 （bank_loan_contract_id 用 bc.id填充）

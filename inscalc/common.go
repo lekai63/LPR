@@ -94,31 +94,54 @@ func genMonthlyInsPlanDate(start, end civil.Date) (dates []interface{}) {
 // 第一个扣息日为距离start_date 最近的一个季度末月的21日
 // 最后一期利随本清,不额外生成一个利息还款计划
 func genSeasonlyInsPlanDate(start, end civil.Date) (dates []interface{}) {
-	var d civil.Date
-	for i := time.March; i <= time.December; i = i + 3 {
-		m := civil.Date{
-			Year:  start.Year,
-			Month: i,
+	//d1 为第一个扣息日
+	var d1 civil.Date
+	if start.Month == time.December && start.Day >= 21 {
+		// start 日期处于12月21日至12月31日时
+		d1 = civil.Date{
+			Year:  start.Year + 1,
+			Month: time.March,
 			Day:   21,
 		}
-		if start.Before(m) {
-			d = m
-			break
-		} else {
-			// start 日期处于12月21日至12月31日时
-			d = civil.Date{
-				Year:  start.Year + 1,
-				Month: time.March,
+	} else {
+		for i := time.March; i <= time.December; i = i + 3 {
+			m := civil.Date{
+				Year:  start.Year,
+				Month: i,
 				Day:   21,
 			}
-			break
+			if start.Before(m) {
+				d1 = m
+				break
+			}
 		}
-	}
-	// TODO:循环+3个月
-	if d.Before(end) {
-		dates = append(dates, d)
+
 	}
 
+	termMonths := 12*(end.Year-start.Year) + (int(end.Month) - int(start.Month))
+	for i := 0; i < termMonths; i = i + 3 {
+		mInt := (int(d1.Month) + i) % 12
+		var m time.Month
+		var d civil.Date
+		if mInt == 0 {
+			d = civil.Date{
+				Year:  d1.Year + (i+int(d1.Month))/12 - 1,
+				Month: time.December,
+				Day:   21,
+			}
+		} else {
+			m = time.Month(mInt)
+			d = civil.Date{
+				Year:  d1.Year + (i+int(d1.Month))/12,
+				Month: m,
+				Day:   21,
+			}
+		}
+
+		if d.Before(end) {
+			dates = append(dates, d)
+		}
+	}
 	// 不额外生成最后一期利随本清还息日期
 	// dates = append(dates, end)
 
