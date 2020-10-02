@@ -433,16 +433,16 @@ func (model *BankRepayPlanCalcModel) AddPlanAmount() *BankRepayPlanCalcModel {
 }
 
 // rowInsCalc 计算本行的计划利息。参数vals传入本行row值，upperVals传入上一行值
-// 在传入本函数前，应该先完成sort排序 model.Sort("plan_date")
-// 不在本函数里做sort 是担心与其他调用函数形成死锁
-// 适用多数银行
-func (model *BankRepayPlanCalcModel) rowInsCalc(vals map[interface{}]interface{}, upperVals map[interface{}]interface{}) int64 {
+// 在传入本函数前，应该先完成sort排序 model.Sort("plan_date")， 不在本函数里做sort 是担心与其他调用函数形成死锁
+// method不传参，为默认计息方式（年利率/360×天数）适用多数银行
+// method传参"monthly",为按月利率计息(月利率/30×天数)，与默认计息方式的区别是利率的四舍五入,适用杭州银行
+func (model *BankRepayPlanCalcModel) rowInsCalc(vals map[interface{}]interface{}, upperVals map[interface{}]interface{}, method ...string) (res int64) {
 	upperDay := upperVals["plan_date"].(civil.Date)
 	if upperVals["actual_date"] != nil {
 		upperDay = (upperVals["actual_date"].(civil.Date))
 	}
 
-	rowDay := upperVals["plan_date"].(civil.Date)
+	rowDay := vals["plan_date"].(civil.Date)
 	if vals["actual_date"] != nil {
 		rowDay = (vals["actual_date"].(civil.Date))
 	}
@@ -451,31 +451,33 @@ func (model *BankRepayPlanCalcModel) rowInsCalc(vals map[interface{}]interface{}
 	planInsB := big.NewInt(0)
 	accruedB := big.NewInt(vals["accrued_principal"].(int64))
 	RateB := big.NewInt(int64(model.Bc.CurrentRate))
-	// 计划利息 = 应计本金×年利率×期间天数/360 （因利率单位为0.01%，所以再除以1000000）
-	planInsB.Mul(accruedB, RateB).Mul(planInsB, big.NewInt(int64(calcDays)))
-	planInsB.Div(planInsB, big.NewInt(360000000))
-	fmt.Printf("calcDays:%d;planInsB:%+v\n", calcDays, *planInsB)
-	return planInsB.Int64()
-}
 
-// rowInsCalcWithMonthlyRate 以月利率计算本row利息
-// 参数vals传入本行row值，upperVals传入上一行值
-// 在传入本函数前，应该先完成sort排序 model.Sort("plan_date")
-// 不在本函数里做sort 是担心与其他调用函数形成死锁
-// 适用杭州银行
-func (model *BankRepayPlanCalcModel) rowInsCalcWithMonthlyRate(vals map[interface{}]interface{}, upperVals map[interface{}]interface{}) int64 {
-	compareDay := upperVals["plan_date"].(civil.Date)
-	/* if upperVals["actual_date"] != nil {
-		compareDay = (upperVals["actual_date"].(civil.Date))
-	} */
-	calcDays := (vals["plan_date"].(civil.Date)).DaysSince(compareDay)
-	planInsB := big.NewInt(0)
-	accruedB := big.NewInt(vals["accrued_principal"].(int64))
-	// 月利率=年利率/12,精确到0.0001%
-	rateMonthB := big.NewInt(int64(model.Bc.CurrentRate * 10 / 12)) //为了月利率的精度，小数点右移一位后再除以12
-	// 计划利息 = 应计本金×月利率×期间天数/30
-	planInsB = planInsB.Mul(accruedB, rateMonthB).Mul(planInsB, big.NewInt(int64(calcDays))).Div(planInsB, big.NewInt(300000000)) // 注意最后要多除以10，即把上面移动的小数点移回去
-	return planInsB.Int64()
+	if method == nil {
+		// 默认_计划利息 = 应计本金×年利率×期间天数/360 （因利率单位为0.01%，所以再除以1000000）
+		planInsB.Mul(accruedB, RateB).Mul(planInsB, big.NewInt(int64(calcDays)))
+		planInsB.Div(planInsB, big.NewInt(360000000))
+	} else {
+		switch method[0] {
+		case "monthly":
+			// 月利率=年利率/12,精确到0.0001%
+			rateMonthB := big.NewInt(int64(model.Bc.CurrentRate * 10 / 12)) //为了月利率的精度，小数点右移一位后再除以12
+			// 计划利息 = 应计本金×月利率×期间天数/30
+			planInsB = planInsB.Mul(accruedB, rateMonthB).Mul(planInsB, big.NewInt(int64(calcDays))).Div(planInsB, big.NewInt(300000000)) // 注意最后要多除以10，即把上面移动的小数点移回去
+		default:
+			// planInsB = big.NewInt(-1)
+		}
+	}
+
+	// 四舍五入
+	pString := strconv.FormatInt(planInsB.Int64(), 10)
+	if d, _ := strconv.Atoi(pString[len(pString)-2 : len(pString)-1]); d < 5 {
+		pString = pString[:len(pString)-2] + "00"
+		res, _ = strconv.ParseInt(pString, 10, 64)
+	} else {
+		res, _ = strconv.ParseInt(pString[:len(pString)-2], 10, 64)
+		res = (res + 1) * 100
+	}
+	return res
 }
 
 func timeSerie2dateSerie(d *dataframe.Series) (*dataframe.SeriesGeneric, error) {

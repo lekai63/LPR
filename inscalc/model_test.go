@@ -7,8 +7,8 @@ import (
 
 func TestNewBankRepayPlanCalcModel(t *testing.T) {
 	var (
-		in       = 12
-		expected = 12
+		in       = 3
+		expected = 3
 	)
 	actual, err := NewModel(int32(in))
 	if err != nil {
@@ -19,9 +19,9 @@ func TestNewBankRepayPlanCalcModel(t *testing.T) {
 	fmt.Println("origin table")
 	fmt.Print(p.Brps.Table())
 
-	// p, err = p.ToICBC(true)
+	p, err = p.ToICBC(true)
 	// p, err = p.ToHZBank(true)
-	p, err = p.ToABC(true)
+	// p, err = p.ToABC(true)
 	if err != nil {
 		fmt.Println(err)
 	}

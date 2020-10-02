@@ -49,11 +49,11 @@ func (model *BankRepayPlanCalcModel) AddHZBankFactoringIns() *BankRepayPlanCalcM
 		// 第0行为第一笔利息还款计划
 		case (*row) == 0:
 			upperVals["plan_date"] = civil.DateOf(model.Bc.ActualStartDate.ValueOrZero())
-			planInsterest[*row] = model.rowInsCalcWithMonthlyRate(vals, upperVals)
+			planInsterest[*row] = model.rowInsCalc(vals, upperVals, "monthly")
 
 			// 最后一行利随本清
 		case (*row) == nrows-1: // 如使用(*row) == df.NRows() 游标直接到最后，从而无法执行
-			planInsterest[*row] = model.rowInsCalcWithMonthlyRate(vals, upperVals)
+			planInsterest[*row] = model.rowInsCalc(vals, upperVals, "monthly")
 		default:
 			// 杭州银行保理利息在每季末21日扣
 			// 本金偿还时需配套付息，付息金额=本次偿还本金*（偿还日-最近一期季度付息日）/30 * 月利率
@@ -63,13 +63,13 @@ func (model *BankRepayPlanCalcModel) AddHZBankFactoringIns() *BankRepayPlanCalcM
 				// 与默认保理利息计算方式不同的地方，本金还款时还会有对应的利息
 				rowins := model.hzRowIns(vals, upperVals)
 				planInsterest[*row] = rowins
-				temp = model.rowInsCalcWithMonthlyRate(vals, upperVals) - rowins
+				temp = model.rowInsCalc(vals, upperVals, "monthly") - rowins
 			} else if x := upperVals["plan_date"].(civil.Date); x.Day != 21 {
 				// 上一row为非21日，将temp提取出来，加入本row
-				planInsterest[*row] = model.rowInsCalcWithMonthlyRate(vals, upperVals) + temp
+				planInsterest[*row] = model.rowInsCalc(vals, upperVals, "mothly") + temp
 			} else {
 				// 默认planInsterest算法，即本row 上一row 均为21日
-				planInsterest[*row] = model.rowInsCalcWithMonthlyRate(vals, upperVals)
+				planInsterest[*row] = model.rowInsCalc(vals, upperVals, "monthly")
 			}
 		}
 
