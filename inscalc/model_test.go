@@ -3,15 +3,12 @@ package inscalc
 import (
 	"fmt"
 	"testing"
-	"time"
-
-	"cloud.google.com/go/civil"
 )
 
 func TestNewBankRepayPlanCalcModel(t *testing.T) {
 	var (
-		in       = 1
-		expected = 1
+		in       = 12
+		expected = 12
 	)
 	actual, err := NewModel(int32(in))
 	if err != nil {
@@ -22,7 +19,9 @@ func TestNewBankRepayPlanCalcModel(t *testing.T) {
 	fmt.Println("origin table")
 	fmt.Print(p.Brps.Table())
 
-	p, err = p.ToICBC(false)
+	// p, err = p.ToICBC(true)
+	// p, err = p.ToHZBank(true)
+	p, err = p.ToABC(true)
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -31,8 +30,8 @@ func TestNewBankRepayPlanCalcModel(t *testing.T) {
 		t.Errorf("sth wrong")
 	}
 
-	tt := time.Now()
-	p.AfterDay(civil.DateOf(tt))
+	// tt := time.Now()
+	// p.AfterDay(civil.DateOf(tt))
 	fmt.Println("test table")
 	fmt.Print(p.Brps.Table())
 

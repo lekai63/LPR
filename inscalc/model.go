@@ -287,7 +287,7 @@ func (model *BankRepayPlanCalcModel) AddAccruedPrincipal() *BankRepayPlanCalcMod
 	return model
 }
 
-// TODO:根据银行不同 生成不同的计划还款日期
+// TODO:根据计息方式不同 生成不同的计划还款日期
 func (model *BankRepayPlanCalcModel) FillInsPlanDate() *BankRepayPlanCalcModel {
 	method := model.Bc.InterestCalcMethod
 	switch method.String {
@@ -325,11 +325,14 @@ func (model *BankRepayPlanCalcModel) FillPlanDateMonthly() *BankRepayPlanCalcMod
 	n, err := getLatestNilActualRowNum(brps)
 	nrow := se.NRows()
 	check(err)
-
 	startDate := se.Value(n).(civil.Date)
-	endDate := se.Value(nrow - 1).(civil.Date)
-	planDateSlice := genMonthlyInsPlanDate(startDate, endDate)
+	if n > 0 {
+		startDate = se.Value(n - 1).(civil.Date)
+	}
 
+	endDate := se.Value(nrow - 1).(civil.Date)
+	planDates := genMonthlyInsPlanDate(startDate, endDate)
+	planDateSlice := fliterDates(planDates, se)
 	// 填充生成的planDate，并对其他字段进行填充
 	model.Brps = brps
 	maps := model.slice2maps("plan_date", planDateSlice...)
@@ -356,11 +359,13 @@ func (model *BankRepayPlanCalcModel) FillPlanDateSeasonly() *BankRepayPlanCalcMo
 	n, err := getLatestNilActualRowNum(brps)
 	nrow := se.NRows()
 	check(err)
-
 	startDate := se.Value(n).(civil.Date)
+	if n > 0 {
+		startDate = se.Value(n - 1).(civil.Date)
+	}
 	endDate := se.Value(nrow - 1).(civil.Date)
-	planDateSlice := genSeasonlyInsPlanDate(startDate, endDate)
-
+	planDates := genSeasonlyInsPlanDate(startDate, endDate)
+	planDateSlice := fliterDates(planDates, se)
 	// 填充生成的planDate，并对其他字段进行填充
 	model.Brps = brps
 	maps := model.slice2maps("plan_date", planDateSlice...)
@@ -430,14 +435,46 @@ func (model *BankRepayPlanCalcModel) AddPlanAmount() *BankRepayPlanCalcModel {
 // rowInsCalc 计算本行的计划利息。参数vals传入本行row值，upperVals传入上一行值
 // 在传入本函数前，应该先完成sort排序 model.Sort("plan_date")
 // 不在本函数里做sort 是担心与其他调用函数形成死锁
+// 适用多数银行
 func (model *BankRepayPlanCalcModel) rowInsCalc(vals map[interface{}]interface{}, upperVals map[interface{}]interface{}) int64 {
+	upperDay := upperVals["plan_date"].(civil.Date)
+	if upperVals["actual_date"] != nil {
+		upperDay = (upperVals["actual_date"].(civil.Date))
+	}
 
-	calcDays := vals["plan_date"].(civil.Date).DaysSince(upperVals["plan_date"].(civil.Date))
+	rowDay := upperVals["plan_date"].(civil.Date)
+	if vals["actual_date"] != nil {
+		rowDay = (vals["actual_date"].(civil.Date))
+	}
+
+	calcDays := (rowDay).DaysSince(upperDay)
 	planInsB := big.NewInt(0)
 	accruedB := big.NewInt(vals["accrued_principal"].(int64))
 	RateB := big.NewInt(int64(model.Bc.CurrentRate))
-	// 计划利息 = 应计本金×年利率×期间天数/360 （因利率单位为0.01%，所以再除以10000）
-	planInsB = planInsB.Mul(accruedB, RateB).Mul(planInsB, big.NewInt(int64(calcDays))).Div(planInsB, big.NewInt(3600000))
+	// 计划利息 = 应计本金×年利率×期间天数/360 （因利率单位为0.01%，所以再除以1000000）
+	planInsB.Mul(accruedB, RateB).Mul(planInsB, big.NewInt(int64(calcDays)))
+	planInsB.Div(planInsB, big.NewInt(360000000))
+	fmt.Printf("calcDays:%d;planInsB:%+v\n", calcDays, *planInsB)
+	return planInsB.Int64()
+}
+
+// rowInsCalcWithMonthlyRate 以月利率计算本row利息
+// 参数vals传入本行row值，upperVals传入上一行值
+// 在传入本函数前，应该先完成sort排序 model.Sort("plan_date")
+// 不在本函数里做sort 是担心与其他调用函数形成死锁
+// 适用杭州银行
+func (model *BankRepayPlanCalcModel) rowInsCalcWithMonthlyRate(vals map[interface{}]interface{}, upperVals map[interface{}]interface{}) int64 {
+	compareDay := upperVals["plan_date"].(civil.Date)
+	/* if upperVals["actual_date"] != nil {
+		compareDay = (upperVals["actual_date"].(civil.Date))
+	} */
+	calcDays := (vals["plan_date"].(civil.Date)).DaysSince(compareDay)
+	planInsB := big.NewInt(0)
+	accruedB := big.NewInt(vals["accrued_principal"].(int64))
+	// 月利率=年利率/12,精确到0.0001%
+	rateMonthB := big.NewInt(int64(model.Bc.CurrentRate * 10 / 12)) //为了月利率的精度，小数点右移一位后再除以12
+	// 计划利息 = 应计本金×月利率×期间天数/30
+	planInsB = planInsB.Mul(accruedB, rateMonthB).Mul(planInsB, big.NewInt(int64(calcDays))).Div(planInsB, big.NewInt(300000000)) // 注意最后要多除以10，即把上面移动的小数点移回去
 	return planInsB.Int64()
 }
 

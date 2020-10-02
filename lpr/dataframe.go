@@ -179,6 +179,7 @@ func (model *BankRepayPlanCalcModel) AddAccruedPrincipalSeries(ctx context.Conte
 func getLatestNilActualRowNum(df *dataframe.DataFrame) (int, error) {
 	iterator := df.ValuesIterator(dataframe.ValuesOptions{0, 1, true})
 	df.Lock()
+	defer df.Unlock()
 	for {
 		row, vals, _ := iterator()
 		if row == nil {
@@ -188,7 +189,7 @@ func getLatestNilActualRowNum(df *dataframe.DataFrame) (int, error) {
 			return *row, nil
 		}
 	}
-	df.Unlock()
+
 	return -1, fmt.Errorf("无未还款记录，请检查合同是否已结束")
 
 }

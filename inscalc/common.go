@@ -59,7 +59,7 @@ func getLatestNilActualRowNum(df *dataframe.DataFrame) (int, error) {
 // 若起始日为21日以后（含21日当日），则生成的第一个扣息日为下月21日
 // 若起始日为21日以前，则生成的第一个扣息日为本月21日
 // 最后一期利随本清,不额外生成一个利息还款计划
-func genMonthlyInsPlanDate(start, end civil.Date) (dates []interface{}) {
+func genMonthlyInsPlanDate(start, end civil.Date) (dates []civil.Date) {
 	termMonths := 12*(end.Year-start.Year) + (int(end.Month) - int(start.Month))
 	plus := 0
 	if start.Day >= 21 {
@@ -93,7 +93,7 @@ func genMonthlyInsPlanDate(start, end civil.Date) (dates []interface{}) {
 // genSeasonlyInsPlanDate 生成利息还款计划，默认每季度（3、6、9、12月）21日扣息.
 // 第一个扣息日为距离start_date 最近的一个季度末月的21日
 // 最后一期利随本清,不额外生成一个利息还款计划
-func genSeasonlyInsPlanDate(start, end civil.Date) (dates []interface{}) {
+func genSeasonlyInsPlanDate(start, end civil.Date) (dates []civil.Date) {
 	//d1 为第一个扣息日
 	var d1 civil.Date
 	if start.Month == time.December && start.Day >= 21 {
@@ -146,4 +146,36 @@ func genSeasonlyInsPlanDate(start, end civil.Date) (dates []interface{}) {
 	// dates = append(dates, end)
 
 	return
+}
+
+// fliterDates 筛选planDates，若planDates中的元素日期与series中的任一元素日期相同，则删除planDates中的此元素。
+func fliterDates(planDates []civil.Date, se dataframe.Series) []interface{} {
+	iterator := se.ValuesIterator(dataframe.ValuesOptions{0, 1, true})
+	se.Lock()
+	for {
+		row, vals, _ := iterator()
+		if row == nil {
+			break
+		}
+		n := len(planDates)
+		for i := 0; i < n; i++ {
+			x := planDates[i]
+			if (vals.(civil.Date)).DaysSince(x) == 0 {
+				planDates = append(planDates[:i], planDates[i+1:]...)
+				i = i - 1
+				n = n - 1
+			}
+		}
+	}
+	se.Unlock()
+
+	// convert a []T to an []interface{}
+	// https://golang.org/doc/faq#convert_slice_of_interface
+	s := make([]interface{}, len(planDates))
+	for i, v := range planDates {
+		s[i] = v
+	}
+
+	return s
+
 }
