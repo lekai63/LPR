@@ -34,6 +34,7 @@ func (model *BankRepayPlanCalcModel) AddDefaultFactoringIns() *BankRepayPlanCalc
 	// planInsterest Slice用于存储计算后的计划利息,因最后要将 planInsterest 传入NewSeries，故类型直接选择[]interface{} ,如定义为[]int,还需再循环转换为[]interface{}
 	// https://golang.org/doc/faq#convert_slice_of_interface
 	planInsterest := make([]interface{}, nrows)
+	var e error
 
 	iterator := df.ValuesIterator(dataframe.ValuesOptions{0, 1, true})
 	df.Lock()
@@ -46,24 +47,28 @@ func (model *BankRepayPlanCalcModel) AddDefaultFactoringIns() *BankRepayPlanCalc
 		// 第0行为第一笔利息还款计划
 		case (*row) == 0:
 			upperVals["plan_date"] = civil.DateOf(model.Bc.ActualStartDate.ValueOrZero())
-			planInsterest[*row] = model.rowInsCalc(vals, upperVals)
-
+			planInsterest[*row], e = model.rowInsCalc(vals, upperVals)
+			check(e)
 			// 最后一行利随本清
 		case (*row) == nrows-1: // 如使用(*row) == df.NRows() 游标直接到最后，从而无法执行
-			planInsterest[*row] = model.rowInsCalc(vals, upperVals)
-
+			planInsterest[*row], e = model.rowInsCalc(vals, upperVals)
+			check(e)
 		default:
 			// 因农行保理利息在每季末21日扣，故本金还款日当天的利息，应加到下一季末的21日一并扣息
 			// 本row还款日非21日，将计划还款利息暂存入temp
 			if d := vals["plan_date"].(civil.Date); d.Day != 21 {
-				temp = model.rowInsCalc(vals, upperVals)
+				temp, e = model.rowInsCalc(vals, upperVals)
+				check(e)
 				planInsterest[*row] = 0
 			} else if x := upperVals["plan_date"].(civil.Date); x.Day != 21 {
 				// 上一row为非21日，将temp提取出来，加入本row
-				planInsterest[*row] = model.rowInsCalc(vals, upperVals) + temp
+				m, e := model.rowInsCalc(vals, upperVals)
+				check(e)
+				planInsterest[*row] = m + temp
 			} else {
 				// 默认planInsterest算法
-				planInsterest[*row] = model.rowInsCalc(vals, upperVals)
+				planInsterest[*row], e = model.rowInsCalc(vals, upperVals)
+				check(e)
 			}
 		}
 

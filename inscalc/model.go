@@ -3,9 +3,7 @@ package inscalc
 import (
 	"context"
 	"fmt"
-	"log"
 	"math/big"
-	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -436,7 +434,7 @@ func (model *BankRepayPlanCalcModel) AddPlanAmount() *BankRepayPlanCalcModel {
 // 在传入本函数前，应该先完成sort排序 model.Sort("plan_date")， 不在本函数里做sort 是担心与其他调用函数形成死锁
 // method不传参，为默认计息方式（年利率/360×天数）适用多数银行
 // method传参"monthly",为按月利率计息(月利率/30×天数)，与默认计息方式的区别是利率的四舍五入,适用杭州银行
-func (model *BankRepayPlanCalcModel) rowInsCalc(vals map[interface{}]interface{}, upperVals map[interface{}]interface{}, method ...string) (res int64) {
+func (model *BankRepayPlanCalcModel) rowInsCalc(vals map[interface{}]interface{}, upperVals map[interface{}]interface{}, method ...string) (int64, error) {
 	upperDay := upperVals["plan_date"].(civil.Date)
 	if upperVals["actual_date"] != nil {
 		upperDay = (upperVals["actual_date"].(civil.Date))
@@ -464,20 +462,13 @@ func (model *BankRepayPlanCalcModel) rowInsCalc(vals map[interface{}]interface{}
 			// 计划利息 = 应计本金×月利率×期间天数/30
 			planInsB = planInsB.Mul(accruedB, rateMonthB).Mul(planInsB, big.NewInt(int64(calcDays))).Div(planInsB, big.NewInt(300000000)) // 注意最后要多除以10，即把上面移动的小数点移回去
 		default:
-			// planInsB = big.NewInt(-1)
+			return -1, fmt.Errorf("未定义的计息方式")
 		}
 	}
 
 	// 四舍五入
-	pString := strconv.FormatInt(planInsB.Int64(), 10)
-	if d, _ := strconv.Atoi(pString[len(pString)-2 : len(pString)-1]); d < 5 {
-		pString = pString[:len(pString)-2] + "00"
-		res, _ = strconv.ParseInt(pString, 10, 64)
-	} else {
-		res, _ = strconv.ParseInt(pString[:len(pString)-2], 10, 64)
-		res = (res + 1) * 100
-	}
-	return res
+	p := planInsB.Int64()
+	return rounding(p), nil
 }
 
 func timeSerie2dateSerie(d *dataframe.Series) (*dataframe.SeriesGeneric, error) {
@@ -517,11 +508,4 @@ func timeSerie2dateSerie(d *dataframe.Series) (*dataframe.SeriesGeneric, error) 
 
 	return se, nil
 
-}
-
-func check(err error) {
-	if err != nil {
-		log.Fatalln(err)
-		os.Exit(10086)
-	}
 }

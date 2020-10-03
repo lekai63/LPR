@@ -2,6 +2,9 @@ package inscalc
 
 import (
 	"fmt"
+	"log"
+	"os"
+	"strconv"
 	"time"
 
 	"cloud.google.com/go/civil"
@@ -178,4 +181,28 @@ func fliterDates(planDates []civil.Date, se dataframe.Series) []interface{} {
 
 	return s
 
+}
+
+// 四舍五入
+func rounding(p int64) (res int64) {
+	pString := strconv.FormatInt(p, 10)
+	if len(pString) < 2 {
+		res = 0
+		return
+	}
+	if d, _ := strconv.Atoi(pString[len(pString)-2 : len(pString)-1]); d < 5 {
+		pString = pString[:len(pString)-2] + "00"
+		res, _ = strconv.ParseInt(pString, 10, 64)
+	} else {
+		res, _ = strconv.ParseInt(pString[:len(pString)-2], 10, 64)
+		res = (res + 1) * 100
+	}
+	return
+}
+
+func check(err error) {
+	if err != nil {
+		log.Fatalln(err)
+		os.Exit(10086)
+	}
 }
