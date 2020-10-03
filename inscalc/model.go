@@ -9,9 +9,10 @@ import (
 	"time"
 
 	"cloud.google.com/go/civil"
-	"github.com/guregu/null"
 
+	"github.com/lekai63/lpr/models"
 	dataframe "github.com/rocketlaunchr/dataframe-go"
+
 	// "github.com/rocketlaunchr/dataframe-go/exports"
 
 	"github.com/rocketlaunchr/dataframe-go/imports"
@@ -19,12 +20,13 @@ import (
 
 // BankRepayPlanCalcModel  定义单个合同的计算模型
 type BankRepayPlanCalcModel struct {
-	Bc BankLoanContractMini
+	// Bc BankLoanContractMini
+	Bc models.BankLoanContract
 	// Brps存储Bc合同项下的所有还款记录, Brp []BankRepayPlan
 	Brps *dataframe.DataFrame
 }
 
-// BankLoanContractMini 提取BankLoanContract与利息计算相关的字段
+/* // BankLoanContractMini 提取BankLoanContract与利息计算相关的字段
 type BankLoanContractMini struct {
 	// ID,InterestCalcMethod ,BankName,LoanMethod ,CurrentRate对应bank_loan_contract 中的同名字段
 	//[ 0] id                                             INT4                 null: false  primary: true   isArray: false  auto: true   col: INT4            len: -1      default: []
@@ -39,7 +41,7 @@ type BankLoanContractMini struct {
 	ActualStartDate null.Time `gorm:"column:actual_start_date;type:DATE;" json:"actual_start_date"`
 	//[16] current_rate                                   INT4                 null: false  primary: false  isArray: false  auto: false  col: INT4            len: -1      default: []
 	CurrentRate int32 `gorm:"column:current_rate;type:INT4;" json:"current_rate"`
-}
+} */
 
 var ctx = context.Background()
 var db, _ = gormInitForTest()
@@ -51,7 +53,7 @@ func NewModel(bankLoanContractID int32) (model BankRepayPlanCalcModel, err error
 	db, _ := gormInitForTest()
 
 	// gen model.Bc
-	var bc BankLoanContractMini
+	var bc models.BankLoanContract
 	bc.ID = bankLoanContractID
 	db.Table("bank_loan_contract").First(&bc)
 	// db.First(&bc)
@@ -434,6 +436,7 @@ func (model *BankRepayPlanCalcModel) AddPlanAmount() *BankRepayPlanCalcModel {
 // 在传入本函数前，应该先完成sort排序 model.Sort("plan_date")， 不在本函数里做sort 是担心与其他调用函数形成死锁
 // method不传参，为默认计息方式（年利率/360×天数）适用多数银行
 // method传参"monthly",为按月利率计息(月利率/30×天数)，与默认计息方式的区别是利率的四舍五入,适用杭州银行
+// method传参"halfyearly",按半年计息，适用招行
 func (model *BankRepayPlanCalcModel) rowInsCalc(vals map[interface{}]interface{}, upperVals map[interface{}]interface{}, method ...string) (int64, error) {
 	upperDay := upperVals["plan_date"].(civil.Date)
 	if upperVals["actual_date"] != nil {
@@ -444,6 +447,8 @@ func (model *BankRepayPlanCalcModel) rowInsCalc(vals map[interface{}]interface{}
 	if vals["actual_date"] != nil {
 		rowDay = (vals["actual_date"].(civil.Date))
 	}
+
+	// TODO:当current_reprice_day 在upperDay和rowDay之间时，对于LPR的合同分段计价。
 
 	calcDays := (rowDay).DaysSince(upperDay)
 	planInsB := big.NewInt(0)
@@ -456,11 +461,21 @@ func (model *BankRepayPlanCalcModel) rowInsCalc(vals map[interface{}]interface{}
 		planInsB.Div(planInsB, big.NewInt(360000000))
 	} else {
 		switch method[0] {
+		case "yearly":
+			// 默认_计划利息 = 应计本金×年利率×期间天数/360 （因利率单位为0.01%，所以再除以1000000）
+			planInsB.Mul(accruedB, RateB).Mul(planInsB, big.NewInt(int64(calcDays)))
+			planInsB.Div(planInsB, big.NewInt(360000000))
 		case "monthly":
 			// 月利率=年利率/12,精确到0.0001%
 			rateMonthB := big.NewInt(int64(model.Bc.CurrentRate * 10 / 12)) //为了月利率的精度，小数点右移一位后再除以12
 			// 计划利息 = 应计本金×月利率×期间天数/30
 			planInsB = planInsB.Mul(accruedB, rateMonthB).Mul(planInsB, big.NewInt(int64(calcDays))).Div(planInsB, big.NewInt(300000000)) // 注意最后要多除以10，即把上面移动的小数点移回去
+		case "halfyearly":
+			// 半利率=年利率/2,精确到0.0001%
+			rateHalfB := big.NewInt(int64(model.Bc.CurrentRate / 2))
+			// 计划利息 = 应计本金×半利率
+			planInsB.Mul(accruedB, rateHalfB).Div(planInsB, big.NewInt(1000000)) //因利率单位为0.01%，所以再除以1000000
+
 		default:
 			return -1, fmt.Errorf("未定义的计息方式")
 		}
@@ -509,3 +524,5 @@ func timeSerie2dateSerie(d *dataframe.Series) (*dataframe.SeriesGeneric, error) 
 	return se, nil
 
 }
+
+// TODO:lpr中段变化时，分段计息的计算公式

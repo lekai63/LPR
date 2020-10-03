@@ -5,10 +5,11 @@ import (
 	"testing"
 )
 
+// TODO:pg中将招行、建行三笔合同的current Rate 改回到43000
 func TestNewBankRepayPlanCalcModel(t *testing.T) {
 	var (
-		in       = 3
-		expected = 3
+		in       = 5
+		expected = in
 	)
 	actual, err := NewModel(int32(in))
 	if err != nil {
@@ -19,9 +20,11 @@ func TestNewBankRepayPlanCalcModel(t *testing.T) {
 	fmt.Println("origin table")
 	fmt.Print(p.Brps.Table())
 
-	p, err = p.ToICBC(true)
+	// p, err = p.ToICBC(true)
 	// p, err = p.ToHZBank(true)
 	// p, err = p.ToABC(true)
+	// p, err = p.ToCMB(true)
+	p, err = p.ToCCB(true)
 	if err != nil {
 		fmt.Println(err)
 	}

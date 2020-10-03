@@ -8,6 +8,7 @@ import (
 	dataframe "github.com/rocketlaunchr/dataframe-go"
 )
 
+// ToHZBank 生成杭州银行还款计划
 func (model *BankRepayPlanCalcModel) ToHZBank(isFirst bool) (*BankRepayPlanCalcModel, error) {
 	if model.Bc.BankName != "杭州银行" {
 		return nil, errors.New("输入模型的银行名称不是杭州银行，请检查")
