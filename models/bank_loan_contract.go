@@ -89,7 +89,7 @@ type BankLoanContract struct {
 	//[13] current_reprice_day                            DATE                 null: true   primary: false  isArray: false  auto: false  col: DATE            len: -1      default: []
 	CurrentRepriceDay null.Time `gorm:"column:current_reprice_day;type:DATE;" json:"current_reprice_day"`
 	//[14] current_lpr                                    INT4                 null: true   primary: false  isArray: false  auto: false  col: INT4            len: -1      default: []
-	CurrentLpr null.Int `gorm:"column:current_lpr;type:INT4;" json:"current_lpr"`
+	// CurrentLpr null.Int `gorm:"column:current_lpr;type:INT4;" json:"current_lpr"`
 	//[15] lpr_plus                                       INT4                 null: true   primary: false  isArray: false  auto: false  col: INT4            len: -1      default: []
 	LprPlus null.Int `gorm:"column:lpr_plus;type:INT4;" json:"lpr_plus"`
 	//[16] current_rate                                   INT4                 null: false  primary: false  isArray: false  auto: false  col: INT4            len: -1      default: []
@@ -414,27 +414,6 @@ var bank_loan_contractTableInfo = &TableInfo{
 
 		&ColumnInfo{
 			Index:              14,
-			Name:               "current_lpr",
-			Comment:            ``,
-			Notes:              ``,
-			Nullable:           true,
-			DatabaseTypeName:   "INT4",
-			DatabaseTypePretty: "INT4",
-			IsPrimaryKey:       false,
-			IsAutoIncrement:    false,
-			IsArray:            false,
-			ColumnType:         "INT4",
-			ColumnLength:       -1,
-			GoFieldName:        "CurrentLpr",
-			GoFieldType:        "null.Int",
-			JSONFieldName:      "current_lpr",
-			ProtobufFieldName:  "current_lpr",
-			ProtobufType:       "int32",
-			ProtobufPos:        15,
-		},
-
-		&ColumnInfo{
-			Index:              15,
 			Name:               "lpr_plus",
 			Comment:            ``,
 			Notes:              ``,
@@ -451,11 +430,11 @@ var bank_loan_contractTableInfo = &TableInfo{
 			JSONFieldName:      "lpr_plus",
 			ProtobufFieldName:  "lpr_plus",
 			ProtobufType:       "int32",
-			ProtobufPos:        16,
+			ProtobufPos:        15,
 		},
 
 		&ColumnInfo{
-			Index:              16,
+			Index:              15,
 			Name:               "current_rate",
 			Comment:            ``,
 			Notes:              ``,
@@ -472,11 +451,11 @@ var bank_loan_contractTableInfo = &TableInfo{
 			JSONFieldName:      "current_rate",
 			ProtobufFieldName:  "current_rate",
 			ProtobufType:       "int32",
-			ProtobufPos:        17,
+			ProtobufPos:        16,
 		},
 
 		&ColumnInfo{
-			Index:              17,
+			Index:              16,
 			Name:               "next_reprice_day",
 			Comment:            ``,
 			Notes:              ``,
@@ -493,11 +472,11 @@ var bank_loan_contractTableInfo = &TableInfo{
 			JSONFieldName:      "next_reprice_day",
 			ProtobufFieldName:  "next_reprice_day",
 			ProtobufType:       "google.protobuf.Timestamp",
-			ProtobufPos:        18,
+			ProtobufPos:        17,
 		},
 
 		&ColumnInfo{
-			Index:              18,
+			Index:              17,
 			Name:               "all_repaid_principal",
 			Comment:            ``,
 			Notes:              ``,
@@ -514,11 +493,11 @@ var bank_loan_contractTableInfo = &TableInfo{
 			JSONFieldName:      "all_repaid_principal",
 			ProtobufFieldName:  "all_repaid_principal",
 			ProtobufType:       "int32",
-			ProtobufPos:        19,
+			ProtobufPos:        18,
 		},
 
 		&ColumnInfo{
-			Index:              19,
+			Index:              18,
 			Name:               "all_repaid_interest",
 			Comment:            ``,
 			Notes:              ``,
@@ -535,11 +514,11 @@ var bank_loan_contractTableInfo = &TableInfo{
 			JSONFieldName:      "all_repaid_interest",
 			ProtobufFieldName:  "all_repaid_interest",
 			ProtobufType:       "int32",
-			ProtobufPos:        20,
+			ProtobufPos:        19,
 		},
 
 		&ColumnInfo{
-			Index:              20,
+			Index:              19,
 			Name:               "is_finished",
 			Comment:            ``,
 			Notes:              ``,
@@ -556,11 +535,11 @@ var bank_loan_contractTableInfo = &TableInfo{
 			JSONFieldName:      "is_finished",
 			ProtobufFieldName:  "is_finished",
 			ProtobufType:       "bool",
-			ProtobufPos:        21,
+			ProtobufPos:        20,
 		},
 
 		&ColumnInfo{
-			Index:              21,
+			Index:              20,
 			Name:               "contact_person",
 			Comment:            ``,
 			Notes:              ``,
@@ -577,11 +556,11 @@ var bank_loan_contractTableInfo = &TableInfo{
 			JSONFieldName:      "contact_person",
 			ProtobufFieldName:  "contact_person",
 			ProtobufType:       "string",
-			ProtobufPos:        22,
+			ProtobufPos:        21,
 		},
 
 		&ColumnInfo{
-			Index:              22,
+			Index:              21,
 			Name:               "contact_tel",
 			Comment:            ``,
 			Notes:              ``,
@@ -598,11 +577,11 @@ var bank_loan_contractTableInfo = &TableInfo{
 			JSONFieldName:      "contact_tel",
 			ProtobufFieldName:  "contact_tel",
 			ProtobufType:       "string",
-			ProtobufPos:        23,
+			ProtobufPos:        22,
 		},
 
 		&ColumnInfo{
-			Index:              23,
+			Index:              22,
 			Name:               "created_at",
 			Comment:            ``,
 			Notes:              ``,
@@ -619,11 +598,11 @@ var bank_loan_contractTableInfo = &TableInfo{
 			JSONFieldName:      "created_at",
 			ProtobufFieldName:  "created_at",
 			ProtobufType:       "uint64",
-			ProtobufPos:        24,
+			ProtobufPos:        23,
 		},
 
 		&ColumnInfo{
-			Index:              24,
+			Index:              23,
 			Name:               "updated_at",
 			Comment:            ``,
 			Notes:              ``,
@@ -640,11 +619,11 @@ var bank_loan_contractTableInfo = &TableInfo{
 			JSONFieldName:      "updated_at",
 			ProtobufFieldName:  "updated_at",
 			ProtobufType:       "uint64",
-			ProtobufPos:        25,
+			ProtobufPos:        24,
 		},
 
 		&ColumnInfo{
-			Index:              26,
+			Index:              24,
 			Name:               "abbreviation",
 			Comment:            ``,
 			Notes:              ``,
@@ -661,7 +640,7 @@ var bank_loan_contractTableInfo = &TableInfo{
 			JSONFieldName:      "abbreviation",
 			ProtobufFieldName:  "abbreviation",
 			ProtobufType:       "string",
-			ProtobufPos:        27,
+			ProtobufPos:        26,
 		},
 	},
 }

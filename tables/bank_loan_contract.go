@@ -60,7 +60,7 @@ func GetBankLoanContractTable(ctx *context.Context) table.Table {
 		}
 	})
 	info.AddField("Current_reprice_day", "current_reprice_day", db.Date).FieldHide()
-	info.AddField("Current_lpr", "current_lpr", db.Int).FieldHide()
+	//info.AddField("Current_lpr", "current_lpr", db.Int).FieldHide()
 	info.AddField("Lpr_plus", "lpr_plus", db.Int).FieldHide()
 	info.AddField("当前执行利率", "current_rate", db.Int).FieldDisplay(showMoney)
 	info.AddField("下一重定价日", "next_reprice_day", db.Date).
@@ -114,7 +114,7 @@ func GetBankLoanContractTable(ctx *context.Context) table.Table {
 		}).FieldDefault("基于LPR定价").
 		FieldOnChooseHide("基于基准定价", "current_reprice_day", "current_lpr", "lpr_plus", "next_reprice_day")
 	formList.AddField("当前执行利率的重定价日", "current_reprice_day", db.Date, form.Date).FieldPostFilterFn(allowReturnNullString)
-	formList.AddField("当前基于的LPR利率", "current_lpr", db.Int, form.Rate).FieldDisplay(showMoney).FieldPostFilterFn(allowReturnNullString).FieldPostFilterFn(money2bigint)
+	//formList.AddField("当前基于的LPR利率", "current_lpr", db.Int, form.Rate).FieldDisplay(showMoney).FieldPostFilterFn(allowReturnNullString).FieldPostFilterFn(money2bigint)
 	formList.AddField("LPR加点值", "lpr_plus", db.Int, form.Number).FieldDisplay(showLprPlus).FieldHelpMsg("单位:bp. 即0.01%. 加50.5bp就输入50.5").FieldPostFilterFn(allowReturnNullString).FieldPostFilterFn(lprplus2int)
 	formList.AddField("下一重定价日", "next_reprice_day", db.Date, form.Date).FieldPostFilterFn(allowReturnNullString)
 
