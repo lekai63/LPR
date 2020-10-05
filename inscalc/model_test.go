@@ -18,8 +18,8 @@ func TestCollectNilActualRows(t *testing.T) {
 	}
 	p := &actual
 	p.CollectNilActualRows()
-	fmt.Println("coll table")
-	fmt.Print(p.Brps.Table())
+	// fmt.Println("coll table")
+	// fmt.Print(p.Brps.Table())
 
 }
 

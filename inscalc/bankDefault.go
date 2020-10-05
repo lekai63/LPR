@@ -10,10 +10,10 @@ import (
 // ToDefault 根据model生成默认的还本付息计划：利息在每月或每季度21日偿还，本金在其他日期偿还，且本金偿还时不额外付息
 // 适用工行、农行
 // 首次生成，则isFirst 为true,生成后写入数据库；非首次生成，则预期数据库中已有InsPlanDate信息
-func (model *BankRepayPlanCalcModel) ToDefault(isFirst bool) (*BankRepayPlanCalcModel, error) {
+func (model *BankRepayPlanCalcModel) ToDefault(fillInsPlanDate bool) (*BankRepayPlanCalcModel, error) {
 
 	// 注意使用括号决定计算优先级，不要直接链式调用
-	if isFirst {
+	if fillInsPlanDate {
 		model.FillInsPlanDate()
 	}
 	model.AddAccruedPrincipal()
@@ -23,7 +23,11 @@ func (model *BankRepayPlanCalcModel) ToDefault(isFirst bool) (*BankRepayPlanCalc
 }
 
 // AddDefaultFactoringIns 计算默认保理利息并添加到列，本函数将df.lock 注意避免与其他函数形成死锁
-// 默认保理利息方案为：利息在每月或每季度21日偿还，本金在其他日期偿还，且本金偿还时不额外付息
+// # 默认保理利息方案为：
+// 利息在每月或每季度21日偿还，本金在其他日期偿还，且本金偿还时不额外付息
+// # 注意：
+// 如遇节假日，付息时间不顺延。工行还本时间提前，建行还本时间不变，农行还本时间顺延并收顺延期间资金占用利息。
+// 故利息计算时，需根据actual_date测算期间利息。
 func (model *BankRepayPlanCalcModel) AddDefaultFactoringIns() *BankRepayPlanCalcModel {
 	model.Sort("plan_date")
 	df := model.Brps
@@ -95,31 +99,31 @@ func (model *BankRepayPlanCalcModel) AddDefaultFactoringIns() *BankRepayPlanCalc
 }
 
 // ToABC 生成农行还款计划
-func (model *BankRepayPlanCalcModel) ToABC(isFirst bool) (*BankRepayPlanCalcModel, error) {
+func (model *BankRepayPlanCalcModel) ToABC(fillInsPlanDate bool) (*BankRepayPlanCalcModel, error) {
 	if model.Bc.BankName != "农业银行" {
 		return nil, errors.New("输入模型的银行名称不是农业银行，请检查")
 	}
-	model.ToDefault(isFirst)
+	model.ToDefault(fillInsPlanDate)
 	return model, nil
 
 }
 
 // ToCCB 生成建行还款计划
-func (model *BankRepayPlanCalcModel) ToCCB(isFirst bool) (*BankRepayPlanCalcModel, error) {
+func (model *BankRepayPlanCalcModel) ToCCB(fillInsPlanDate bool) (*BankRepayPlanCalcModel, error) {
 	if model.Bc.BankName != "建设银行" {
 		return nil, errors.New("输入模型的银行名称不是建设银行，请检查")
 	}
-	model.ToDefault(isFirst)
+	model.ToDefault(fillInsPlanDate)
 	return model, nil
 
 }
 
 // ToICBC 根据model 生成工行还本付息计划
 // 首次生成，则isFirst 为true；
-func (model *BankRepayPlanCalcModel) ToICBC(isFirst bool) (*BankRepayPlanCalcModel, error) {
+func (model *BankRepayPlanCalcModel) ToICBC(fillInsPlanDate bool) (*BankRepayPlanCalcModel, error) {
 	if model.Bc.BankName != "工商银行" {
 		return nil, errors.New("输入模型的银行名称不是工商银行，请检查")
 	}
-	model.ToDefault(isFirst)
+	model.ToDefault(fillInsPlanDate)
 	return model, nil
 }

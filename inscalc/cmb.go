@@ -8,13 +8,13 @@ import (
 )
 
 // ToCMB 生成招商银行还款计划
-func (model *BankRepayPlanCalcModel) ToCMB(isFirst bool) (*BankRepayPlanCalcModel, error) {
+func (model *BankRepayPlanCalcModel) ToCMB(fillInsPlanDate bool) (*BankRepayPlanCalcModel, error) {
 	if model.Bc.BankName != "招商银行" {
 		return nil, errors.New("输入模型的银行名称不是招商银行，请检查")
 	}
 
 	// 招行每期利息与本金一起支付，不需额外生成利息还款计划
-	// if isFirst {
+	// if fillInsPlanDate {
 	// 	model.FillInsPlanDate()
 	// }
 
@@ -25,7 +25,8 @@ func (model *BankRepayPlanCalcModel) ToCMB(isFirst bool) (*BankRepayPlanCalcMode
 }
 
 // AddCMBFactoringIns 计算招商银行保理利息并添加到列，本函数将df.lock 注意避免与其他函数形成死锁
-// 招商银行保理利息方案为：本金利息均根据应收款偿还计划在6月、12月的20日偿还。还本付息时若遇节假日，仍按之前计算好的本息还款，不额外加收多占天数的利息。
+// # 招商银行保理利息方案为：
+// 本金利息均根据应收款偿还计划在6月、12月的20日偿还。还本付息时若遇节假日，仍按之前计算好的本息还款，不额外加收多占天数的利息。
 // 故在使用rowInsCalc函数前，需调整传入的参数vals和upperVals
 func (model *BankRepayPlanCalcModel) AddCMBFactoringIns() *BankRepayPlanCalcModel {
 	model.Sort("plan_date")

@@ -8,29 +8,30 @@ import (
 	dataframe "github.com/rocketlaunchr/dataframe-go"
 )
 
-// ToHZBank 生成杭州银行还款计划
-func (model *BankRepayPlanCalcModel) ToHZBank(fillInsPlanDate bool) (*BankRepayPlanCalcModel, error) {
-	if model.Bc.BankName != "杭州银行" {
-		return nil, errors.New("输入模型的银行名称不是杭州银行，请检查")
+// ToCZBank 生成杭州银行还款计划
+func (model *BankRepayPlanCalcModel) ToCZBank(fillInsPlanDate bool) (*BankRepayPlanCalcModel, error) {
+	if model.Bc.BankName != "浙商银行" {
+		return nil, errors.New("输入模型的银行名称不是浙商银行，请检查")
 	}
 	if fillInsPlanDate {
 		model.FillInsPlanDate()
 	}
 
 	model.AddAccruedPrincipal()
-	model.AddHZBankFactoringIns()
+	model.AddCZBankFactoringIns()
 	model.AddPlanAmount()
 	return model, nil
 
 }
 
-// AddHZBankFactoringIns 计算杭州银行保理利息并添加到列，本函数将df.lock 注意避免与其他函数形成死锁
-// # 杭州银行保理利息方案为：
+// AddCZBankFactoringIns 计算浙商银行保理利息并添加到列，本函数将df.lock 注意避免与其他函数形成死锁
+// # 浙商银行保理利息方案为：
 // 利息在每季度21日偿还，本金在其他日期偿还。
-// 本金偿还时需配套付息，付息金额=本次偿还本金*（偿还日-最近一期季度付息日）/30 * 月利率
-// # 注意:
-// 杭州银行采用月利率，即年利率除以12；日利率=月利率/30
-func (model *BankRepayPlanCalcModel) AddHZBankFactoringIns() *BankRepayPlanCalcModel {
+// 本金偿还时需配套付息，付息金额=本次偿还本金*（偿还日-最近一期季度付息日）/360 * 年利率
+// # 注意：
+// 浙商银行 如遇节假日，顺延还款时间，且不加收顺延期间的资金占用利息。
+// 故期间利息的计算不考虑actual_date (但该观点未验证，不确定),因此调整传入的vals 和 upperVals
+func (model *BankRepayPlanCalcModel) AddCZBankFactoringIns() *BankRepayPlanCalcModel {
 	model.Sort("plan_date")
 	df := model.Brps
 	// upperVal 用于存储上一个row的信息
@@ -51,38 +52,44 @@ func (model *BankRepayPlanCalcModel) AddHZBankFactoringIns() *BankRepayPlanCalcM
 		switch {
 		// 第0行为第一笔利息还款计划
 		case (*row) == 0:
+			upperVals["actual_date"] = nil
+			vals["actual_date"] = nil
 			upperVals["plan_date"] = civil.DateOf(model.Bc.ActualStartDate.ValueOrZero())
-			planInsterest[*row], e = model.rowInsCalc(vals, upperVals, "monthly")
+			planInsterest[*row], e = model.rowInsCalc(vals, upperVals, "yearly")
 			check(e)
 			// 最后一行利随本清
 		case (*row) == nrows-1: // 如使用(*row) == df.NRows() 游标直接到最后，从而无法执行
-			planInsterest[*row], e = model.rowInsCalc(vals, upperVals, "monthly")
+			upperVals["actual_date"] = nil
+			vals["actual_date"] = nil
+			planInsterest[*row], e = model.rowInsCalc(vals, upperVals, "yearly")
 			check(e)
 		default:
-			// 杭州银行保理利息在每季末21日扣
-			// 本金偿还时需配套付息，付息金额=本次偿还本金*（偿还日-最近一期季度付息日）/30 * 月利率
+			// 浙商银行保理利息在每季末21日扣
+			// 本金偿还时需配套付息，付息金额=本次偿还本金*（偿还日-最近一期季度付息日）/360 * 年利率
 			// 其余本金应加到下一季末的21日一并扣息
 			// 本row还款日非21日，将计划还款利息暂存入temp
+			upperVals["actual_date"] = nil
+			vals["actual_date"] = nil
 			if d := vals["plan_date"].(civil.Date); d.Day != 21 {
-				m, e := model.rowInsCalc(vals, upperVals, "monthly")
+				m, e := model.rowInsCalc(vals, upperVals, "yearly")
 				check(e)
 				// 与默认保理利息计算方式不同的地方，本金还款时还会有本笔本金对应的利息,
 				// 通过中间变量深度拷贝一个vals修改 应计本金，来计算本次利息
 				var midVals map[interface{}]interface{}
 				deepcopy.Copy(&midVals, &vals).Do()
 				midVals["accrued_principal"] = vals["plan_principal"]
-				rowins, e := model.rowInsCalc(midVals, upperVals, "monthly")
+				rowins, e := model.rowInsCalc(midVals, upperVals, "yearly")
 				check(e)
 				planInsterest[*row] = rowins
 				temp = m - rowins
 			} else if x := upperVals["plan_date"].(civil.Date); x.Day != 21 {
 				// 上一row为非21日，将temp提取出来，加入本row
-				m, e := model.rowInsCalc(vals, upperVals, "monthly")
+				m, e := model.rowInsCalc(vals, upperVals, "yearly")
 				check(e)
 				planInsterest[*row] = m + temp
 			} else {
 				// 默认planInsterest算法，即本row 上一row 均为21日
-				planInsterest[*row], e = model.rowInsCalc(vals, upperVals, "monthly")
+				planInsterest[*row], e = model.rowInsCalc(vals, upperVals, "yearly")
 				check(e)
 			}
 		}
