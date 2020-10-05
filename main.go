@@ -19,7 +19,6 @@ import (
 	"github.com/GoAdminGroup/go-admin/template/chartjs"
 	"github.com/gin-gonic/gin"
 
-	"github.com/lekai63/lpr/lpr"
 	"github.com/lekai63/lpr/models"
 	"github.com/lekai63/lpr/pages"
 	"github.com/lekai63/lpr/tables"
@@ -60,8 +59,7 @@ func startServer() {
 		res := make(gin.H)
 		switch c.PostForm("calc") {
 		case "insterestAll":
-			// todo modify
-			lpr.Test()
+			// TODO:modify
 			res["code"] = 0
 			res["msg"] = "成功调用"
 			res["status_code"] = http.StatusOK

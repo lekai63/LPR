@@ -7,6 +7,7 @@ require (
 	github.com/GoAdminGroup/go-admin v1.2.16
 	github.com/GoAdminGroup/themes v0.0.38
 	github.com/ajg/form v1.5.1 // indirect
+	github.com/antlabs/deepcopy v0.0.3
 	github.com/buaazp/fasthttprouter v0.1.1 // indirect
 	github.com/fasthttp-contrib/websocket v0.0.0-20160511215533-1f3b11f56072 // indirect
 	github.com/fatih/structs v1.1.0 // indirect

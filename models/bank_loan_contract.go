@@ -85,7 +85,7 @@ type BankLoanContract struct {
 	//[11] actual_start_date                              DATE                 null: true   primary: false  isArray: false  auto: false  col: DATE            len: -1      default: []
 	ActualStartDate null.Time `gorm:"column:actual_start_date;type:DATE;" json:"actual_start_date"`
 	//[12] is_lpr                                         BOOL                 null: true   primary: false  isArray: false  auto: false  col: BOOL            len: -1      default: []
-	IsLpr null.Int `gorm:"column:is_lpr;type:BOOL;" json:"is_lpr"`
+	IsLpr null.Bool `gorm:"column:is_lpr;type:BOOL;" json:"is_lpr"`
 	//[13] current_reprice_day                            DATE                 null: true   primary: false  isArray: false  auto: false  col: DATE            len: -1      default: []
 	CurrentRepriceDay null.Time `gorm:"column:current_reprice_day;type:DATE;" json:"current_reprice_day"`
 	//[14] current_lpr                                    INT4                 null: true   primary: false  isArray: false  auto: false  col: INT4            len: -1      default: []
@@ -101,7 +101,7 @@ type BankLoanContract struct {
 	//[19] all_repaid_interest                            INT8                 null: true   primary: false  isArray: false  auto: false  col: INT8            len: -1      default: []
 	AllRepaidInterest null.Int `gorm:"column:all_repaid_interest;type:INT8;" json:"all_repaid_interest"`
 	//[20] is_finished                                    BOOL                 null: true   primary: false  isArray: false  auto: false  col: BOOL            len: -1      default: []
-	IsFinished null.Int `gorm:"column:is_finished;type:BOOL;" json:"is_finished"`
+	IsFinished null.Bool `gorm:"column:is_finished;type:BOOL;" json:"is_finished"`
 	//[21] contact_person                                 VARCHAR(255)         null: true   primary: false  isArray: false  auto: false  col: VARCHAR         len: 255     default: []
 	ContactPerson null.String `gorm:"column:contact_person;type:VARCHAR;size:255;" json:"contact_person"`
 	//[22] contact_tel                                    VARCHAR(50)          null: true   primary: false  isArray: false  auto: false  col: VARCHAR         len: 50      default: []

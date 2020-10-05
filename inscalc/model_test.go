@@ -3,12 +3,42 @@ package inscalc
 import (
 	"fmt"
 	"testing"
+	"time"
+
+	"cloud.google.com/go/civil"
+	"github.com/guregu/null"
 )
+
+func TestReprice(t *testing.T) {
+	lprplus := null.NewInt(4500, true)
+	var (
+		in = InsCalcOption{
+			Method:  "yearly",
+			ExeRate: 47500,
+			LprPlus: lprplus,
+		}
+		expected = InsCalcOption{
+			Method:  "yearly",
+			ExeRate: 43000,
+			LprPlus: lprplus,
+		}
+	)
+	d := civil.Date{
+		Year:  2020,
+		Month: time.August,
+		Day:   15,
+	}
+	ex := in.reprice(d)
+	if ex.ExeRate != expected.ExeRate {
+		t.Errorf("sth wrong")
+	}
+
+}
 
 // TODO:pg中将招行、建行三笔合同的current Rate 改回到43000
 func TestNewBankRepayPlanCalcModel(t *testing.T) {
 	var (
-		in       = 5
+		in       = 12
 		expected = in
 	)
 	actual, err := NewModel(int32(in))
@@ -22,9 +52,9 @@ func TestNewBankRepayPlanCalcModel(t *testing.T) {
 
 	// p, err = p.ToICBC(true)
 	// p, err = p.ToHZBank(true)
-	// p, err = p.ToABC(true)
+	p, err = p.ToABC(true)
 	// p, err = p.ToCMB(true)
-	p, err = p.ToCCB(true)
+	// p, err = p.ToCCB(true)
 	if err != nil {
 		fmt.Println(err)
 	}

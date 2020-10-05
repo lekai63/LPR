@@ -15,5 +15,6 @@
         "apiVersion": 2,
         "showGlobalVariables": true
     },
-    "go.goroot": ""
+    "go.goroot": "",
+    "go.useLanguageServer": true
 }

@@ -1,42 +1,102 @@
 package inscalc
 
 import (
+	"context"
 	"fmt"
 	"log"
-	"os"
 	"strconv"
 	"time"
 
 	"cloud.google.com/go/civil"
+	"github.com/guregu/null"
 	dataframe "github.com/rocketlaunchr/dataframe-go"
 )
 
-// slice2maps 传入两个参数，生成map[fieldname]val . 其中 "bank_loan_contract_id" 字段固定为 model.Bc.ID; fieldname 字段值为val
-// 该map用于添加至 model.Brps 的dataframe中
-func (model *BankRepayPlanCalcModel) slice2maps(fieldname string, vals ...interface{}) []interface{} {
-	brps := model.Brps
-	names := brps.Names()
-	bcID := model.Bc.ID
-	maps := make([]interface{}, 0)
-	if vals == nil {
-		panic("get no vals")
-	} else {
-		for _, val := range vals {
-			// 初始化a
-			a := make(map[string]interface{})
-			for _, name := range names {
-				a[name] = nil
+// TODO:修改db获取方式
+var ctx = context.Background()
+var db, _ = gormInitForTest()
+
+type InsCalcOption struct {
+	Method  string
+	ExeRate int32 //执行利率
+	LprPlus null.Int
+}
+
+type LprRecord struct {
+	ID int32 `gorm:"primary_key;AUTO_INCREMENT;column:id;type:INT4;`
+	// json: cannot unmarshal string into Go struct field Record.records.1Y of type float64
+	OneY string `json:"1Y" gorm:"column:one_y;type:FLOAT8"`
+	// ShowDateEN time.Time `json:"showDateEN,omitempty"`
+	FiveY      string `json:"5Y" gorm:"column:five_y;type:FLOAT8"`
+	ShowDateCN string `json:"showDateCN" gorm:"column:show_date;type:DATE"`
+}
+
+// TableName sets the insert table name for this struct type
+func (b *LprRecord) TableName() string {
+	return "lpr_record"
+}
+
+// reprice 输入day日，输出重定价后的利率=day日执行的LPR+LprPlus
+// 如day日当天公布LPR，该LPR会在day+1日执行。故day日当天适用此前的LPR
+func (option *InsCalcOption) reprice(day civil.Date) *InsCalcOption {
+	var r []LprRecord
+	// 取一年期LPR. LPR公布当日执行的是上一日的LPR，故查询语句只需要写"<" 而非"<="
+	db.Where("show_date < ? ", day.String()).Order("show_date desc").Find(&r)
+	lpr := floatStr2int64(r[0].OneY)
+	option.ExeRate = int32(lpr) + int32(option.LprPlus.ValueOrZero())
+	return option
+
+}
+
+// getLpr 获得 day日之前的lpr, 数值乘以10000 后返回int64（即单位为0.0001%） ，以便与insCalc利率单位一致
+// 注意：T日公布的LPR，将在T+1日生效。故day日事实上执行的是day日之前的LPR
+func getLpr(day civil.Date) int64 {
+	dpast := day.AddDays(-31)
+	dyestoday := day.AddDays(-1) //构造查询语句时，不包含今日，以免混入本应明日生效的LPR
+	var records []LprRecord
+	result := db.Where("show_date BETWEEN ? AND ?", dpast.String(), dyestoday.String()).Find(&records)
+	if result.Error != nil {
+		log.Fatalln(result.Error)
+	}
+	switch result.RowsAffected {
+	case 0:
+		fmt.Printf("未查询到距离%s(含)之前30天内的LPR值,取最新一期LPR", day.String())
+		var r LprRecord
+		restemp := db.Order("show_date desc").First(&r)
+		if restemp.Error != nil {
+			log.Fatalln(restemp.Error)
+		}
+		return floatStr2int64(r.OneY)
+	case 1:
+		return floatStr2int64(records[0].OneY)
+	default:
+		//取日期最近的一期记录
+		m := records[0]
+		for _, val := range records {
+			valday, err := civil.ParseDate(val.ShowDateCN[:10])
+			if err != nil {
+				log.Fatalln(err)
+			}
+			mday, err := civil.ParseDate(m.ShowDateCN[:10])
+			if err != nil {
+				log.Fatalln(err)
 			}
 
-			a["bank_loan_contract_id"] = int64(bcID)
-			a[fieldname] = val
-
-			maps = append(maps, a)
+			if valday.After(mday) {
+				m = val
+			}
 		}
+		return floatStr2int64(m.OneY)
 	}
-	// fmt.Printf("maps:\n %+v", maps)
-	return maps
+}
 
+// floatStr2int64 浮点数×10000后取整
+func floatStr2int64(floatStr string) int64 {
+	f, err := strconv.ParseFloat(floatStr, 64)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return int64(f * 10000)
 }
 
 // getLatestNilActualRowNum 返回第一笔实际未付的记录序号，如全部已付，则返回-1
@@ -203,6 +263,5 @@ func rounding(p int64) (res int64) {
 func check(err error) {
 	if err != nil {
 		log.Fatalln(err)
-		os.Exit(10086)
 	}
 }

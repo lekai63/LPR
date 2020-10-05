@@ -1,7 +1,6 @@
 package inscalc
 
 import (
-	"context"
 	"fmt"
 	"math/big"
 	"strconv"
@@ -9,6 +8,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/civil"
+	"github.com/antlabs/deepcopy"
 
 	"github.com/lekai63/lpr/models"
 	dataframe "github.com/rocketlaunchr/dataframe-go"
@@ -42,9 +42,6 @@ type BankLoanContractMini struct {
 	//[16] current_rate                                   INT4                 null: false  primary: false  isArray: false  auto: false  col: INT4            len: -1      default: []
 	CurrentRate int32 `gorm:"column:current_rate;type:INT4;" json:"current_rate"`
 } */
-
-var ctx = context.Background()
-var db, _ = gormInitForTest()
 
 // NewModel 根据bankLoanContractID 从数据库中获取数据 并生成 BankRepayPlanCalcModel
 func NewModel(bankLoanContractID int32) (model BankRepayPlanCalcModel, err error) {
@@ -432,53 +429,118 @@ func (model *BankRepayPlanCalcModel) AddPlanAmount() *BankRepayPlanCalcModel {
 	return model
 }
 
+func calcDays(vals map[interface{}]interface{}, upperVals map[interface{}]interface{}) int {
+	upperDay := genDay(upperVals)
+	rowDay := genDay(vals)
+	return (rowDay).DaysSince(upperDay)
+}
+
+func genDay(vals map[interface{}]interface{}) civil.Date {
+	day := vals["plan_date"].(civil.Date)
+	if vals["actual_date"] != nil {
+		day = (vals["actual_date"].(civil.Date))
+	}
+	return day
+}
+
 // rowInsCalc 计算本行的计划利息。参数vals传入本行row值，upperVals传入上一行值
 // 在传入本函数前，应该先完成sort排序 model.Sort("plan_date")， 不在本函数里做sort 是担心与其他调用函数形成死锁
 // method不传参，为默认计息方式（年利率/360×天数）适用多数银行
 // method传参"monthly",为按月利率计息(月利率/30×天数)，与默认计息方式的区别是利率的四舍五入,适用杭州银行
 // method传参"halfyearly",按半年计息，适用招行
 func (model *BankRepayPlanCalcModel) rowInsCalc(vals map[interface{}]interface{}, upperVals map[interface{}]interface{}, method ...string) (int64, error) {
-	upperDay := upperVals["plan_date"].(civil.Date)
-	if upperVals["actual_date"] != nil {
-		upperDay = (upperVals["actual_date"].(civil.Date))
+	insCalcOptions := make([]InsCalcOption, 1)
+	option := insCalcOptions[0]
+	if method == nil {
+		option.Method = "yearly"
+	} else {
+		option.Method = method[0]
+	}
+	option.ExeRate = model.Bc.CurrentRate // 默认取当前利率字段
+
+	isLpr := model.Bc.IsLpr.Valid // 是否LPR定价
+	if isLpr {
+		option.LprPlus = model.Bc.LprPlus
+	}
+	crd := model.Bc.CurrentRepriceDay
+	iscrd := crd.Valid   //重定价日本身是否有值
+	isLprChange := false // 重定价日前后LPR是否发生变化
+	isCrdIn := false     // 重定价日是否落在upperDay和rowDay之间
+	upperDay := genDay(upperVals)
+	rowDay := genDay(vals)
+	if iscrd {
+		d := civil.DateOf(crd.ValueOrZero())
+
+		// 若重定价日落在upperDay之前，则执行利率按重定价日的LPR重新计算
+		if d.Before(upperDay) {
+			option.reprice(d)
+		}
+
+		// 重定价日前后LPR是否发生变化
+		lprBefore := getLpr(d)
+		lprAfter := getLpr(d.AddDays(1))
+		if lprBefore != lprAfter {
+			isLprChange = true
+		}
+
+		// 重定价日是否落在upperDay和rowDay之间
+		if ((d.DaysSince(upperDay) == 0) || d.After(upperDay)) && d.Before(rowDay) {
+			isCrdIn = true
+		}
+
 	}
 
-	rowDay := vals["plan_date"].(civil.Date)
-	if vals["actual_date"] != nil {
-		rowDay = (vals["actual_date"].(civil.Date))
+	// 条件判断：在isLPR为true && 重定价日有值 && 重定价日前后LPR发生了变化 && 重定价日落在upperDay和rowDay之间 ,满足上述所有条件时，才需要分前后利率计息
+	if isLpr && isLprChange && isCrdIn {
+		d := civil.DateOf(crd.ValueOrZero())
+		return segIns(d, vals, upperVals, option)
+	} else {
+		// 非LPR定价合同，暂认为就是固定利率（即认为未来人行基准将不会变化）
+		// LPR定价，但重定价日在upperDay之前，也可认为计息期间内是固定利率
+		return fixedIns(vals, upperVals, option)
 	}
+}
 
-	// TODO:当current_reprice_day 在upperDay和rowDay之间时，对于LPR的合同分段计价。
+// segIns 分段计息
+// TODO:未考虑upperDay和rowDay之间存在多个重定价日的情况，可能影响招行保理利息计算
+func segIns(repriceDay civil.Date, vals map[interface{}]interface{}, upperVals map[interface{}]interface{}, option InsCalcOption) (int64, error) {
+	// 做一个深拷贝
+	var midVals map[interface{}]interface{}
+	deepcopy.Copy(&midVals, &vals).Do()
+	midVals["actual_date"] = repriceDay
+	segins1, err := fixedIns(midVals, upperVals, option)
+	check(err)
+	segins2, err := fixedIns(vals, midVals, *option.reprice(repriceDay))
+	check(err)
+	return segins1 + segins2, nil
+}
 
-	calcDays := (rowDay).DaysSince(upperDay)
+// fixedIns 固定利率计息。重定价日不落在vals 和upperVals之间时，适用此方法计息
+func fixedIns(vals map[interface{}]interface{}, upperVals map[interface{}]interface{}, option InsCalcOption) (int64, error) {
+
+	calcDays := calcDays(vals, upperVals)
 	planInsB := big.NewInt(0)
 	accruedB := big.NewInt(vals["accrued_principal"].(int64))
-	RateB := big.NewInt(int64(model.Bc.CurrentRate))
-
-	if method == nil {
+	yearRate := option.ExeRate
+	switch option.Method {
+	case "yearly":
 		// 默认_计划利息 = 应计本金×年利率×期间天数/360 （因利率单位为0.01%，所以再除以1000000）
-		planInsB.Mul(accruedB, RateB).Mul(planInsB, big.NewInt(int64(calcDays)))
+		rateB := big.NewInt(int64(yearRate))
+		planInsB.Mul(accruedB, rateB).Mul(planInsB, big.NewInt(int64(calcDays)))
 		planInsB.Div(planInsB, big.NewInt(360000000))
-	} else {
-		switch method[0] {
-		case "yearly":
-			// 默认_计划利息 = 应计本金×年利率×期间天数/360 （因利率单位为0.01%，所以再除以1000000）
-			planInsB.Mul(accruedB, RateB).Mul(planInsB, big.NewInt(int64(calcDays)))
-			planInsB.Div(planInsB, big.NewInt(360000000))
-		case "monthly":
-			// 月利率=年利率/12,精确到0.0001%
-			rateMonthB := big.NewInt(int64(model.Bc.CurrentRate * 10 / 12)) //为了月利率的精度，小数点右移一位后再除以12
-			// 计划利息 = 应计本金×月利率×期间天数/30
-			planInsB = planInsB.Mul(accruedB, rateMonthB).Mul(planInsB, big.NewInt(int64(calcDays))).Div(planInsB, big.NewInt(300000000)) // 注意最后要多除以10，即把上面移动的小数点移回去
-		case "halfyearly":
-			// 半利率=年利率/2,精确到0.0001%
-			rateHalfB := big.NewInt(int64(model.Bc.CurrentRate / 2))
-			// 计划利息 = 应计本金×半利率
-			planInsB.Mul(accruedB, rateHalfB).Div(planInsB, big.NewInt(1000000)) //因利率单位为0.01%，所以再除以1000000
+	case "monthly":
+		// 月利率=年利率/12,精确到0.0001%
+		rateMonthB := big.NewInt(int64(yearRate * 10 / 12)) //为了月利率的精度，小数点右移一位后再除以12
+		// 计划利息 = 应计本金×月利率×期间天数/30
+		planInsB = planInsB.Mul(accruedB, rateMonthB).Mul(planInsB, big.NewInt(int64(calcDays))).Div(planInsB, big.NewInt(300000000)) // 注意最后要多除以10，即把上面移动的小数点移回去
+	case "halfyearly":
+		// 半利率=年利率/2,精确到0.0001%
+		rateHalfB := big.NewInt(int64(yearRate / 2))
+		// 计划利息 = 应计本金×半利率
+		planInsB.Mul(accruedB, rateHalfB).Div(planInsB, big.NewInt(1000000)) //因利率单位为0.01%，所以再除以1000000
 
-		default:
-			return -1, fmt.Errorf("未定义的计息方式")
-		}
+	default:
+		return -1, fmt.Errorf("未定义的计息方式")
 	}
 
 	// 四舍五入
@@ -526,3 +588,31 @@ func timeSerie2dateSerie(d *dataframe.Series) (*dataframe.SeriesGeneric, error) 
 }
 
 // TODO:lpr中段变化时，分段计息的计算公式
+
+// slice2maps 传入两个参数，生成map[fieldname]val . 其中 "bank_loan_contract_id" 字段固定为 model.Bc.ID; fieldname 字段值为val
+// 该map用于添加至 model.Brps 的dataframe中
+func (model *BankRepayPlanCalcModel) slice2maps(fieldname string, vals ...interface{}) []interface{} {
+	brps := model.Brps
+	names := brps.Names()
+	bcID := model.Bc.ID
+	maps := make([]interface{}, 0)
+	if vals == nil {
+		panic("get no vals")
+	} else {
+		for _, val := range vals {
+			// 初始化a
+			a := make(map[string]interface{})
+			for _, name := range names {
+				a[name] = nil
+			}
+
+			a["bank_loan_contract_id"] = int64(bcID)
+			a[fieldname] = val
+
+			maps = append(maps, a)
+		}
+	}
+	// fmt.Printf("maps:\n %+v", maps)
+	return maps
+
+}
