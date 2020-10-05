@@ -94,6 +94,7 @@ func (model *BankRepayPlanCalcModel) AddDefaultFactoringIns() *BankRepayPlanCalc
 
 }
 
+// ToABC 生成农行还款计划
 func (model *BankRepayPlanCalcModel) ToABC(isFirst bool) (*BankRepayPlanCalcModel, error) {
 	if model.Bc.BankName != "农业银行" {
 		return nil, errors.New("输入模型的银行名称不是农业银行，请检查")
@@ -103,6 +104,7 @@ func (model *BankRepayPlanCalcModel) ToABC(isFirst bool) (*BankRepayPlanCalcMode
 
 }
 
+// ToCCB 生成建行还款计划
 func (model *BankRepayPlanCalcModel) ToCCB(isFirst bool) (*BankRepayPlanCalcModel, error) {
 	if model.Bc.BankName != "建设银行" {
 		return nil, errors.New("输入模型的银行名称不是建设银行，请检查")

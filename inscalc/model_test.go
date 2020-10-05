@@ -12,12 +12,12 @@ import (
 func TestReprice(t *testing.T) {
 	lprplus := null.NewInt(4500, true)
 	var (
-		in = InsCalcOption{
+		in = Option{
 			Method:  "yearly",
 			ExeRate: 47500,
 			LprPlus: lprplus,
 		}
-		expected = InsCalcOption{
+		expected = Option{
 			Method:  "yearly",
 			ExeRate: 43000,
 			LprPlus: lprplus,

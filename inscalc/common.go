@@ -16,14 +16,20 @@ import (
 var ctx = context.Background()
 var db, _ = gormInitForTest()
 
-type InsCalcOption struct {
+// Option 利息计算的参数
+type Option struct {
+	// 计息方式:
+	// yearly: 年利率/360计息
+	// monthly: 月利率/30 计息
+	// halfyearly: 年利率/2 计息半年
 	Method  string
 	ExeRate int32 //执行利率
 	LprPlus null.Int
 }
 
+// LprRecord 表"lpr_record"的结构体模型
 type LprRecord struct {
-	ID int32 `gorm:"primary_key;AUTO_INCREMENT;column:id;type:INT4;`
+	ID int32 `gorm:"primaryKey;autoIncrement;column:id;type:INT4;"`
 	// json: cannot unmarshal string into Go struct field Record.records.1Y of type float64
 	OneY string `json:"1Y" gorm:"column:one_y;type:FLOAT8"`
 	// ShowDateEN time.Time `json:"showDateEN,omitempty"`
@@ -38,7 +44,7 @@ func (b *LprRecord) TableName() string {
 
 // reprice 输入day日，输出重定价后的利率=day日执行的LPR+LprPlus
 // 如day日当天公布LPR，该LPR会在day+1日执行。故day日当天适用此前的LPR
-func (option *InsCalcOption) reprice(day civil.Date) *InsCalcOption {
+func (option *Option) reprice(day civil.Date) *Option {
 	var r []LprRecord
 	// 取一年期LPR. LPR公布当日执行的是上一日的LPR，故查询语句只需要写"<" 而非"<="
 	db.Where("show_date < ? ", day.String()).Order("show_date desc").Find(&r)

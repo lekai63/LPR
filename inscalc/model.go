@@ -284,7 +284,7 @@ func (model *BankRepayPlanCalcModel) AddAccruedPrincipal() *BankRepayPlanCalcMod
 	return model
 }
 
-// TODO:根据计息方式不同 生成不同的计划还款日期
+// FillInsPlanDate 根据计息方式不同 生成不同的计划还款日期
 func (model *BankRepayPlanCalcModel) FillInsPlanDate() *BankRepayPlanCalcModel {
 	method := model.Bc.InterestCalcMethod
 	switch method.String {
@@ -293,7 +293,8 @@ func (model *BankRepayPlanCalcModel) FillInsPlanDate() *BankRepayPlanCalcModel {
 	case "按季扣息":
 		model.fillPlanDateSeasonly()
 	default:
-
+		// 默认”按季扣息“
+		model.fillPlanDateSeasonly()
 	}
 
 	return model
@@ -449,7 +450,7 @@ func genDay(vals map[interface{}]interface{}) civil.Date {
 // method传参"monthly",为按月利率计息(月利率/30×天数)，与默认计息方式的区别是利率的四舍五入,适用杭州银行
 // method传参"halfyearly",按半年计息，适用招行
 func (model *BankRepayPlanCalcModel) rowInsCalc(vals map[interface{}]interface{}, upperVals map[interface{}]interface{}, method ...string) (int64, error) {
-	insCalcOptions := make([]InsCalcOption, 1)
+	insCalcOptions := make([]Option, 1)
 	option := insCalcOptions[0]
 	if method == nil {
 		option.Method = "yearly"
@@ -494,16 +495,16 @@ func (model *BankRepayPlanCalcModel) rowInsCalc(vals map[interface{}]interface{}
 	if isLpr && isLprChange && isCrdIn {
 		d := civil.DateOf(crd.ValueOrZero())
 		return segIns(d, vals, upperVals, option)
-	} else {
-		// 非LPR定价合同，暂认为就是固定利率（即认为未来人行基准将不会变化）
-		// LPR定价，但重定价日在upperDay之前，也可认为计息期间内是固定利率
-		return fixedIns(vals, upperVals, option)
 	}
+	// 非LPR定价合同，暂认为就是固定利率（即认为未来人行基准将不会变化）
+	// LPR定价，但重定价日在upperDay之前，也可认为计息期间内是固定利率
+	return fixedIns(vals, upperVals, option)
+
 }
 
 // segIns 分段计息
 // TODO:未考虑upperDay和rowDay之间存在多个重定价日的情况，可能影响招行保理利息计算
-func segIns(repriceDay civil.Date, vals map[interface{}]interface{}, upperVals map[interface{}]interface{}, option InsCalcOption) (int64, error) {
+func segIns(repriceDay civil.Date, vals map[interface{}]interface{}, upperVals map[interface{}]interface{}, option Option) (int64, error) {
 	// 做一个深拷贝
 	var midVals map[interface{}]interface{}
 	deepcopy.Copy(&midVals, &vals).Do()
@@ -516,7 +517,7 @@ func segIns(repriceDay civil.Date, vals map[interface{}]interface{}, upperVals m
 }
 
 // fixedIns 固定利率计息。重定价日不落在vals 和upperVals之间时，适用此方法计息
-func fixedIns(vals map[interface{}]interface{}, upperVals map[interface{}]interface{}, option InsCalcOption) (int64, error) {
+func fixedIns(vals map[interface{}]interface{}, upperVals map[interface{}]interface{}, option Option) (int64, error) {
 
 	calcDays := calcDays(vals, upperVals)
 	planInsB := big.NewInt(0)
