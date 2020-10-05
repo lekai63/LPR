@@ -46,7 +46,7 @@ type BankLoanContractMini struct {
 // NewModel 根据bankLoanContractID 从数据库中获取数据 并生成 BankRepayPlanCalcModel
 func NewModel(bankLoanContractID int32) (model BankRepayPlanCalcModel, err error) {
 	// conn := models.GlobalConn
-	// to change back to models.GlobalConn
+	// TODO: change back to models.GlobalConn
 	db, _ := gormInitForTest()
 
 	// gen model.Bc
@@ -91,7 +91,22 @@ func NewModel(bankLoanContractID int32) (model BankRepayPlanCalcModel, err error
 
 }
 
-// AfterDay 仅提取某一日之后的dataframe
+// CollectNilActualRows 提取所有【实际未付】的所有记录
+// 一般在更新/插入database前使用
+func (model *BankRepayPlanCalcModel) CollectNilActualRows() (*BankRepayPlanCalcModel, error) {
+	model.Sort("plan_date")
+	df := model.Brps
+	n, err := getLatestNilActualRowNum(df)
+	check(err)
+	df.Lock()
+	newDf := df.Copy(dataframe.Range{&n, nil})
+	df.Unlock()
+	model.Brps = newDf
+	return model, nil
+}
+
+// AfterDay 仅提取plan_date在某一日之后的dataframe
+// 考虑在还款计划df 计算完成后，写入数据库前 使用本函数
 func (model *BankRepayPlanCalcModel) AfterDay(day civil.Date) (*BankRepayPlanCalcModel, error) {
 	model.Sort("plan_date")
 	df := model.Brps
