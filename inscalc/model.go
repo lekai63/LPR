@@ -120,7 +120,7 @@ func (model *BankRepayPlanCalcModel) AfterDay(day civil.Date) (*BankRepayPlanCal
 	return model, nil
 }
 
-// Update 筛选id为nil的值，插入到数据库
+// Update 筛选id非nil的值，更新到数据库
 func (model *BankRepayPlanCalcModel) Update() error {
 
 	df := model.Brps
@@ -289,9 +289,9 @@ func (model *BankRepayPlanCalcModel) FillInsPlanDate() *BankRepayPlanCalcModel {
 	method := model.Bc.InterestCalcMethod
 	switch method.String {
 	case "按月扣息":
-		model.FillPlanDateMonthly()
+		model.fillPlanDateMonthly()
 	case "按季扣息":
-		model.FillPlanDateSeasonly()
+		model.fillPlanDateSeasonly()
 	default:
 
 	}
@@ -313,7 +313,7 @@ func (model *BankRepayPlanCalcModel) Sort(fieldname string) *BankRepayPlanCalcMo
 
 // FillPlanDateMonthly 对还未还款的记录（actual_date 为nil），生成每月21日的还息日期plan_date，并按planDate升序排序。
 // 其他字段以nil进行填充 （bank_loan_contract_id 用 bc.id填充）
-func (model *BankRepayPlanCalcModel) FillPlanDateMonthly() *BankRepayPlanCalcModel {
+func (model *BankRepayPlanCalcModel) fillPlanDateMonthly() *BankRepayPlanCalcModel {
 	brps := model.Brps
 	col, _ := brps.NameToColumn("plan_date")
 	se := brps.Series[col]
@@ -347,7 +347,7 @@ func (model *BankRepayPlanCalcModel) FillPlanDateMonthly() *BankRepayPlanCalcMod
 
 // FillPlanDateSeasonly 对还未还款的记录（actual_date 为nil），生成每季度21日的还息日期plan_date，并按planDate升序排序。
 // 其他字段以nil进行填充 （bank_loan_contract_id 用 bc.id填充）
-func (model *BankRepayPlanCalcModel) FillPlanDateSeasonly() *BankRepayPlanCalcModel {
+func (model *BankRepayPlanCalcModel) fillPlanDateSeasonly() *BankRepayPlanCalcModel {
 	brps := model.Brps
 	col, _ := brps.NameToColumn("plan_date")
 	se := brps.Series[col]
