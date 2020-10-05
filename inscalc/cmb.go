@@ -14,6 +14,7 @@ func (model *BankRepayPlanCalcModel) ToCMB(fillInsPlanDate bool) (*BankRepayPlan
 	}
 
 	// 招行每期利息与本金一起支付，不需额外生成利息还款计划
+	// TODO:招行可能根据不同业务 计息方式不同
 	// if fillInsPlanDate {
 	// 	model.FillInsPlanDate()
 	// }

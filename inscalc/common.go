@@ -106,9 +106,9 @@ func floatStr2int64(floatStr string) int64 {
 }
 
 // getLatestNilActualRowNum 返回第一笔实际未付的记录序号，如全部已付，则返回-1
+// 调用本函数前，df 应当是已经经过排序的
 func getLatestNilActualRowNum(df *dataframe.DataFrame) (int, error) {
 	iterator := df.ValuesIterator(dataframe.ValuesOptions{0, 1, true})
-
 	df.Lock()
 	defer df.Unlock()
 	for {
@@ -116,10 +116,11 @@ func getLatestNilActualRowNum(df *dataframe.DataFrame) (int, error) {
 		if row == nil {
 			break
 		}
-		if vals["actual_amount"] == nil {
+		if vals["actual_date"] == nil {
 			return *row, nil
 		}
 	}
+	// TODO:返回错误码
 	return -1, fmt.Errorf("无未还款记录，请检查合同是否已结束")
 
 }

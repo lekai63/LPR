@@ -47,7 +47,6 @@ type BankLoanContractMini struct {
 func NewModel(bankLoanContractID int32) (model BankRepayPlanCalcModel, err error) {
 	// conn := models.GlobalConn
 	// TODO: change back to models.GlobalConn
-	db, _ := gormInitForTest()
 
 	// gen model.Bc
 	var bc models.BankLoanContract
@@ -91,9 +90,36 @@ func NewModel(bankLoanContractID int32) (model BankRepayPlanCalcModel, err error
 
 }
 
-// CollectNilActualRows 提取所有【实际未付】的所有记录
+// ToBank 根据model的银行名称字段生成不同银行的还款计划。方便并发调用
+func (model *BankRepayPlanCalcModel) ToBank(fillInsPlanDate bool) (*BankRepayPlanCalcModel, error) {
+	if model.Bc.BankName == "" {
+		return nil, fmt.Errorf("error:银行名称为空")
+	}
+	switch model.Bc.BankName {
+	case "工商银行":
+		model.ToICBC(fillInsPlanDate)
+	case "农业银行":
+		model.ToABC(fillInsPlanDate)
+	case "建设银行":
+		model.ToCCB(fillInsPlanDate)
+	case "浦发银行":
+		model.ToSPDB(fillInsPlanDate)
+	case "招商银行":
+		model.ToCMB(fillInsPlanDate)
+	case "杭州银行":
+		model.ToHZBank(fillInsPlanDate)
+	case "浙商银行":
+		model.ToCZBank(fillInsPlanDate)
+	default:
+		fmt.Printf("%s不在预定义的银行名单内，将采用默认方法生成还款计划!", model.Bc.BankName)
+		model.ToDefault(fillInsPlanDate)
+	}
+	return model, nil
+}
+
+// FilterNilActualRows 提取所有【实际未付】的所有记录
 // 一般在更新/插入database前使用
-func (model *BankRepayPlanCalcModel) CollectNilActualRows() (*BankRepayPlanCalcModel, error) {
+func (model *BankRepayPlanCalcModel) FilterNilActualRows() (*BankRepayPlanCalcModel, error) {
 	model.Sort("plan_date")
 	df := model.Brps
 	n, err := getLatestNilActualRowNum(df)
@@ -330,14 +356,19 @@ func (model *BankRepayPlanCalcModel) Sort(fieldname string) *BankRepayPlanCalcMo
 // FillPlanDateMonthly 对还未还款的记录（actual_date 为nil），生成每月21日的还息日期plan_date，并按planDate升序排序。
 // 其他字段以nil进行填充 （bank_loan_contract_id 用 bc.id填充）
 func (model *BankRepayPlanCalcModel) fillPlanDateMonthly() *BankRepayPlanCalcModel {
+	model.Sort("plan_date")
 	brps := model.Brps
+
 	col, _ := brps.NameToColumn("plan_date")
 	se := brps.Series[col]
 	se.Sort(ctx, dataframe.SortOptions{Desc: false})
 
 	n, err := getLatestNilActualRowNum(brps)
 	nrow := se.NRows()
-	check(err)
+	// TODO:待完善getLatestNilActualRowNum的错误返回值后 修改本处理方式
+	if err != nil {
+		return model
+	}
 	startDate := se.Value(n).(civil.Date)
 	if n > 0 {
 		startDate = se.Value(n - 1).(civil.Date)
@@ -364,6 +395,7 @@ func (model *BankRepayPlanCalcModel) fillPlanDateMonthly() *BankRepayPlanCalcMod
 // FillPlanDateSeasonly 对还未还款的记录（actual_date 为nil），生成每季度21日的还息日期plan_date，并按planDate升序排序。
 // 其他字段以nil进行填充 （bank_loan_contract_id 用 bc.id填充）
 func (model *BankRepayPlanCalcModel) fillPlanDateSeasonly() *BankRepayPlanCalcModel {
+	model.Sort("plan_date")
 	brps := model.Brps
 	col, _ := brps.NameToColumn("plan_date")
 	se := brps.Series[col]
@@ -371,7 +403,10 @@ func (model *BankRepayPlanCalcModel) fillPlanDateSeasonly() *BankRepayPlanCalcMo
 
 	n, err := getLatestNilActualRowNum(brps)
 	nrow := se.NRows()
-	check(err)
+	// TODO:待完善getLatestNilActualRowNum的错误返回值后 修改本处理方式
+	if err != nil {
+		return model
+	}
 	startDate := se.Value(n).(civil.Date)
 	if n > 0 {
 		startDate = se.Value(n - 1).(civil.Date)
