@@ -35,7 +35,6 @@ func TestReprice(t *testing.T) {
 
 }
 
-// TODO:pg中将招行、建行三笔合同的current Rate 改回到43000
 func TestNewBankRepayPlanCalcModel(t *testing.T) {
 	var (
 		in       = 12

@@ -588,8 +588,6 @@ func timeSerie2dateSerie(d *dataframe.Series) (*dataframe.SeriesGeneric, error) 
 
 }
 
-// TODO:lpr中段变化时，分段计息的计算公式
-
 // slice2maps 传入两个参数，生成map[fieldname]val . 其中 "bank_loan_contract_id" 字段固定为 model.Bc.ID; fieldname 字段值为val
 // 该map用于添加至 model.Brps 的dataframe中
 func (model *BankRepayPlanCalcModel) slice2maps(fieldname string, vals ...interface{}) []interface{} {
