@@ -2,9 +2,9 @@ package inscalc
 
 import (
 	"errors"
-	"math/big"
 
 	"cloud.google.com/go/civil"
+	"github.com/antlabs/deepcopy"
 	dataframe "github.com/rocketlaunchr/dataframe-go"
 )
 
@@ -62,11 +62,16 @@ func (model *BankRepayPlanCalcModel) AddHZBankFactoringIns() *BankRepayPlanCalcM
 			// 其余本金应加到下一季末的21日一并扣息
 			// 本row还款日非21日，将计划还款利息暂存入temp
 			if d := vals["plan_date"].(civil.Date); d.Day != 21 {
-				// 与默认保理利息计算方式不同的地方，本金还款时还会有本笔本金对应的利息
-				rowins := model.hzRowInsCalc(vals, upperVals)
-				planInsterest[*row] = rowins
 				m, e := model.rowInsCalc(vals, upperVals, "monthly")
 				check(e)
+				// 与默认保理利息计算方式不同的地方，本金还款时还会有本笔本金对应的利息,
+				// 通过中间变量深度拷贝一个vals修改 应计本金，来计算本次利息
+				var midVals map[interface{}]interface{}
+				deepcopy.Copy(&midVals, &vals).Do()
+				midVals["accrued_principal"] = vals["plan_principal"]
+				rowins, e := model.rowInsCalc(midVals, upperVals, "monthly")
+				check(e)
+				planInsterest[*row] = rowins
 				temp = m - rowins
 			} else if x := upperVals["plan_date"].(civil.Date); x.Day != 21 {
 				// 上一row为非21日，将temp提取出来，加入本row
@@ -100,26 +105,4 @@ func (model *BankRepayPlanCalcModel) AddHZBankFactoringIns() *BankRepayPlanCalcM
 	model.Brps = df
 	return model
 
-}
-
-func (model *BankRepayPlanCalcModel) hzRowInsCalc(vals map[interface{}]interface{}, upperVals map[interface{}]interface{}) int64 {
-	upperDay := upperVals["plan_date"].(civil.Date)
-	if upperVals["actual_date"] != nil {
-		upperDay = (upperVals["actual_date"].(civil.Date))
-	}
-
-	rowDay := vals["plan_date"].(civil.Date)
-	if vals["actual_date"] != nil {
-		rowDay = (vals["actual_date"].(civil.Date))
-	}
-
-	calcDays := (rowDay).DaysSince(upperDay)
-
-	planInsB := big.NewInt(0)
-	accruedB := big.NewInt(vals["plan_principal"].(int64))                                                                        //此行与默认计息方式不同
-	rateMonthB := big.NewInt(int64(model.Bc.CurrentRate * 10 / 12))                                                               //为了月利率的精度，小数点右移一位后再除以12
-	planInsB = planInsB.Mul(accruedB, rateMonthB).Mul(planInsB, big.NewInt(int64(calcDays))).Div(planInsB, big.NewInt(300000000)) // 注意最后要多除以10，即把上面移动的小数点移回去
-	// 四舍五入
-	p := planInsB.Int64()
-	return rounding(p)
 }
