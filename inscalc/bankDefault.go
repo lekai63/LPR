@@ -106,12 +106,14 @@ func (model *BankRepayPlanCalcModel) AddDefaultFactoringIns() *BankRepayPlanCalc
 			upperVals["plan_date"] = civil.DateOf(model.Bc.ActualStartDate.ValueOrZero())
 			planInsterest[*row], e = model.rowInsCalc(vals, upperVals)
 			check(e)
-			// 最后一行利随本清
+			// 最后一行 利随本清
 		case (*row) == nrows-1: // 如使用(*row) == df.NRows() 游标直接到最后，从而无法执行
-			planInsterest[*row], e = model.rowInsCalc(vals, upperVals)
+			t, e := model.rowInsCalc(vals, upperVals)
 			check(e)
+			// 把暂存与temp中的利息加回来
+			planInsterest[*row] = t +temp
 		default:
-			// 因农行保理利息在每季末21日扣，故本金还款日当天的利息，应加到下一季末的21日一并扣息
+			// 保理利息在每季末/月末21日扣，故本金还款日当天的利息，应加到下一季末/月末的21日一并扣息
 			// 本row还款日非21日，将计划还款利息暂存入temp
 			if d := vals["plan_date"].(civil.Date); d.Day != 21 {
 				temp, e = model.rowInsCalc(vals, upperVals)

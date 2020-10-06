@@ -69,7 +69,7 @@ func getLpr(day civil.Date) int64 {
 	var records []LprRecord
 	result := db.Where("show_date BETWEEN ? AND ?", dpast.String(), dyestoday.String()).Find(&records)
 	if result.Error != nil {
-		fmt.Errorf("数据库查询失败%w %w", result.Error)
+		fmt.Errorf("数据库查询失败 %w", result.Error)
 	}
 	switch result.RowsAffected {
 	case 0:
@@ -127,7 +127,7 @@ func getLatestNilActualRowNum(df *dataframe.DataFrame) (int, error) {
 			return *row, nil
 		}
 	}
-	return -1, fmt.Errorf("无未还款记录，请检查合同是否已结束 %w", ErrNoRecord)
+	return -1, fmt.Errorf("已偿付完毕，请检查合同是否已结束 %w", ErrNoRecord)
 }
 
 // genMonthlyInsPlanDate 生成利息还款计划，默认每月21日扣息.

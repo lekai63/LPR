@@ -56,8 +56,10 @@ func (model *BankRepayPlanCalcModel) AddHZBankFactoringIns() *BankRepayPlanCalcM
 			check(e)
 			// 最后一行利随本清
 		case (*row) == nrows-1: // 如使用(*row) == df.NRows() 游标直接到最后，从而无法执行
-			planInsterest[*row], e = model.rowInsCalc(vals, upperVals, "monthly")
+			t, e := model.rowInsCalc(vals, upperVals, "monthly")
 			check(e)
+			// 把暂存与temp中的利息加回来
+			planInsterest[*row] = t + temp
 		default:
 			// 杭州银行保理利息在每季末21日扣
 			// 本金偿还时需配套付息，付息金额=本次偿还本金*（偿还日-最近一期季度付息日）/30 * 月利率

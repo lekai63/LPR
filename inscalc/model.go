@@ -118,7 +118,7 @@ func (model *BankRepayPlanCalcModel) ToBank(fillInsPlanDate bool) (*BankRepayPla
 	return model, nil
 }
 
-// FilterNilActualRows 提取所有【实际未付】的所有记录
+// FilterNilActualRows 提取所有【实际未付】的所有记录（即剩余还款计划)
 // 一般在更新/插入database前使用
 func (model *BankRepayPlanCalcModel) FilterNilActualRows() (*BankRepayPlanCalcModel, error) {
 	model.Sort("plan_date")
@@ -127,7 +127,7 @@ func (model *BankRepayPlanCalcModel) FilterNilActualRows() (*BankRepayPlanCalcMo
 	if err != nil {
 		if errors.Is(errors.Unwrap(err), ErrNoRecord) {
 			model.Brps = nil
-			fmt.Printf("warning:无实际未付记录")
+			fmt.Printf("银行名称:%s,合同号:%s,无剩余还款计划", model.Bc.BankName, model.Bc.BankContractNo.ValueOrZero())
 			return model, nil
 		} else {
 			check(err)
@@ -384,8 +384,7 @@ func (model *BankRepayPlanCalcModel) fillPlanDateMonthly() *BankRepayPlanCalcMod
 	nrow := se.NRows()
 	if err != nil {
 		if errors.Is(errors.Unwrap(err), ErrNoRecord) {
-			model.Brps = nil
-			fmt.Printf("warning:无实际未付记录")
+			fmt.Printf("无需生成额外的还款日期 %v", err)
 			return model
 		} else {
 			check(err)
@@ -428,8 +427,7 @@ func (model *BankRepayPlanCalcModel) fillPlanDateSeasonly() *BankRepayPlanCalcMo
 	nrow := se.NRows()
 	if err != nil {
 		if errors.Is(errors.Unwrap(err), ErrNoRecord) {
-			model.Brps = nil
-			fmt.Printf("warning:无实际未付记录")
+			fmt.Printf("无需生成额外的还款日期 %v", err)
 			return model
 		} else {
 			check(err)
@@ -628,7 +626,7 @@ func fixedIns(vals map[interface{}]interface{}, upperVals map[interface{}]interf
 		planInsB.Mul(accruedB, rateHalfB).Div(planInsB, big.NewInt(1000000)) //因利率单位为0.01%，所以再除以1000000
 
 	default:
-		return -1, fmt.Errorf("未定义的计息方式", ErrUndefined)
+		return -1, fmt.Errorf("未定义的计息方式 %w", ErrUndefined)
 	}
 
 	// 四舍五入
