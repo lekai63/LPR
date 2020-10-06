@@ -1,7 +1,7 @@
 package inscalc
 
 import (
-	"errors"
+	"fmt"
 
 	"cloud.google.com/go/civil"
 	"github.com/antlabs/deepcopy"
@@ -11,7 +11,7 @@ import (
 // ToHZBank 生成杭州银行还款计划
 func (model *BankRepayPlanCalcModel) ToHZBank(fillInsPlanDate bool) (*BankRepayPlanCalcModel, error) {
 	if model.Bc.BankName != "杭州银行" {
-		return nil, errors.New("输入模型的银行名称不是杭州银行，请检查")
+		return nil, fmt.Errorf("输入模型的银行名称不是杭州银行，请检查 %w", ErrName)
 	}
 	if fillInsPlanDate {
 		model.FillInsPlanDate()

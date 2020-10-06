@@ -2,14 +2,21 @@ package inscalc
 
 import (
 	"context"
+	"errors"
 	"fmt"
-	"log"
 	"strconv"
 	"time"
 
 	"cloud.google.com/go/civil"
 	"github.com/guregu/null"
 	dataframe "github.com/rocketlaunchr/dataframe-go"
+)
+
+// 定义常量错误
+var (
+	ErrNoRecord  = errors.New("No Record")
+	ErrUndefined = errors.New("Undefined")
+	ErrName      = errors.New("Name Error")
 )
 
 // TODO:修改db获取方式
@@ -62,15 +69,15 @@ func getLpr(day civil.Date) int64 {
 	var records []LprRecord
 	result := db.Where("show_date BETWEEN ? AND ?", dpast.String(), dyestoday.String()).Find(&records)
 	if result.Error != nil {
-		log.Fatalln(result.Error)
+		fmt.Errorf("数据库查询失败%w %w", result.Error)
 	}
 	switch result.RowsAffected {
 	case 0:
-		fmt.Printf("未查询到距离%s(含)之前30天内的LPR值,取最新一期LPR", day.String())
+		fmt.Errorf("未查询到距离%s(含)之前30天内的LPR值,取最新一期LPR %w", day.String(), ErrNoRecord)
 		var r LprRecord
 		restemp := db.Order("show_date desc").First(&r)
 		if restemp.Error != nil {
-			log.Fatalln(restemp.Error)
+			fmt.Errorf("从数据库读取show_date时发生错误 %w", restemp.Error)
 		}
 		return floatStr2int64(r.OneY)
 	case 1:
@@ -81,11 +88,11 @@ func getLpr(day civil.Date) int64 {
 		for _, val := range records {
 			valday, err := civil.ParseDate(val.ShowDateCN[:10])
 			if err != nil {
-				log.Fatalln(err)
+				fmt.Errorf("%s日期转换失败:%w", val.ShowDateCN[:10], err)
 			}
 			mday, err := civil.ParseDate(m.ShowDateCN[:10])
 			if err != nil {
-				log.Fatalln(err)
+				fmt.Errorf("%s日期转换失败:%w", m.ShowDateCN[:10], err)
 			}
 
 			if valday.After(mday) {
@@ -100,7 +107,7 @@ func getLpr(day civil.Date) int64 {
 func floatStr2int64(floatStr string) int64 {
 	f, err := strconv.ParseFloat(floatStr, 64)
 	if err != nil {
-		log.Fatal(err)
+		fmt.Errorf("%s floatStr转换为int64时发生错误:%w", floatStr, err)
 	}
 	return int64(f * 10000)
 }
@@ -120,9 +127,7 @@ func getLatestNilActualRowNum(df *dataframe.DataFrame) (int, error) {
 			return *row, nil
 		}
 	}
-	// TODO:返回错误码
-	return -1, fmt.Errorf("无未还款记录，请检查合同是否已结束")
-
+	return -1, fmt.Errorf("无未还款记录，请检查合同是否已结束 %w", ErrNoRecord)
 }
 
 // genMonthlyInsPlanDate 生成利息还款计划，默认每月21日扣息.
@@ -269,6 +274,6 @@ func rounding(p int64) (res int64) {
 
 func check(err error) {
 	if err != nil {
-		log.Fatalln(err)
+		fmt.Errorf("check unkown error:%w", err)
 	}
 }

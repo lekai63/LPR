@@ -1,6 +1,7 @@
 package inscalc
 
 import (
+	"errors"
 	"fmt"
 	"math/big"
 	"strconv"
@@ -80,7 +81,7 @@ func NewModel(bankLoanContractID int32) (model BankRepayPlanCalcModel, err error
 	}
 	brps, err := imports.LoadFromSQL(ctx, tx, &op)
 	if err != nil {
-		fmt.Printf("从数据库中读取数据组装dataframe时发生错误：%+v", err)
+		err = fmt.Errorf("从数据库中读取数据组装dataframe时发生错误：%w", err)
 		return model, err
 	}
 	model.Brps = brps
@@ -93,7 +94,7 @@ func NewModel(bankLoanContractID int32) (model BankRepayPlanCalcModel, err error
 // ToBank 根据model的银行名称字段生成不同银行的还款计划。方便并发调用
 func (model *BankRepayPlanCalcModel) ToBank(fillInsPlanDate bool) (*BankRepayPlanCalcModel, error) {
 	if model.Bc.BankName == "" {
-		return nil, fmt.Errorf("error:银行名称为空")
+		return nil, fmt.Errorf("银行名称为空")
 	}
 	switch model.Bc.BankName {
 	case "工商银行":
@@ -111,7 +112,7 @@ func (model *BankRepayPlanCalcModel) ToBank(fillInsPlanDate bool) (*BankRepayPla
 	case "浙商银行":
 		model.ToCZBank(fillInsPlanDate)
 	default:
-		fmt.Printf("%s不在预定义的银行名单内，将采用默认方法生成还款计划!", model.Bc.BankName)
+		fmt.Errorf("%s不在预定义的银行名单内，将采用默认方法生成还款计划! %w", model.Bc.BankName, ErrUndefined)
 		model.ToDefault(fillInsPlanDate)
 	}
 	return model, nil
@@ -123,7 +124,15 @@ func (model *BankRepayPlanCalcModel) FilterNilActualRows() (*BankRepayPlanCalcMo
 	model.Sort("plan_date")
 	df := model.Brps
 	n, err := getLatestNilActualRowNum(df)
-	check(err)
+	if err != nil {
+		if errors.Is(errors.Unwrap(err), ErrNoRecord) {
+			model.Brps = nil
+			fmt.Printf("warning:无实际未付记录")
+			return model, nil
+		} else {
+			check(err)
+		}
+	}
 	df.Lock()
 	newDf := df.Copy(dataframe.Range{&n, nil})
 	df.Unlock()
@@ -152,7 +161,7 @@ func (model *BankRepayPlanCalcModel) AfterDay(day civil.Date) (*BankRepayPlanCal
 	}
 	df.Unlock()
 	if n < 0 {
-		return model, fmt.Errorf("不存在%s之后的还款计划", day)
+		return model, fmt.Errorf("不存在%s之后的还款计划 %w", day, ErrNoRecord)
 	}
 	df.Lock()
 	newDf := df.Copy(dataframe.Range{&n, nil})
@@ -188,9 +197,13 @@ func (model *BankRepayPlanCalcModel) Update() error {
 	//  tx := conn.BeginTx()
 
 	sqldb, err := db.DB()
-	check(err)
+	if err != nil {
+		return err
+	}
 	tx, err := sqldb.Begin()
-	check(err)
+	if err != nil {
+		return err
+	}
 
 	m := map[string]*string{
 		"id":                    &[]string{"id"}[0],
@@ -254,9 +267,13 @@ func (model *BankRepayPlanCalcModel) Insert() error {
 	//  tx := conn.BeginTx()
 
 	sqldb, err := db.DB()
-	check(err)
+	if err != nil {
+		return err
+	}
 	tx, err := sqldb.Begin()
-	check(err)
+	if err != nil {
+		return err
+	}
 
 	m := map[string]*string{
 		"id":                    nil,
@@ -365,10 +382,16 @@ func (model *BankRepayPlanCalcModel) fillPlanDateMonthly() *BankRepayPlanCalcMod
 
 	n, err := getLatestNilActualRowNum(brps)
 	nrow := se.NRows()
-	// TODO:待完善getLatestNilActualRowNum的错误返回值后 修改本处理方式
 	if err != nil {
-		return model
+		if errors.Is(errors.Unwrap(err), ErrNoRecord) {
+			model.Brps = nil
+			fmt.Printf("warning:无实际未付记录")
+			return model
+		} else {
+			check(err)
+		}
 	}
+
 	startDate := se.Value(n).(civil.Date)
 	if n > 0 {
 		startDate = se.Value(n - 1).(civil.Date)
@@ -403,9 +426,14 @@ func (model *BankRepayPlanCalcModel) fillPlanDateSeasonly() *BankRepayPlanCalcMo
 
 	n, err := getLatestNilActualRowNum(brps)
 	nrow := se.NRows()
-	// TODO:待完善getLatestNilActualRowNum的错误返回值后 修改本处理方式
 	if err != nil {
-		return model
+		if errors.Is(errors.Unwrap(err), ErrNoRecord) {
+			model.Brps = nil
+			fmt.Printf("warning:无实际未付记录")
+			return model
+		} else {
+			check(err)
+		}
 	}
 	startDate := se.Value(n).(civil.Date)
 	if n > 0 {
@@ -557,13 +585,22 @@ func (model *BankRepayPlanCalcModel) rowInsCalc(vals map[interface{}]interface{}
 func segIns(repriceDay civil.Date, vals map[interface{}]interface{}, upperVals map[interface{}]interface{}, option Option) (int64, error) {
 	// 做一个深拷贝
 	var midVals map[interface{}]interface{}
+	var err error
+
 	deepcopy.Copy(&midVals, &vals).Do()
 	midVals["actual_date"] = repriceDay
-	segins1, err := fixedIns(midVals, upperVals, option)
-	check(err)
-	segins2, err := fixedIns(vals, midVals, *option.reprice(repriceDay))
-	check(err)
-	return segins1 + segins2, nil
+
+	segins1, err1 := fixedIns(midVals, upperVals, option)
+	if err1 != nil {
+		segins1 = 0
+		err = fmt.Errorf("sgeIns1 error:%w", err1)
+	}
+	segins2, err2 := fixedIns(vals, midVals, *option.reprice(repriceDay))
+	if err2 != nil {
+		segins2 = 0
+		err = fmt.Errorf("sgeIns2 error:%w", err2)
+	}
+	return segins1 + segins2, err
 }
 
 // fixedIns 固定利率计息。重定价日不落在vals 和upperVals之间时，适用此方法计息
@@ -591,7 +628,7 @@ func fixedIns(vals map[interface{}]interface{}, upperVals map[interface{}]interf
 		planInsB.Mul(accruedB, rateHalfB).Div(planInsB, big.NewInt(1000000)) //因利率单位为0.01%，所以再除以1000000
 
 	default:
-		return -1, fmt.Errorf("未定义的计息方式")
+		return -1, fmt.Errorf("未定义的计息方式", ErrUndefined)
 	}
 
 	// 四舍五入
@@ -628,6 +665,13 @@ func timeSerie2dateSerie(d *dataframe.Series) (*dataframe.SeriesGeneric, error) 
 
 	// 定义比较函数，以便用于排序
 	f := func(a, b interface{}) bool {
+		if a == nil {
+			return true
+		}
+		if a != nil && b == nil {
+			return false
+		}
+
 		a1 := a.(civil.Date)
 		b1 := b.(civil.Date)
 		return a1.Before(b1)
@@ -646,7 +690,7 @@ func (model *BankRepayPlanCalcModel) slice2maps(fieldname string, vals ...interf
 	bcID := model.Bc.ID
 	maps := make([]interface{}, 0)
 	if vals == nil {
-		panic("get no vals")
+		fmt.Errorf("No Vals,pls check params")
 	} else {
 		for _, val := range vals {
 			// 初始化a

@@ -1,7 +1,7 @@
 package inscalc
 
 import (
-	"errors"
+	"fmt"
 
 	"cloud.google.com/go/civil"
 	dataframe "github.com/rocketlaunchr/dataframe-go"
@@ -10,7 +10,7 @@ import (
 // ToCMB 生成招商银行还款计划
 func (model *BankRepayPlanCalcModel) ToCMB(fillInsPlanDate bool) (*BankRepayPlanCalcModel, error) {
 	if model.Bc.BankName != "招商银行" {
-		return nil, errors.New("输入模型的银行名称不是招商银行，请检查")
+		return nil, fmt.Errorf("输入模型的银行名称不是招商银行，请检查 %w", ErrName)
 	}
 
 	// 招行每期利息与本金一起支付，不需额外生成利息还款计划

@@ -1,7 +1,7 @@
 package inscalc
 
 import (
-	"errors"
+	"fmt"
 
 	"cloud.google.com/go/civil"
 	dataframe "github.com/rocketlaunchr/dataframe-go"
@@ -154,7 +154,7 @@ func (model *BankRepayPlanCalcModel) AddDefaultFactoringIns() *BankRepayPlanCalc
 // ToABC 生成农行还款计划
 func (model *BankRepayPlanCalcModel) ToABC(fillInsPlanDate bool) (*BankRepayPlanCalcModel, error) {
 	if model.Bc.BankName != "农业银行" {
-		return nil, errors.New("输入模型的银行名称不是农业银行，请检查")
+		return nil, fmt.Errorf("输入模型的银行名称不是农业银行，请检查 %w", ErrName)
 	}
 	model.ToDefault(fillInsPlanDate)
 	return model, nil
@@ -164,7 +164,7 @@ func (model *BankRepayPlanCalcModel) ToABC(fillInsPlanDate bool) (*BankRepayPlan
 // ToCCB 生成建行还款计划
 func (model *BankRepayPlanCalcModel) ToCCB(fillInsPlanDate bool) (*BankRepayPlanCalcModel, error) {
 	if model.Bc.BankName != "建设银行" {
-		return nil, errors.New("输入模型的银行名称不是建设银行，请检查")
+		return nil, fmt.Errorf("输入模型的银行名称不是建设银行，请检查 %w", ErrName)
 	}
 	model.ToDefault(fillInsPlanDate)
 	return model, nil
@@ -174,7 +174,7 @@ func (model *BankRepayPlanCalcModel) ToCCB(fillInsPlanDate bool) (*BankRepayPlan
 // ToICBC 生成工行还本付息计划
 func (model *BankRepayPlanCalcModel) ToICBC(fillInsPlanDate bool) (*BankRepayPlanCalcModel, error) {
 	if model.Bc.BankName != "工商银行" {
-		return nil, errors.New("输入模型的银行名称不是工商银行，请检查")
+		return nil, fmt.Errorf("输入模型的银行名称不是工商银行，请检查 %w", ErrName)
 	}
 	model.ToDefault(fillInsPlanDate)
 	return model, nil
@@ -183,7 +183,7 @@ func (model *BankRepayPlanCalcModel) ToICBC(fillInsPlanDate bool) (*BankRepayPla
 // ToSPDB 生成浦发还本付息计划
 func (model *BankRepayPlanCalcModel) ToSPDB(fillInsPlanDate bool) (*BankRepayPlanCalcModel, error) {
 	if model.Bc.BankName != "浦发银行" {
-		return nil, errors.New("输入模型的银行名称不是浦发银行，请检查")
+		return nil, fmt.Errorf("输入模型的银行名称不是浦发银行，请检查 %w", ErrName)
 	}
 	model.ToDefault(fillInsPlanDate)
 	return model, nil
