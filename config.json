@@ -2,14 +2,14 @@
 	"database": {
 		"default": {
 			"host": "192.168.5.11",
-			"port": "5432",
+			"port": "15432",
 			"user": "fzzl",
 			"pwd": "fzzl032003",
 			"name": "lpr",
 			"max_idle_con": 5,
 			"max_open_con": 10,
 			"driver": "postgresql",
-			"dsn": "host=192.168.5.11 user=fzzl password=fzzl032003 dbname=lpr port=5432 sslmode=disable TimeZone=Asia/Shanghai"
+			"dsn": "host=192.168.5.11 user=fzzl password=fzzl032003 dbname=lpr port=15432 sslmode=disable TimeZone=Asia/Shanghai"
 		}
 	},
 	"language": "zh",

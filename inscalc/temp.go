@@ -7,7 +7,7 @@ import (
 )
 
 func gormInitForTest() (*gorm.DB, error) {
-	dsn := "host=192.168.5.11 user=fzzl password=fzzl032003 dbname=lpr port=5432 sslmode=disable TimeZone=Asia/Shanghai"
+	dsn := "host=192.168.5.11 user=fzzl password=fzzl032003 dbname=lpr port=15432 sslmode=disable TimeZone=Asia/Shanghai"
 	gormv2, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
 		NamingStrategy: schema.NamingStrategy{
 			//	TablePrefix:   "t_", // 表名前缀，`User` 的表名应该是 `t_users`

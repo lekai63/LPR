@@ -2,6 +2,32 @@
 
 // TODO:错误梳理、处理
 
+# pgsql 相关
+
+## postgres 操作
+
+```
+// 查看所有sequence
+SELECT c.relname FROM pg_class c WHERE c.relkind = 'S'; 
+// 修改序列起始号
+alter sequence lease_contract_id_seq restart with 39;
+// 删除记录
+delete from xx_table where id = 9999 ;
+```
+
+## pgSQL在配置更新后的热重启
+
+Command below is the perfect command to avoid restart and most importantly does not disrupt ongoing queries
+```
+docker exec -it {postgres_container}  psql -U postgres -c "SELECT pg_reload_conf();"
+```
+## 调整时区
+```
+sudo timedatectl set-timezone 'Asia/Shanghai'
+```
+
+# go开发相关
+
 ## dlv远程调试
 
 ```
@@ -25,21 +51,7 @@
    	--overwrite
 ```
 
-## postgres 操作
 
-```
-// 查看所有sequence
-SELECT c.relname FROM pg_class c WHERE c.relkind = 'S'; 
-// 修改序列起始号
-alter sequence lease_contract_id_seq restart with 39;
-// 删除记录
-delete from xx_table where id = 9999 ;
-```
-
-## 调整时区
-```
-sudo timedatectl set-timezone 'Asia/Shanghai'
-```
 
 # GoAdmin 介绍
 
