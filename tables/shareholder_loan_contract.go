@@ -22,13 +22,8 @@ func GetShareholderLoanContractTable(ctx *context.Context) table.Table {
 	info := shareholderLoanContract.GetInfo().HideFilterArea()
 
 	info.AddField("序号", "id", db.Int)
-	info.AddField("出借人", "creditor", db.Varchar).FieldDisplay(func(model types.FieldModel) interface{} {
-		if model.Value == "浙江省国有资本运营有限公司" {
-			return "浙资运营"
-		} else {
-			return model.Value
-		}
-	})
+	info.AddField("出借人", "creditor", db.Varchar)
+
 	info.AddField("项目简称", "abbreviation", db.Varchar).
 		FieldFilterable(types.FilterType{Operator: types.FilterOperatorLike}).
 		FieldFilterProcess(func(s string) string {
