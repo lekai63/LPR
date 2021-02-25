@@ -57,8 +57,11 @@ sudo timedatectl set-timezone 'Asia/Shanghai'
 ```
 
 # 项目实践中参考使用了以下项目，致谢：
+
 https://github.com/GoAdminGroup/go-admin
+
 https://github.com/smallnest/gen
+
 https://gorm.io/
 
 
